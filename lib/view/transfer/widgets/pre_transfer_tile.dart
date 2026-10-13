@@ -6,6 +6,7 @@ class PreTransferTile extends StatelessWidget {
   final String image, title, subTitle;
   final bool isComingSoon;
   final VoidCallback onTap;
+
   const PreTransferTile({
     super.key,
     required this.image,
@@ -17,96 +18,115 @@ class PreTransferTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        margin: EdgeInsets.only(bottom: 16),
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.outlineVariant,
+          color: isDark ? const Color(0xFF1E1A14) : Colors.white,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? const Color(0xFF2C241B) : const Color(0xFFEFE8DE),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.15 : 0.03),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
-              height: 40,
-              width: 40,
-              padding: EdgeInsets.all(10),
+              height: 44,
+              width: 44,
+              padding: const EdgeInsets.all(11),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.onTertiaryContainer,
+                color: isDark
+                    ? const Color(0xFF2A2218)
+                    : const Color(0xFFFAF5ED),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF382F22)
+                      : const Color(0xFFEBE3D7),
+                ),
               ),
-              child: SvgPicture.asset(image),
+              child: SvgPicture.asset(
+                image,
+                colorFilter: ColorFilter.mode(
+                  primaryColor,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  isComingSoon
-                      ? Row(
-                        children: [
-                          Text(
-                            title,
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0,
-                            ),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          title,
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            letterSpacing: -0.2,
                           ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFB57510).withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(100),
-                            ),
-                            child: Text(
-                              "COMING SOON",
-                              style: GoogleFonts.inter(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 9,
-                                letterSpacing: 0.5,
-                                color: const Color(0xFFB57510),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                      : Text(
-                        title,
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0,
                         ),
                       ),
-
+                      if (isComingSoon) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Text(
+                            "SOON",
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 8.5,
+                              letterSpacing: 0.4,
+                              color: primaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 3),
                   Text(
                     subTitle,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.inter(
-                      fontSize: 12,
-                      letterSpacing: 0,
-                      color: Theme.of(context).colorScheme.shadow,
+                      fontSize: 11.5,
+                      color: Theme.of(context).colorScheme.scrim,
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 10),
-            Container(
-              height: 24,
-              width: 24,
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.onTertiaryContainer.withValues(alpha: 0.3),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.arrow_forward_rounded, size: 16),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: Theme.of(context).colorScheme.scrim,
             ),
           ],
         ),

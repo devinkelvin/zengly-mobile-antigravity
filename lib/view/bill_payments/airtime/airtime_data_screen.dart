@@ -8,7 +8,8 @@ import '../../../widgets/widgets.dart';
 import '../../view.dart';
 
 class AirtimeDataScreen extends ConsumerStatefulWidget {
-  const AirtimeDataScreen({super.key});
+  final int initialTabIndex;
+  const AirtimeDataScreen({super.key, this.initialTabIndex = 0});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -21,7 +22,13 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
 
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: (widget.initialTabIndex >= 0 && widget.initialTabIndex < 2)
+          ? widget.initialTabIndex
+          : 0,
+    );
 
     super.initState();
   }
@@ -46,13 +53,20 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
-        title: Text(
-          "Airtime & Data",
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0,
-          ),
+        title: AnimatedBuilder(
+          animation: _tabController,
+          builder: (context, _) {
+            final title =
+                _tabController.index == 1 ? "Data Bundles" : "Airtime Top-up";
+            return Text(
+              title,
+              style: GoogleFonts.inter(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0,
+              ),
+            );
+          },
         ),
         actions: [BalanceWidget()],
       ),

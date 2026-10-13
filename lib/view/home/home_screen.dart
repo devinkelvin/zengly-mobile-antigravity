@@ -25,62 +25,109 @@ class _ZenglyRewardsBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      clipBehavior: Clip.hardEdge,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6B4400), Color(0xFFAD7210)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
+    return InkWell(
+      onTap: () => context.pushNamed(AppRouter.preVerification),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF593902), Color(0xFF9E6508)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF593902).withValues(alpha: 0.25),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-      ),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 18, 130, 18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        "Unlock Your Zengly Experience 🎁",
-                        style: GoogleFonts.raleway(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Left content column
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          "Unlock your Zengly experience",
+                          style: GoogleFonts.raleway(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                            letterSpacing: -0.2,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Complete quick verification steps and earn exclusive rewards at every level. The more you verify, the more you win.",
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: Colors.white.withValues(alpha: 0.8),
-                    height: 1.5,
-                    letterSpacing: 0,
+                      const SizedBox(width: 6),
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.card_giftcard_rounded,
+                          size: 13,
+                          color: Color(0xFFFFD580),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Text(
+                    "Complete quick verification steps and earn exclusive rewards at every level.",
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      color: Colors.white.withValues(alpha: 0.85),
+                      height: 1.35,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Verify now",
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFFFFE082),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 12,
+                        color: Color(0xFFFFE082),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            right: -4,
-            bottom: 0,
-            child: Image.asset(
-              AppImages.handHold,
-              height: 110,
+            const SizedBox(width: 12),
+            // Right illustration - cleanly separated with fixed bounds
+            SizedBox(
+              width: 72,
+              height: 72,
+              child: Image.asset(
+                AppImages.handHold,
+                fit: BoxFit.contain,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

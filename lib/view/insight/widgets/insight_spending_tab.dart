@@ -28,31 +28,11 @@ class InsightSpendingTab extends StatelessWidget {
   });
 
   Future<void> _showCustomDatePicker(BuildContext context) async {
-    final now = DateTime.now();
-    final picked = await showDateRangePicker(
+    final picked = await CompactCalendarSheet.show(
       context: context,
+      initialRange: dateRange,
       firstDate: DateTime(2020),
-      lastDate: DateTime(now.year + 2, 12, 31),
-      initialDateRange: dateRange,
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: const Color(0xFFB57510),
-              onPrimary: Colors.white,
-              surface: const Color(0xFF1E1E1E),
-              onSurface: Colors.white,
-            ),
-            dialogTheme: const DialogThemeData(
-              backgroundColor: Color(0xFF181818),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
+      lastDate: DateTime(DateTime.now().year + 2, 12, 31),
     );
 
     if (picked != null) {

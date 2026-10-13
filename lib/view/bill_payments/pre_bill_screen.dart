@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/data.dart';
 import '../../utils/utils.dart';
 import '../../view/dashboard/dashboard_vm.dart';
-import '../../view/dashboard/widgets/dashboard_bottom_bar.dart';
 import '../../widgets/widgets.dart';
 
 class PreBillScreen extends ConsumerStatefulWidget {
@@ -18,282 +17,386 @@ class PreBillScreen extends ConsumerStatefulWidget {
 }
 
 class _PreBillScreenState extends ConsumerState<PreBillScreen> {
-  bool _essentialsExpanded = true;
-  bool _billsExpanded = true;
+  final _searchController = TextEditingController();
+  String _searchQuery = "";
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final items = [
-      _MenuItem(
-        label: "Transfer",
-        icon: AppImages.sendNew,
-        onTap: () => AppOverlays.transferOptionsSheet(context: context),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final textSecondary = isDark ? const Color(0xFF9E9E9E) : const Color(0xFF757575);
+    final borderColor = isDark ? const Color(0xFF2C241B) : const Color(0xFFEFE8DE);
+
+    // Master catalog of all Zengly services
+    final categories = [
+      _MenuCategory(
+        title: "Payments & Transfers",
+        items: [
+          _MenuItemData(
+            title: "Send Money",
+            subtitle: "Instant Zengly & interbank transfers",
+            iconSvg: AppImages.sendNew,
+            onTap: () => AppOverlays.transferOptionsSheet(context: context),
+          ),
+          _MenuItemData(
+            title: "Split Bill",
+            subtitle: "Divide group expenses smoothly",
+            iconSvg: AppImages.splitNew,
+            badge: "NEW",
+            onTap: () => context.pushNamed(AppRouter.splitBill),
+          ),
+          _MenuItemData(
+            title: "QR Code Pay",
+            subtitle: "Fast contactless payments",
+            iconData: Icons.qr_code_scanner_rounded,
+            onTap: () => context.pushNamed(AppRouter.preTransferScreen),
+          ),
+        ],
       ),
-      _MenuItem(
-        label: "Vaniti",
-        icon: AppImages.vanitiNew,
-        onTap: () => AppOverlays.vanitiIntroDialog(
-          context: context,
-          onProceed: () => context.goNamed(AppRouter.preSpecialFeatures),
-        ),
+      _MenuCategory(
+        title: "Social & Lifestyle Finance",
+        items: [
+          _MenuItemData(
+            title: "Vaniti Spray Cash",
+            subtitle: "Digital money spraying & celebrations",
+            iconSvg: AppImages.vanitiNew,
+            badge: "POPULAR",
+            onTap: () => context.pushNamed(AppRouter.preSpecialFeatures),
+          ),
+          _MenuItemData(
+            title: "Ajo 2.0 Savings",
+            subtitle: "Automated rotational group thrift",
+            iconData: Icons.groups_rounded,
+            badge: "V2",
+            onTap: () => context.pushNamed(AppRouter.ajoHub),
+          ),
+          _MenuItemData(
+            title: "Split Bill History",
+            subtitle: "Track settled and pending splits",
+            iconData: Icons.history_rounded,
+            onTap: () => context.pushNamed(AppRouter.splitBillHistory),
+          ),
+        ],
       ),
-      _MenuItem(
-        label: "Split Bill",
-        icon: AppImages.splitNew,
-        onTap: () => context.goNamed(AppRouter.splitBill),
+      _MenuCategory(
+        title: "Bills & Utilities",
+        items: [
+          _MenuItemData(
+            title: "Airtime Top-up",
+            subtitle: "Instant mobile recharge for all networks",
+            iconSvg: AppImages.airtimeNew,
+            onTap: () => context.pushNamed(AppRouter.airtimeData, extra: 0),
+          ),
+          _MenuItemData(
+            title: "Data Bundles",
+            subtitle: "Daily, weekly and monthly data plans",
+            iconSvg: AppImages.dataNew,
+            onTap: () => context.pushNamed(AppRouter.airtimeData, extra: 1),
+          ),
+          _MenuItemData(
+            title: "Electricity Tokens",
+            subtitle: "Prepaid & postpaid disco meters",
+            iconSvg: AppImages.electricityNew,
+            onTap: () => context.pushNamed(AppRouter.electricity),
+          ),
+          _MenuItemData(
+            title: "Airtime to Cash",
+            subtitle: "Convert excess airtime to wallet balance",
+            iconSvg: AppImages.airtime2CashNew,
+            badge: "HOT",
+            onTap: () => context.pushNamed(AppRouter.airtimeToCash),
+          ),
+          _MenuItemData(
+            title: "TV & Cable",
+            subtitle: "DStv, GOtv, and StarTimes bouquets",
+            iconData: Icons.tv_rounded,
+            onTap: () => context.pushNamed(AppRouter.tvSubscription),
+          ),
+          _MenuItemData(
+            title: "Gift Cards",
+            subtitle: "Global digital gift cards & vouchers",
+            iconData: Icons.card_giftcard_rounded,
+            onTap: () => context.pushNamed(AppRouter.giftCard),
+          ),
+        ],
       ),
-      _MenuItem(
-        label: "Finance AI",
-        image: AppImages.insightsIcon,
-        isV2: true,
-        onTap: () {
-          ref.read(dashboardVm).switchPage(2);
-          context.pop();
-        },
+      _MenuCategory(
+        title: "Smart Finance & Intelligence",
+        items: [
+          _MenuItemData(
+            title: "Finance AI Insights",
+            subtitle: "Smart spending categorisation & analytics",
+            iconSvg: AppImages.insightsIcon,
+            badge: "AI",
+            onTap: () {
+              ref.read(dashboardVm).switchPage(3);
+              context.pop();
+            },
+          ),
+          _MenuItemData(
+            title: "P2P Lending & Credit",
+            subtitle: "Fast micro-credit & community investing",
+            iconData: Icons.handshake_rounded,
+            badge: "NEW",
+            onTap: () => context.pushNamed(AppRouter.p2pLending),
+          ),
+          _MenuItemData(
+            title: "Voice Banking",
+            subtitle: "Hands-free speech-powered financial actions",
+            iconData: Icons.mic_rounded,
+            badge: "AI",
+            onTap: () => context.pushNamed(AppRouter.voiceBanking),
+          ),
+        ],
       ),
-      _MenuItem(
-        label: "Ajo 2.0",
-        iconData: Icons.groups_outlined,
-        isV2: true,
-        onTap: () => AppOverlays.showToast(
-          context: context,
-          message: "Ajo 2.0 is coming soon! Stay tuned.",
-        ),
-      ),
-      _MenuItem(
-        label: "P2P Lending",
-        iconData: Icons.handshake_outlined,
-        isV2: true,
-        onTap: () => AppOverlays.showToast(
-          context: context,
-          message: "P2P Lending is coming soon! Stay tuned.",
-        ),
-      ),
-      _MenuItem(
-        label: "Voice Banking",
-        iconData: Icons.mic_none_outlined,
-        isV2: true,
-        onTap: () => AppOverlays.showToast(
-          context: context,
-          message: "Voice Banking is coming soon! Stay tuned.",
-        ),
+      _MenuCategory(
+        title: "Cards & Security",
+        items: [
+          _MenuItemData(
+            title: "Zengly Virtual Cards",
+            subtitle: "Manage debit cards & international limits",
+            iconData: Icons.credit_card_rounded,
+            onTap: () => context.pushNamed(AppRouter.cardScreen),
+          ),
+          _MenuItemData(
+            title: "KYC & Identity Verification",
+            subtitle: "Upgrade limits with BVN & NIN verification",
+            iconData: Icons.badge_outlined,
+            onTap: () => context.pushNamed(AppRouter.preVerification),
+          ),
+        ],
       ),
     ];
 
-    final billItems = [
-      _MenuItem(
-        label: "Data",
-        icon: AppImages.dataNew,
-        onTap: () => context.goNamed(AppRouter.airtimeData),
-      ),
-      _MenuItem(
-        label: "Airtime",
-        icon: AppImages.airtimeNew,
-        onTap: () => context.goNamed(AppRouter.airtimeData),
-      ),
-      _MenuItem(
-        label: "Electricity",
-        icon: AppImages.electricityNew,
-        onTap: () => context.goNamed(AppRouter.electricity),
-      ),
-      _MenuItem(
-        label: "Airtime2Cash",
-        icon: AppImages.airtime2CashNew,
-        onTap: () => context.goNamed(AppRouter.airtimeToCash),
-      ),
-      // _MenuItem(
-      //   label: "TV",
-      //   icon: AppImages.television,
-      //   onTap: () => context.goNamed(AppRouter.tvSubscription),
-      // ),
-      // _MenuItem(
-      //   label: "Gift Cards",
-      //   icon: AppImages.newCopy,
-      //   onTap: () => context.goNamed(AppRouter.giftCard),
-      // ),
-    ];
+    // Filter items if searching
+    final query = _searchQuery.toLowerCase().trim();
+    final filteredCategories = query.isEmpty
+        ? categories
+        : categories
+            .map((cat) {
+              final matchedItems = cat.items
+                  .where((item) =>
+                      item.title.toLowerCase().contains(query) ||
+                      item.subtitle.toLowerCase().contains(query))
+                  .toList();
+              return _MenuCategory(title: cat.title, items: matchedItems);
+            })
+            .where((cat) => cat.items.isNotEmpty)
+            .toList();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => context.pop(),
-          icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          icon: Icon(Icons.arrow_back, color: textPrimary),
         ),
         title: Text(
-          "Menu",
-          style: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 22),
+          "Menu & Services",
+          style: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 20, color: textPrimary),
         ),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(
-              AppImages.search,
-              width: 20,
-              height: 20,
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF26211A) : const Color(0xFFF3ECE0),
+              borderRadius: BorderRadius.circular(100),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: GestureDetector(
-              onTap: () => context.goNamed(AppRouter.notification),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
-                    padding: const EdgeInsets.all(9),
-                    child: SvgPicture.asset(
-                      AppImages.bellIcon,
-                      colorFilter: ColorFilter.mode(
-                        Theme.of(context).colorScheme.onSurface,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: -2,
-                    right: -2,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFF24A4A),
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: Center(
-                        child: Text(
-                          "2",
-                          style: GoogleFonts.inter(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            height: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Tier 2 • ", style: GoogleFonts.inter(fontSize: 11, color: textSecondary)),
+                Text("Verified", style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: primaryColor)),
+              ],
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: AppDimensions.viewPadding,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap:
-                  () => setState(
-                    () => _essentialsExpanded = !_essentialsExpanded,
-                  ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.grid_view_rounded,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Essentials",
-                        style: GoogleFonts.inter(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Icon(
-                    _essentialsExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ],
+            // Instant Search Field
+            Container(
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E1A14) : Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: borderColor),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (val) => setState(() => _searchQuery = val),
+                style: GoogleFonts.inter(fontSize: 13.5, color: textPrimary),
+                decoration: InputDecoration(
+                  hintText: "Search services, bills, or features...",
+                  hintStyle: GoogleFonts.inter(fontSize: 13, color: textSecondary),
+                  prefixIcon: Icon(Icons.search_rounded, color: primaryColor, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear_rounded, color: textSecondary, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = "");
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
               ),
             ),
-            SizedBox(height: 16),
-            if (_essentialsExpanded)
-              GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 14,
-                crossAxisSpacing: 14,
-                childAspectRatio: 1,
-                children: items.map((item) => _MenuCell(item: item)).toList(),
+            const SizedBox(height: 18),
+
+            // Render Categories
+            if (filteredCategories.isEmpty) ...[
+              const SizedBox(height: 40),
+              Center(
+                child: Column(
+                  children: [
+                    Icon(Icons.search_off_rounded, size: 48, color: textSecondary),
+                    const SizedBox(height: 12),
+                    Text(
+                      "No services found for '$_searchQuery'",
+                      style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: textPrimary),
+                    ),
+                  ],
+                ),
               ),
-            SizedBox(height: 24),
-            GestureDetector(
-              onTap: () => setState(() => _billsExpanded = !_billsExpanded),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.receipt_long_outlined,
-                        size: 20,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        "Bills Payment",
-                        style: GoogleFonts.inter(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0,
+            ] else ...[
+              for (final cat in filteredCategories) ...[
+                Padding(
+                  padding: const EdgeInsets.only(left: 4, bottom: 8, top: 6),
+                  child: Text(
+                    cat.title,
+                    style: GoogleFonts.inter(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: primaryColor,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E1A14) : Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: borderColor),
+                  ),
+                  child: ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: cat.items.length,
+                    separatorBuilder: (context, _) => Divider(
+                      height: 1,
+                      thickness: 1,
+                      indent: 64,
+                      color: isDark ? const Color(0xFF28231B) : const Color(0xFFF4EDE4),
+                    ),
+                    itemBuilder: (context, index) {
+                      final item = cat.items[index];
+                      return InkWell(
+                        onTap: item.onTap,
+                        borderRadius: BorderRadius.circular(18),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isDark ? const Color(0xFF2B241A) : const Color(0xFFFAF5ED),
+                                  border: Border.all(
+                                    color: isDark ? const Color(0xFF382F22) : const Color(0xFFEBE3D7),
+                                  ),
+                                ),
+                                padding: const EdgeInsets.all(9),
+                                child: item.iconSvg != null
+                                    ? SvgPicture.asset(
+                                        item.iconSvg!,
+                                        colorFilter: ColorFilter.mode(primaryColor, BlendMode.srcIn),
+                                      )
+                                    : Icon(item.iconData, color: primaryColor, size: 20),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Flexible(
+                                          child: Text(
+                                            item.title,
+                                            style: GoogleFonts.inter(
+                                              fontSize: 13.5,
+                                              fontWeight: FontWeight.w600,
+                                              color: textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        if (item.badge != null) ...[
+                                          const SizedBox(width: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                            decoration: BoxDecoration(
+                                              color: item.badge == "AI"
+                                                  ? const Color(0xFF8E24AA)
+                                                  : (item.badge == "POPULAR" || item.badge == "HOT"
+                                                      ? const Color(0xFFE53935)
+                                                      : primaryColor),
+                                              borderRadius: BorderRadius.circular(100),
+                                            ),
+                                            child: Text(
+                                              item.badge!,
+                                              style: GoogleFonts.inter(
+                                                fontSize: 8.5,
+                                                fontWeight: FontWeight.w800,
+                                                color: Colors.white,
+                                                letterSpacing: 0.3,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      item.subtitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.inter(fontSize: 11, color: textSecondary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(Icons.chevron_right_rounded, size: 18, color: textSecondary),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                  Icon(
-                    _billsExpanded
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 16),
-            if (_billsExpanded)
-              GridView.count(
-                crossAxisCount: 3,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 14,
-                crossAxisSpacing: 14,
-                childAspectRatio: 1,
-                children:
-                    billItems.map((item) => _MenuCell(item: item)).toList(),
-              ),
-            SizedBox(height: 24),
+                ),
+              ],
+            ],
+            const SizedBox(height: 24),
           ],
         ),
       ),
@@ -301,114 +404,27 @@ class _PreBillScreenState extends ConsumerState<PreBillScreen> {
   }
 }
 
-class _MenuCell extends StatelessWidget {
-  final _MenuItem item;
+class _MenuCategory {
+  final String title;
+  final List<_MenuItemData> items;
 
-  const _MenuCell({required this.item});
-
-  Widget _buildIcon(BuildContext context) {
-    return Container(
-      height: 56,
-      width: 56,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Theme.of(context).colorScheme.secondaryContainer,
-      ),
-      child: Center(
-        child: item.icon != null
-            ? SvgPicture.asset(
-                item.icon!,
-                width: 26,
-                height: 26,
-                colorFilter: const ColorFilter.mode(
-                  Color(0xFFB57510),
-                  BlendMode.srcIn,
-                ),
-              )
-            : item.image != null
-                ? Image.asset(item.image!, width: 26, height: 26, fit: BoxFit.contain)
-                : Icon(item.iconData, size: 26, color: const Color(0xFFB57510)),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: item.onTap,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildIcon(context),
-                const SizedBox(height: 10),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    item.label,
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (item.isV2)
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF24A4A),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  "V2.0",
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0,
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
+  const _MenuCategory({required this.title, required this.items});
 }
 
-class _MenuItem {
-  final String label;
-  final String? icon;
-  final String? image;
+class _MenuItemData {
+  final String title;
+  final String subtitle;
+  final String? iconSvg;
   final IconData? iconData;
-  final bool isV2;
+  final String? badge;
   final VoidCallback onTap;
 
-  const _MenuItem({
-    required this.label,
-    this.icon,
-    this.image,
+  const _MenuItemData({
+    required this.title,
+    required this.subtitle,
+    this.iconSvg,
     this.iconData,
-    this.isV2 = false,
+    this.badge,
     required this.onTap,
   });
 }

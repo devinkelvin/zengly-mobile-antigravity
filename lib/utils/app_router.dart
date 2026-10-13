@@ -74,6 +74,9 @@ class AppRouter {
   static const String selectCardType = "selectCardType";
   static const String enterTransactionPin = "/enterTransactionPin";
   static const String qrScanner = "/qrScanner";
+  static const String ajoHub = "ajoHub";
+  static const String p2pLending = "p2pLending";
+  static const String voiceBanking = "voiceBanking";
 
   static final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -360,7 +363,10 @@ class AppRouter {
           GoRoute(
             path: airtimeData,
             name: airtimeData,
-            builder: (context, state) => const AirtimeDataScreen(),
+            builder: (context, state) {
+              final initialTab = (state.extra is int) ? state.extra as int : 0;
+              return AirtimeDataScreen(initialTabIndex: initialTab);
+            },
           ),
           GoRoute(
             path: airtimeToCash,
@@ -496,6 +502,21 @@ class AppRouter {
             path: selectCardType,
             name: selectCardType,
             builder: (context, state) => const SelectCardType(),
+          ),
+          GoRoute(
+            path: ajoHub,
+            name: ajoHub,
+            builder: (context, state) => const AjoLandingScreen(),
+          ),
+          GoRoute(
+            path: p2pLending,
+            name: p2pLending,
+            builder: (context, state) => const P2pLendingScreen(),
+          ),
+          GoRoute(
+            path: voiceBanking,
+            name: voiceBanking,
+            builder: (context, state) => const VoiceBankingScreen(),
           ),
         ],
       ),

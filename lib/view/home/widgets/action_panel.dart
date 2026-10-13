@@ -12,6 +12,8 @@ class ActionPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final actions = [
       _ActionItem(
         label: "Transfer",
@@ -38,13 +40,19 @@ class ActionPanel extends StatelessWidget {
         label: "Data",
         icon: AppImages.dataNew,
         isNew: false,
-        onTap: () => context.goNamed(AppRouter.airtimeData),
+        onTap: () => context.pushNamed(
+          AppRouter.airtimeData,
+          extra: 1, // Opens Data tab directly
+        ),
       ),
       _ActionItem(
         label: "Airtime",
         icon: AppImages.airtimeNew,
         isNew: false,
-        onTap: () => context.goNamed(AppRouter.airtimeData),
+        onTap: () => context.pushNamed(
+          AppRouter.airtimeData,
+          extra: 0, // Opens Airtime tab directly
+        ),
       ),
       _ActionItem(
         label: "Electricity",
@@ -62,24 +70,43 @@ class ActionPanel extends StatelessWidget {
         label: "More",
         icon: AppImages.moreNew,
         isNew: false,
-        onTap: () => context.goNamed(AppRouter.preBill),
+        onTap: () => context.pushNamed(AppRouter.preBill),
       ),
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.outlineVariant,
+        color: isDark ? const Color(0xFF1E1A14) : Colors.white,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark ? const Color(0xFF2C241B) : const Color(0xFFEFE8DE),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
-      child: GridView.count(
-        crossAxisCount: 4,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        mainAxisSpacing: 0,
-        crossAxisSpacing: 0,
-        childAspectRatio: 85 / 106,
-        children: actions.map((item) => _ActionCell(item: item)).toList(),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: actions.sublist(0, 4).map((item) {
+              return Expanded(child: _ActionCell(item: item));
+            }).toList(),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: actions.sublist(4, 8).map((item) {
+              return Expanded(child: _ActionCell(item: item));
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
@@ -91,70 +118,89 @@ class _ActionCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InkWell(
       onTap: item.onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                ),
-                padding: const EdgeInsets.all(14),
-                child: SvgPicture.asset(
-                  item.icon,
-                  colorFilter: const ColorFilter.mode(
-                    Color(0xFFB57510),
-                    BlendMode.srcIn,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? const Color(0xFF2B241A)
+                        : const Color(0xFFF9F5EE),
+                    border: Border.all(
+                      color: isDark
+                          ? const Color(0xFF382E20)
+                          : const Color(0xFFECE4D7),
+                      width: 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.all(13),
+                  child: SvgPicture.asset(
+                    item.icon,
+                    colorFilter: const ColorFilter.mode(
+                      Color(0xFFB57510),
+                      BlendMode.srcIn,
+                    ),
                   ),
                 ),
-              ),
-              if (item.isNew)
-                Positioned(
-                  top: -6,
-                  right: -14,
-                  child: Container(
-                    width: 40,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF24A4A),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "NEW",
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
+                if (item.isNew)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 1.5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE53935),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isDark ? const Color(0xFF1E1A14) : Colors.white,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        "NEW",
+                        style: GoogleFonts.inter(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          letterSpacing: 0.3,
+                        ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
+              ],
+            ),
+            const SizedBox(height: 7),
+            Text(
               item.label,
               maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,
+                letterSpacing: -0.1,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
