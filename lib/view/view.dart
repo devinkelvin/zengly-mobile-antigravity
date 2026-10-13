@@ -1,0 +1,15 @@
+export './onboarding/onboarding.dart';
+export './auth/auth.dart';
+export './dashboard/dashboard.dart';
+export './account/account.dart';
+export './history/history.dart';
+export './home/home.dart';
+export './insight/insight.dart';
+export './personal_info/personal_info.dart';
+export './language/language.dart';
+export './notifications/notification.dart';
+export './user_verification/user_verification.dart';
+export './transfer/transfer.dart';
+export './bill_payments/bill_payments.dart';
+export './special_features/special_features.dart';
+export './cards/cards.dart';

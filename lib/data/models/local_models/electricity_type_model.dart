@@ -1,0 +1,1 @@
+enum ElectricityType { prepaid, postpaid }

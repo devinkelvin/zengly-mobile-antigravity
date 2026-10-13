@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "521714018785",
+    "project_id": "zengly-mobile",
+    "storage_bucket": "zengly-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521714018785:android:cdae96f0b87a2e4af18aa0",
+        "android_client_info": {
+          "package_name": "com.example.zengly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTN4kXNcRnZZOUYISdBSe3KUEvhMaYH5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521714018785:android:26ec1ab006ecc42cf18aa0",
+        "android_client_info": {
+          "package_name": "com.zengly.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTN4kXNcRnZZOUYISdBSe3KUEvhMaYH5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521714018785:android:059d01c91170ac7af18aa0",
+        "android_client_info": {
+          "package_name": "com.zengly.prod"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTN4kXNcRnZZOUYISdBSe3KUEvhMaYH5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

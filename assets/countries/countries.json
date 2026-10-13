@@ -1,0 +1,42 @@
+[
+   
+{
+        "name": "Canada",
+        "code": "CA",
+        "emoji": "🇨🇦",
+        "unicode": "U+1F1E8 U+1F1E6",
+        "image": "CA.svg",
+        "dial_code": "+1",
+        "min_length":"10"
+    },
+  
+    {
+        "name": "United Kingdom",
+        "code": "GB",
+        "emoji": "🇬🇧",
+        "unicode": "U+1F1EC U+1F1E7",
+        "image": "GB.svg",
+        "dial_code": "+44",
+        "min_length":"10"
+    },
+  
+    {
+        "name": "Nigeria",
+        "code": "NG",
+        "emoji": "🇳🇬",
+        "unicode": "U+1F1F3 U+1F1EC",
+        "image": "NG.svg",
+        "dial_code": "+234",
+        "min_length":"10"
+    },
+  
+    {
+        "name": "United States",
+        "code": "US",
+        "emoji": "🇺🇸",
+        "unicode": "U+1F1FA U+1F1F8",
+        "image": "US.svg",
+        "dial_code": "+1",
+        "min_length":"10"
+    }
+]
