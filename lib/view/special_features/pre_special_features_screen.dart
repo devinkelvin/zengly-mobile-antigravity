@@ -5,7 +5,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/data.dart';
 import '../../utils/utils.dart';
+import '../../widgets/widgets.dart';
 import 'widgets/top_sprayers_section.dart';
+import 'widgets/vaniti_host_event_sheet.dart';
+import 'widgets/vaniti_leaderboard_sheet.dart';
 
 class PreSpecialFeaturesScreen extends ConsumerWidget {
   const PreSpecialFeaturesScreen({super.key});
@@ -63,7 +66,10 @@ class PreSpecialFeaturesScreen extends ConsumerWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () => AppOverlays.vanitiIntroDialog(
+              context: context,
+              onProceed: () => context.pushNamed(AppRouter.sprayCash),
+            ),
             icon: Icon(
               Icons.help_outline_rounded,
               color: Theme.of(context).colorScheme.onSurface,
@@ -234,7 +240,7 @@ class PreSpecialFeaturesScreen extends ConsumerWidget {
                           ),
                           const SizedBox(height: 18),
                           GestureDetector(
-                            onTap: () {},
+                            onTap: () => VanitiHostEventSheet.show(context),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 22,
@@ -264,12 +270,12 @@ class PreSpecialFeaturesScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Top Sprayers Section
-            TopSprayersSection(onSeeMore: () {}),
+            TopSprayersSection(onSeeMore: () => VanitiLeaderboardSheet.show(context)),
             const SizedBox(height: 8),
 
             // See More Sprayers button
             GestureDetector(
-              onTap: () {},
+              onTap: () => VanitiLeaderboardSheet.show(context),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 14),

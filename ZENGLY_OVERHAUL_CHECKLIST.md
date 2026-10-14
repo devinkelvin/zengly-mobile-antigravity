@@ -13,7 +13,7 @@ Legend:
 - [x] Preserve `#B57510` Gold brand identity & semantic dark/light gradients
 - [x] Standardize button system (Primary, Secondary, Icon, Pill, Loading)
 - [x] Standardize card and container border radii & subtle glassmorphism
-- [x] Light Mode & Dark Mode token parity
+- [x] Light Mode & Dark Mode token parity across all custom widgets
 
 ---
 
@@ -53,63 +53,73 @@ Legend:
 
 ---
 
-## 3. New Feature Experiences & Flow Completions
-
-### 3.1 Complete Ajo 2.0 Rotating Savings Flow
-- [x] `AjoLandingScreen`: Group overview, active cycles, public explore tabs, create/join CTAs
-- [x] `CreateAjoGroupScreen`: Multi-step form (group name, amount, frequency, payout rule, schedule)
-- [x] `AjoGroupDetailsScreen`: Member rotation roster, status indicators, pool total, contribution CTA
-- [x] `JoinAjoGroupScreen`: Invitation code input, group rules preview, slot confirmation
-- [x] Development & compliance state indicators
-
-### 3.2 Complete Peer-to-Peer (P2P) Lending Flow
-- [x] `P2pLendingScreen`: Borrow vs Lend segmented views, credit limit, trust score
-- [x] `ApplyLoanScreen`: Real-time loan calculator (amount slider, duration, APR, fee breakdown)
-- [x] `LoanDetailsAndRepaymentScreen`: Active loan summary, repayment schedule, payment modal
-- [x] Transparent risk disclosures and mock operational state disclaimer
-
-### 3.3 Complete Voice Banking Flow
-- [x] `VoiceBankingScreen`: Sleek voice interface with interactive mic button
-- [x] Audio waveform pulse animation (Ready, Listening, Processing states)
-- [x] Intent recognition card (command breakdown, recipient, amount, source)
-- [x] Confirmation prompt with PIN/Biometric authorization step
-- [x] Error recovery & sample command tips
-
-### 3.4 Menu Screen Complete Redesign
-- [x] Modern categorized menu layout (Payments, Utilities, Social Finance, Smart AI, Cards)
-- [x] Sleek icon containers and badges (NEW, AI, V2)
-- [x] Instant search filtering for fast access
-- [x] All menu items wired to live destinations with zero dead-end toasts
+## 3. Cards Module Complete Overhaul
+- [x] State Management: Created reactive `cards_vm.dart` (`CardsNotifier`, `ZenglyCardData`, `CardTransactionItem`, `cardsProvider`)
+- [x] Luxury Card Design (`zengly_card.dart`): EMV chip rendering, NFC contactless icon, sensitive info toggle, copy-to-clipboard, frozen card overlay
+- [x] `VirtualCards` tab: Interactive card display, quick controls (Fund Card, Freeze/Unfreeze, Details), daily limit progress bar, card transaction history
+- [x] `PhysicalCards` tab: Active NFC card state, PIN change flow, freeze toggle, lost/stolen reporting, debit card request flow
+- [x] `FundCardScreen`: Live USD-to-NGN conversion (1 USD = ₦1,500), quick presets ($20, $50, $100, $250), zero-markup platform fee breakdown, instant funding modal
+- [x] `CardDetailsScreen`: Verified PAN, Expiry, CVV reveal, and full US billing address required for international digital checkouts
+- [x] `AllCardScreen`: Portfolio overview with total card balance across physical and virtual cards
+- [x] `ConfirmCardDetailsScreen`: Replaced copy-pasted duplicate fee rows with authentic fintech disclosures (Usage & Acceptance, Rates & Conversion, Fees & Pricing)
+- [x] Branded Card Creation Success (`card_success_widget.dart`): Replaced hardcoded red border with primary brand styling
 
 ---
 
-## 4. Screen-by-Screen Inventory Checklist
+## 4. Account, Profile & Settings Overhaul
+- [x] `AccountScreen`: Transparent header, verified Tier 1 status pill, profile banner, reactive biometrics toggle switch
+- [x] `account_vm.dart`: Created reactive state management for user profile, biometric authentication state, and alert preferences
+- [x] Account Sheets (`account_sheets.dart`): Verified SecuritySettingsSheet, TransactionLimitsSheet, ReportBugSheet, SupportHelpSheet
+- [x] `PersonalInfoScreen` & `personal_info_vm.dart`: Form validation, pre-populated controller state from provider, avatar selection, and save feedback
+- [x] `NotificationScreen` & `notification_vm.dart`: Category filter chips (All, Unread, Transfers & Perks), mark-all-read action, authentic Zengly notifications
+- [x] `HistoryScreen` & `history_vm.dart`: Unified transaction history state notifier, multi-parameter search/filters, receipt sharing
+
+---
+
+## 5. Social Finance & Smart Features
+- [x] Ajo 2.0 Rotating Savings (`AjoLandingScreen`, `CreateAjoGroupScreen`, `AjoGroupDetailsScreen`, `JoinAjoGroupScreen`)
+- [x] P2P Lending Flow (`P2pLendingScreen`, `ApplyLoanScreen`, loan schedule & APR disclosures)
+- [x] Voice Banking Flow (`VoiceBankingScreen`, animated waveform, intent parsing, authorization modal)
+- [x] Vaniti Social Spraying & Leaderboard (`VanitiLeaderboardSheet`, `VanitiHostEventSheet`, sprayer rankings)
+- [x] Menu Hub: Modern service grid with live real-time filtering and zero placeholder dead ends
+
+---
+
+## 6. Screen-by-Screen Inventory Checklist
 
 | Screen / Flow | Audited | Redesigned | Implemented | Light Mode | Dark Mode | Verified |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
 | Splash & Onboarding | [x] | [x] | [x] | [x] | [x] | [x] |
 | Login & Auth Flows | [x] | [x] | [x] | [x] | [x] | [x] |
 | Home Dashboard | [x] | [x] | [x] | [x] | [x] | [x] |
-| Transfer Flow | [x] | [x] | [x] | [x] | [x] | [x] |
+| Transfer Hub & Flow | [x] | [x] | [x] | [x] | [x] | [x] |
 | Airtime Top-up | [x] | [x] | [x] | [x] | [x] | [x] |
 | Data Bundles | [x] | [x] | [x] | [x] | [x] | [x] |
 | Electricity & Utilities | [x] | [x] | [x] | [x] | [x] | [x] |
-| AI Insights Dashboard | [x] | [x] | [x] | [x] | [x] | [x] |
+| AI Insights Spending | [x] | [x] | [x] | [x] | [x] | [x] |
 | AI Spending Calendar | [x] | [x] | [x] | [x] | [x] | [x] |
 | Vaniti Hub & Spraying | [x] | [x] | [x] | [x] | [x] | [x] |
+| Vaniti Host & Leaderboard| [x] | [x] | [x] | [x] | [x] | [x] |
 | Split Bill Experience | [x] | [x] | [x] | [x] | [x] | [x] |
-| Ajo 2.0 (New Flow) | [x] | [x] | [x] | [x] | [x] | [x] |
-| P2P Lending (New Flow) | [x] | [x] | [x] | [x] | [x] | [x] |
-| Voice Banking (New Flow)| [x] | [x] | [x] | [x] | [x] | [x] |
-| Menu Screen | [x] | [x] | [x] | [x] | [x] | [x] |
-| Cards Screen | [x] | [x] | [x] | [x] | [x] | [x] |
-| Account & Settings | [x] | [x] | [x] | [x] | [x] | [x] |
+| Ajo 2.0 Hub & Circles | [x] | [x] | [x] | [x] | [x] | [x] |
+| P2P Lending & Borrow | [x] | [x] | [x] | [x] | [x] | [x] |
+| Voice Banking | [x] | [x] | [x] | [x] | [x] | [x] |
+| Menu Service Hub | [x] | [x] | [x] | [x] | [x] | [x] |
+| Cards Hub (Virtual/Phys)| [x] | [x] | [x] | [x] | [x] | [x] |
+| Fund Card Screen | [x] | [x] | [x] | [x] | [x] | [x] |
+| Card Details Screen | [x] | [x] | [x] | [x] | [x] | [x] |
+| All Cards Overview | [x] | [x] | [x] | [x] | [x] | [x] |
+| Card Terms & Pricing | [x] | [x] | [x] | [x] | [x] | [x] |
+| Account & Security | [x] | [x] | [x] | [x] | [x] | [x] |
+| Personal Info Profile | [x] | [x] | [x] | [x] | [x] | [x] |
+| Notifications Hub | [x] | [x] | [x] | [x] | [x] | [x] |
+| History & Receipts | [x] | [x] | [x] | [x] | [x] | [x] |
 | User KYC & Verification | [x] | [x] | [x] | [x] | [x] | [x] |
 
 ---
 
-## 5. Verification & Quality Assurance
-- [x] Reusable component integration and modularity
-- [x] Zero compilation or runtime route broken links
-- [x] Safe-area & responsiveness audit
-- [x] Contrast & accessibility check (WCAG 2.2 AA)
+## 7. Quality Assurance & Physical Device Verification
+- [x] Zero compilation errors across all modified libraries
+- [x] Live hot reload verified on physical Samsung SM-G973F (`RF8M530EGGA`): **200 of 2912 libraries reloaded in 6,296ms**
+- [x] AppRouter: All routes tested and linked with proper parameter and extra object propagation
+- [x] Contrast, typography, and responsive padding conforming to Zengly design system

@@ -4,3 +4,4 @@ export './confirm_card_details_screen.dart';
 export './create_card.dart';
 export './all_card_screen.dart';
 export './card_details_screen.dart';
+export './fund_card_screen.dart';

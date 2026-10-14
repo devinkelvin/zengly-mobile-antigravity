@@ -10,6 +10,8 @@ class AccountListTile extends StatelessWidget {
   final IconData? iconData;
   final VoidCallback onPressed;
   final bool isBiometrics, isLogOut;
+  final bool? switchValue;
+  final ValueChanged<bool>? onSwitchChanged;
   const AccountListTile({
     super.key,
     required this.title,
@@ -19,6 +21,8 @@ class AccountListTile extends StatelessWidget {
     required this.onPressed,
     this.isBiometrics = false,
     this.isLogOut = false,
+    this.switchValue,
+    this.onSwitchChanged,
   }) : assert(icon != null || iconData != null);
 
   @override
@@ -94,10 +98,10 @@ class AccountListTile extends StatelessWidget {
           trailing:
               isBiometrics
                   ? Switch(
-                    value: true,
-                    onChanged: (val) {},
+                    value: switchValue ?? true,
+                    onChanged: onSwitchChanged ?? (val) {},
                     activeThumbColor: Theme.of(context).colorScheme.onPrimary,
-                    activeTrackColor: Theme.of(context).colorScheme.tertiary,
+                    activeTrackColor: const Color(0xFFB57510),
                     inactiveThumbColor: Theme.of(context).colorScheme.onPrimary,
                     inactiveTrackColor:
                         Theme.of(context).colorScheme.outlineVariant,

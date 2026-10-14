@@ -28,12 +28,13 @@ class _CardsScreenState extends ConsumerState<CardsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        surfaceTintColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           "Cards",
           style: GoogleFonts.raleway(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 20,
             letterSpacing: 0,
           ),
@@ -45,9 +46,8 @@ class _CardsScreenState extends ConsumerState<CardsScreen>
               context.pushNamed(AppRouter.selectCardType);
             },
             child: Container(
-              width: 100,
               height: 38,
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(100),
@@ -64,7 +64,7 @@ class _CardsScreenState extends ConsumerState<CardsScreen>
                       letterSpacing: 0,
                     ),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 6),
                   Container(
                     height: 20,
                     width: 20,
@@ -72,13 +72,13 @@ class _CardsScreenState extends ConsumerState<CardsScreen>
                       shape: BoxShape.circle,
                       color: Theme.of(context).colorScheme.primary,
                     ),
-                    child: Icon(Icons.add, size: 16),
+                    child: const Icon(Icons.add, size: 16, color: Colors.white),
                   ),
                 ],
               ),
             ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
         ],
       ),
       body: Padding(
@@ -88,12 +88,12 @@ class _CardsScreenState extends ConsumerState<CardsScreen>
             AppTab(
               tabController: _tabController,
               hasPadding: false,
-              titles: ["Physical Card", "Virtual Card"],
+              titles: const ["Virtual Card", "Physical Card"],
             ),
             Expanded(
               child: TabBarView(
                 controller: _tabController,
-                children: [PhysicalCards(), VirtualCards()],
+                children: const [VirtualCards(), PhysicalCards()],
               ),
             ),
           ],

@@ -340,13 +340,13 @@ class _ConfirmCardDetailsScreenState
                       ),
                     ),
                     CardDropDown(
-                      title: "Use",
+                      title: "Usage & Acceptance",
                       child: Column(
                         children: [
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "International Payments",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -355,7 +355,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "Supported (150+ Countries)",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -364,10 +364,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Supported Merchants",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -376,7 +377,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "Amazon, Apple, Netflix, AWS",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -385,10 +386,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Security Protocol",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -397,7 +399,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "3D Secure 2.0 (OTP)",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -406,10 +408,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Settlement Currency",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -418,7 +421,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "USD (\$)",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -438,7 +441,7 @@ class _ConfirmCardDetailsScreenState
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Benchmark FX Rate",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -447,7 +450,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "₦1,500.00 / \$1.00",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -456,10 +459,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "FX Conversion Markup",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -468,7 +472,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "0.0% (Zero hidden fee)",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -477,10 +481,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Settlement Speed",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -489,28 +494,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 12,
-                                  letterSpacing: 0,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                "Card Creation Fee",
-                                style: GoogleFonts.inter(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 12,
-                                  letterSpacing: 0,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                "\$2",
+                                "Instant",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -524,7 +508,7 @@ class _ConfirmCardDetailsScreenState
                       ),
                     ),
                     CardDropDown(
-                      title: "Funding Fees",
+                      title: "Fees & Pricing",
                       child: Column(
                         children: [
                           Row(
@@ -539,7 +523,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "\$2.00",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -548,10 +532,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Monthly Maintenance",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -560,7 +545,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "\$0.00 (Free)",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -569,10 +554,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Funding Fee",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -581,7 +567,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "\$0.00 (Free)",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -590,10 +576,11 @@ class _ConfirmCardDetailsScreenState
                               ),
                             ],
                           ),
+                          SizedBox(height: 12),
                           Row(
                             children: [
                               Text(
-                                "Card Creation Fee",
+                                "Inactivity Fee",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 12,
@@ -602,7 +589,7 @@ class _ConfirmCardDetailsScreenState
                               ),
                               Spacer(),
                               Text(
-                                "\$2",
+                                "\$0.00",
                                 style: GoogleFonts.inter(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 12,
@@ -623,7 +610,7 @@ class _ConfirmCardDetailsScreenState
                 children: [
                   Checkbox(
                     value: _isAgreedToTerms,
-                    activeColor: Color(0XFFE0334C),
+                    activeColor: Theme.of(context).colorScheme.primary,
                     checkColor: Theme.of(context).colorScheme.surface,
                     onChanged: (val) {
                       setState(() {

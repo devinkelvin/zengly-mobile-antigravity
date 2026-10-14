@@ -72,6 +72,9 @@ class AppRouter {
   static const String cardCreatedStatus = "cardCreatedStatus";
   static const String confirmCardDetail = "confirmCardDetail";
   static const String selectCardType = "selectCardType";
+  static const String fundCard = "fundCard";
+  static const String cardDetails = "cardDetails";
+  static const String allCards = "allCards";
   static const String enterTransactionPin = "/enterTransactionPin";
   static const String qrScanner = "/qrScanner";
   static const String ajoHub = "ajoHub";
@@ -502,6 +505,25 @@ class AppRouter {
             path: selectCardType,
             name: selectCardType,
             builder: (context, state) => const SelectCardType(),
+          ),
+          GoRoute(
+            path: fundCard,
+            name: fundCard,
+            builder: (context, state) => FundCardScreen(
+              cardId: (state.extra as String?) ?? "card_v_01",
+            ),
+          ),
+          GoRoute(
+            path: cardDetails,
+            name: cardDetails,
+            builder: (context, state) => CardDetailsScreen(
+              cardId: (state.extra as String?) ?? "card_v_01",
+            ),
+          ),
+          GoRoute(
+            path: allCards,
+            name: allCards,
+            builder: (context, state) => const AllCardScreen(),
           ),
           GoRoute(
             path: ajoHub,

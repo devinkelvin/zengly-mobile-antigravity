@@ -10,6 +10,7 @@ import '../../features/auth/providers/auth_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
+import 'account_vm.dart';
 import 'widgets/widgets.dart';
 
 class AccountScreen extends ConsumerStatefulWidget {
@@ -23,6 +24,7 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final accountState = ref.watch(accountProvider);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -237,7 +239,13 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               title: l10n.biometricsTitle,
               subTitle: l10n.fingerprintOrFaceId,
               isBiometrics: true,
-              onPressed: () {},
+              switchValue: accountState.isBiometricEnabled,
+              onSwitchChanged: (val) {
+                ref.read(accountProvider.notifier).toggleBiometrics();
+              },
+              onPressed: () {
+                ref.read(accountProvider.notifier).toggleBiometrics();
+              },
             ),
             AccountListTile(
               icon: AppImages.accountCircle,

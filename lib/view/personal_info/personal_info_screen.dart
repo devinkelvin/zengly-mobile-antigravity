@@ -9,6 +9,8 @@ import '../../data/data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
+import '../account/account_vm.dart';
+import 'personal_info_vm.dart';
 
 class PersonalInfoScreen extends ConsumerStatefulWidget {
   const PersonalInfoScreen({super.key});
@@ -48,8 +50,13 @@ class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
 
   @override
   void initState() {
-    _dateOfBirthController.text = "01 January 1992";
     super.initState();
+    final profile = ref.read(personalInfoProvider);
+    _firstNameController.text = profile.firstName;
+    _lastNameController.text = profile.lastName;
+    _emailController.text = profile.email;
+    _phoneController.text = profile.phone;
+    _dateOfBirthController.text = profile.dateOfBirth;
   }
 
   @override
@@ -58,7 +65,7 @@ class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
     _lastNameController.dispose();
     _firstNameController.dispose();
     _dateOfBirthController.dispose();
-
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -223,7 +230,46 @@ class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
                   child: AppButton(
                     height: 50,
                     onPressed: () {
-                      if (_formKey.currentState!.validate()) {}
+                      if (_formKey.currentState!.validate()) {
+                        ref.read(personalInfoProvider.notifier).updateProfile(
+                              firstName: _firstNameController.text.trim(),
+                              lastName: _lastNameController.text.trim(),
+                              email: _emailController.text.trim(),
+                              phone: _phoneController.text.trim(),
+                              dateOfBirth: _dateOfBirthController.text.trim(),
+                              avatarPath: _avatarFile?.path,
+                            );
+                        ref.read(accountProvider.notifier).updateProfile(
+                              fullName:
+                                  "${_firstNameController.text.trim()} ${_lastNameController.text.trim()}",
+                              email: _emailController.text.trim(),
+                              phone: _phoneController.text.trim(),
+                            );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Row(
+                              children: [
+                                const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 10),
+                                Text(
+                                  "Profile updated successfully!",
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            backgroundColor: const Color(0xFF2E7D32),
+                            behavior: SnackBarBehavior.floating,
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                        Navigator.pop(context);
+                      }
                     },
                     actionText: l10n.saveChanges,
                   ),

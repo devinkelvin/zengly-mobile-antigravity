@@ -44,8 +44,8 @@ class CardSuccessWidget extends StatelessWidget {
               context.pop();
             },
             actionText: "Okay",
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            borderSide: BorderSide(color: Color(0XFFE0334C)),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            borderSide: BorderSide.none,
           ),
         ),
       ],
