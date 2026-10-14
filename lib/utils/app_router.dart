@@ -465,7 +465,9 @@ class AppRouter {
           GoRoute(
             path: sprayConfirmation,
             name: sprayConfirmation,
-            builder: (context, state) => const SprayConfirmationScreen(),
+            builder: (context, state) => SprayConfirmationScreen(
+              initialItem: state.extra as SprayItem?,
+            ),
           ),
 
           GoRoute(
@@ -476,7 +478,9 @@ class AppRouter {
           GoRoute(
             path: aboutToSpray,
             name: aboutToSpray,
-            builder: (context, state) => const AboutToSprayScreen(),
+            builder: (context, state) => AboutToSprayScreen(
+              item: state.extra as SprayItem?,
+            ),
           ),
           GoRoute(
             path: sprayVideo,
@@ -486,7 +490,9 @@ class AppRouter {
           GoRoute(
             path: spraySuccess,
             name: spraySuccess,
-            builder: (context, state) => const SpraySuccessScreen(),
+            builder: (context, state) => SpraySuccessScreen(
+              item: state.extra as SprayItem?,
+            ),
           ),
           GoRoute(
             path: cardScreen,

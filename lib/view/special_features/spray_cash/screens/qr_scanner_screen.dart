@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../../../data/data.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widgets/widgets.dart';
 

@@ -234,7 +234,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 14,
                       mainAxisSpacing: 14,
-                      childAspectRatio: 0.86,
+                      childAspectRatio: 0.80,
                     ),
                     itemCount: filteredItems.length,
                     itemBuilder: (context, idx) {
@@ -454,38 +454,24 @@ class _SprayOptionCard extends StatelessWidget {
               ],
             ),
 
-            const Spacer(),
-
-            // Item Asset Image with ambient circle
-            Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 54,
-                    height: 54,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isDark
-                          ? const Color(0xFF2F271D)
-                          : const Color(0xFFF7F2E7),
-                    ),
-                  ),
-                  Image.asset(
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Image.asset(
                     item.image,
-                    height: 56,
+                    height: 88,
+                    width: 88,
                     fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Icon(
+                    errorBuilder: (context, error, stackTrace) => const Icon(
                       Icons.payments_rounded,
-                      size: 42,
-                      color: const Color(0xFFB57510),
+                      size: 50,
+                      color: Color(0xFFB57510),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
-
-            const Spacer(),
 
             // Item Name
             Text(

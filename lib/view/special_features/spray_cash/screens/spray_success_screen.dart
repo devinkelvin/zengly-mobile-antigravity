@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../../../data/data.dart';
@@ -10,7 +11,10 @@ import '../../../../widgets/widgets.dart';
 import '../../../transfer/transfer_receipt_screen.dart';
 
 class SpraySuccessScreen extends ConsumerStatefulWidget {
-  const SpraySuccessScreen({super.key});
+  final SprayItem? item;
+  final String? recipient;
+
+  const SpraySuccessScreen({super.key, this.item, this.recipient});
 
   @override
   ConsumerState<ConsumerStatefulWidget> createState() =>
@@ -21,61 +25,64 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
   bool _isMuted = false;
 
   void _onViewReceipt() {
+    final amt = widget.item?.amount ?? 50000.0;
+    final rName = widget.recipient ?? "Tiwa Savage";
+    final now = DateTime.now();
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TransferReceiptScreen(
           transfer: TransferResult(
-            amount: 4000000.0,
+            amount: amt > 0 ? amt : 50000.0,
             fee: 1000.0,
-            recipientName: "Ability Elijah",
+            recipientName: rName,
             recipientAccountNumber: "5673658653",
             recipientBank: "GTBANK",
-            sourceBank: "GTBank",
-            sourceAccountNumber: "0123456789",
-            note: "Hey",
-            date: DateTime.now(),
-            transactionReference: "2602250901005373281890",
-            providerReference: "TRF| 2MPT8re99|260225090123",
+            sourceBank: "Sterling Bank",
+            sourceAccountNumber: "0287646370",
+            note: "Vaniti Spray Cash",
+            date: now,
+            transactionReference: "SPY${now.millisecondsSinceEpoch}",
+            providerReference: "TRF|ZNG|${now.millisecondsSinceEpoch}",
           ),
         ),
       ),
     );
   }
 
-
-  void _comingSoon(String message) {
+  void _toast(String title, String message) {
     AppOverlays.showToast(
       context: context,
-      title: "Notice",
+      title: title,
       message: message,
-      toastType: ToastificationType.custom(
-        "Notice",
-        Theme.of(context).colorScheme.primary,
-        Icons.warning_amber_outlined,
-      ),
+      toastType: ToastificationType.success,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final displayAmount = widget.item != null
+        ? (widget.item!.amount > 0
+            ? "₦${NumberFormat("#,##0.00").format(widget.item!.amount)}"
+            : widget.item!.displayAmount)
+        : "₦50,000.00";
+    final recipientName = widget.recipient ?? "Tiwa Savage";
+    final itemName = widget.item?.name ?? "Cash Bundle";
+
     return Scaffold(
-      backgroundColor: const Color(0xFF161410),
+      backgroundColor: const Color(0xFF14120E),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: _PillButton(
-            icon: Icons.arrow_downward,
-            label: "Download",
-            onTap: () => _comingSoon("Receipt downloaded"),
-          ),
+        title: _PillButton(
+          icon: Icons.receipt_long_rounded,
+          label: "View Receipt",
+          onTap: _onViewReceipt,
         ),
         centerTitle: true,
         actions: [
-          // Volume toggle
           GestureDetector(
             onTap: () {
               setState(() => _isMuted = !_isMuted);
@@ -84,22 +91,23 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.5),
+                color: Colors.white.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                _isMuted ? Icons.volume_off_outlined : Icons.volume_up_outlined,
+                _isMuted
+                    ? Icons.volume_off_rounded
+                    : Icons.volume_up_rounded,
                 size: 18,
                 color: Colors.white,
               ),
             ),
           ),
-          const SizedBox(width: 12),
-          // Share pill
+          const SizedBox(width: 10),
           _PillButton(
-            icon: Icons.share_outlined,
+            icon: Icons.share_rounded,
             label: "Share",
-            onTap: () => _comingSoon("Share link copied"),
+            onTap: () => _toast("Share", "Spray payment receipt link copied!"),
           ),
           const SizedBox(width: 16),
         ],
@@ -111,21 +119,18 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
             children: [
               const Spacer(flex: 1),
 
-              // 3D Lottie Success Animation
+              // 3D Coin Rotating Celebration Icon
               const Center(
-                child: SizedBox(
-                  height: 120,
-                  child: RotatingCoinIcon(size: 120),
-                ),
+                child: RotatingCoinIcon(size: 110),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
               // Title
               Text(
-                "Gift sent successfully!",
-                style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+                "Gift Sprayed Successfully!",
+                style: GoogleFonts.raleway(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
                   color: Colors.white,
                 ),
               ),
@@ -133,32 +138,32 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
 
               // Amount
               Text(
-                "₦4M",
+                displayAmount,
                 style: GoogleFonts.inter(
                   fontSize: 32,
                   fontWeight: FontWeight.w800,
-                  color: Colors.white,
+                  color: const Color(0xFFB57510),
                 ),
               ),
               const SizedBox(height: 6),
 
               // Subtitle
               Text(
-                "sent to Ability Elijah",
+                "$itemName sent to $recipientName",
                 style: GoogleFonts.inter(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: Colors.white60,
+                  color: Colors.white70,
                 ),
               ),
               const SizedBox(height: 24),
 
-              // Stats + View Receipt Card
+              // Breakdown & Stats Card
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF26211B),
-                  borderRadius: BorderRadius.circular(18),
+                  color: const Color(0xFF221D17),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.08),
                   ),
@@ -171,19 +176,30 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
                         children: [
                           Expanded(
                             child: _StatColumn(
-                              value: "+2",
-                              label: "RANK UP",
+                              value: widget.item?.category ?? "Baller",
+                              label: "TIER",
                             ),
                           ),
                           Container(
-                            height: 28,
+                            height: 36,
                             width: 1,
-                            color: Colors.white.withValues(alpha: 0.08),
+                            color: Colors.white12,
                           ),
                           Expanded(
                             child: _StatColumn(
-                              value: "#3",
-                              label: "LEADERBOARD",
+                              value: "₦1,000",
+                              label: "SERVICE FEE",
+                            ),
+                          ),
+                          Container(
+                            height: 36,
+                            width: 1,
+                            color: Colors.white12,
+                          ),
+                          Expanded(
+                            child: _StatColumn(
+                              value: "Instant",
+                              label: "STATUS",
                             ),
                           ),
                         ],
@@ -196,81 +212,85 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
                     InkWell(
                       onTap: _onViewReceipt,
                       borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(18),
+                        bottom: Radius.circular(20),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        child: Center(
-                          child: Text(
-                            "View Receipt",
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "View Official Receipt",
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFFB57510),
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 6),
+                            const Icon(
+                              Icons.arrow_forward_ios_rounded,
+                              size: 13,
+                              color: Color(0xFFB57510),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 36),
-
-              // Catchphrase
-              Text(
-                "Money na water!",
-                style: GoogleFonts.raleway(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
-              ),
 
               const Spacer(flex: 2),
 
-              // View On Leaderboard
-              GestureDetector(
-                onTap: () {
-                  context.pushNamed(AppRouter.sprayCash);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Text(
-                    "View On Leaderboard",
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
+              // Action Buttons: Spray Again & Go Home
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFB57510),
+                        side: const BorderSide(color: Color(0xFFB57510)),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        "Spray Again",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Go Home button
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () => context.goNamed(AppRouter.dashboard),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFB57510),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => context.goNamed(AppRouter.dashboard),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFB57510),
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: Text(
+                        "Done",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                   ),
-                  child: Text(
-                    "Go Home",
-                    style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                ],
               ),
               const SizedBox(height: 24),
             ],
@@ -294,9 +314,9 @@ class _StatColumn extends StatelessWidget {
         Text(
           value,
           style: GoogleFonts.inter(
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFFC87D0E),
+            color: const Color(0xFFB57510),
           ),
         ),
         const SizedBox(height: 2),
@@ -332,22 +352,23 @@ class _PillButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.5),
+          color: Colors.white.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(100),
+          border: Border.all(color: Colors.white12),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Icon(icon, size: 14, color: Colors.white),
+            const SizedBox(width: 5),
             Text(
               label,
               style: GoogleFonts.inter(
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(width: 5),
-            Icon(icon, size: 14, color: Colors.white),
           ],
         ),
       ),

@@ -552,14 +552,13 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
     );
   }
 
-  void _onStartSpray() async {
-    final pin = await EnterTransactionPinScreen.show(context);
-    if (pin == null || !mounted) return;
-
+  void _onStartSpray() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => AboutToSprayScreen(
-          item: _selectedSprayItem,
+        builder: (context) => SprayConfirmationScreen(
+          initialItem: _selectedSprayItem,
+          initialRecipient: _selectedRecipient ?? "@tiwa_savage",
+          initialAutoSpray: _isAutoSprayMode,
         ),
       ),
     );
