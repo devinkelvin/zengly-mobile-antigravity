@@ -33,36 +33,38 @@ class _FundCardScreenState extends ConsumerState<FundCardScreen> {
     super.dispose();
   }
 
-  void _onFundSuccess() {
+  Future<void> _onFundSuccess() async {
     final amount = _enteredUsd;
     if (amount <= 0) return;
 
-    TransactionPinBottomSheet.show(
+    final pin = await TransactionPinBottomSheet.show(
       context,
       actionText: "Fund Virtual Card",
-      onPinEntered: (pin) {
-        ref.read(cardsProvider.notifier).fundCard(widget.cardId, amount);
+    );
 
-        final now = DateTime.now();
-        final transferResult = TransferResult(
-          recipientName: "USD Virtual Card",
-          recipientAccountNumber: "**** 4821",
-          recipientBank: "Zengly Card Services",
-          sourceBank: "Zed Wallet",
-          sourceAccountNumber: "ZNG-847291",
-          amount: _totalNgn,
-          note: "Fund \$${amount.toStringAsFixed(2)} Virtual Card",
-          fee: 0.0,
-          date: now,
-          transactionReference: "FND${now.millisecondsSinceEpoch}",
-          providerReference: "PRV|FND|${now.millisecondsSinceEpoch}",
-        );
+    if (pin == null || pin.length < 4 || !mounted) return;
 
-        context.pushNamed(
-          AppRouter.transferSuccess,
-          extra: transferResult,
-        );
-      },
+    ref.read(cardsProvider.notifier).fundCard(widget.cardId, amount);
+
+    final now = DateTime.now();
+    final transferResult = TransferResult(
+      recipientName: "USD Virtual Card",
+      recipientAccountNumber: "**** 4821",
+      recipientBank: "Zengly Card Services",
+      sourceBank: "Zed Wallet",
+      sourceAccountNumber: "ZNG-847291",
+      amount: _totalNgn,
+      note: "Fund \$${amount.toStringAsFixed(2)} Virtual Card",
+      fee: 0.0,
+      date: now,
+      transactionReference: "FND${now.millisecondsSinceEpoch}",
+      providerReference: "PRV|FND|${now.millisecondsSinceEpoch}",
+    );
+
+    if (!mounted) return;
+    context.pushNamed(
+      AppRouter.transferSuccess,
+      extra: transferResult,
     );
   }
 
