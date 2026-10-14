@@ -100,16 +100,7 @@ class TransferOptionsSheet extends StatelessWidget {
           PreTransferTile(
             onTap: () {
               context.pop();
-              AppOverlays.showToast(
-                context: context,
-                title: "QR Code",
-                message: "QR code transfer demo mode active.",
-                toastType: ToastificationType.custom(
-                  "QR Code",
-                  primaryColor,
-                  Icons.qr_code_scanner_rounded,
-                ),
-              );
+              context.pushNamed(AppRouter.qrScanner);
             },
             image: AppImages.scan,
             title: "Pay with QR Code",

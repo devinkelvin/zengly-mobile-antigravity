@@ -35,23 +35,30 @@ class _PreTransferScreenState extends ConsumerState<PreTransferScreen> {
     final canPop = Navigator.of(context).canPop();
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor:
+          isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
+        titleSpacing: canPop ? 0 : 20,
         leading: canPop
             ? IconButton(
                 onPressed: () => context.pop(),
-                icon: Icon(Icons.arrow_back, color: textPrimary),
+                icon: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 20,
+                  color: textPrimary,
+                ),
               )
             : null,
         title: Text(
           "Send Money",
           style: GoogleFonts.raleway(
             fontWeight: FontWeight.w700,
-            fontSize: 20,
+            fontSize: 22,
+            letterSpacing: -0.3,
             color: textPrimary,
           ),
         ),
@@ -272,17 +279,7 @@ class _PreTransferScreenState extends ConsumerState<PreTransferScreen> {
             ),
             PreTransferTile(
               onTap: () {
-                AppOverlays.showToast(
-                  context: context,
-                  title: "QR Code Payment",
-                  message:
-                      "QR scanning is currently in demonstration mode.",
-                  toastType: ToastificationType.custom(
-                    "QR Code",
-                    primaryColor,
-                    Icons.qr_code_scanner_rounded,
-                  ),
-                );
+                context.pushNamed(AppRouter.qrScanner);
               },
               image: AppImages.scan,
               title: "Pay with QR Code",

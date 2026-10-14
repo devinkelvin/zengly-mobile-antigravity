@@ -185,10 +185,42 @@ class _SplitBillDetailScreenState extends ConsumerState<SplitBillDetailScreen> {
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: AppDimensions.viewPadding,
-          width: double.infinity,
-          child: AppButton(
-            onPressed: () => context.pop(),
-            actionText: "Send Request",
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.share_rounded, size: 18),
+                  label: const Text("Share Link"),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+                  onPressed: () {
+                    AppOverlays.showToast(
+                      context: context,
+                      title: "Link Copied",
+                      message: "Bill payment link copied to clipboard",
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 2,
+                child: AppButton(
+                  onPressed: () {
+                    AppOverlays.showToast(
+                      context: context,
+                      title: "Reminders Sent",
+                      message: "Sent reminders to 2 unpaid friends",
+                    );
+                  },
+                  actionText: "Remind Unpaid (2)",
+                ),
+              ),
+            ],
           ),
         ),
       ),

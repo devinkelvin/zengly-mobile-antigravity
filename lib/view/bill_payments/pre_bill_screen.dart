@@ -56,7 +56,7 @@ class _PreBillScreenState extends ConsumerState<PreBillScreen> {
             title: "QR Code Pay",
             subtitle: "Fast contactless payments",
             iconData: Icons.qr_code_scanner_rounded,
-            onTap: () => context.pushNamed(AppRouter.preTransferScreen),
+            onTap: () => context.pushNamed(AppRouter.qrScanner),
           ),
         ],
       ),

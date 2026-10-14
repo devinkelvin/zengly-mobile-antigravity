@@ -198,6 +198,7 @@ class AppRouter {
       ),
       GoRoute(
         path: qrScanner,
+        name: qrScanner,
         builder: (context, state) => const QrScannerScreen(),
       ),
       GoRoute(

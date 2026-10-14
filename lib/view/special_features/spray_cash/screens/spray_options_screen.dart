@@ -181,7 +181,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 14,
                       mainAxisSpacing: 14,
-                      childAspectRatio: 1.1,
+                      childAspectRatio: 0.96,
                     ),
                     itemCount: categoryItems.length,
                     itemBuilder: (context, idx) {

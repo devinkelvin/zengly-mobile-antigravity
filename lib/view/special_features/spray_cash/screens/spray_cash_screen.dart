@@ -195,89 +195,232 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
 
   void _showContactsPickerSheet() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final contacts = [
+    final allContacts = [
       {"name": "Kunle Afolayan", "handle": "@kunle_a", "avatar": AppImages.kunle},
       {"name": "Teni Apata", "handle": "@tenientertainer", "avatar": AppImages.queenie},
       {"name": "Burna Boy", "handle": "@burna_live", "avatar": AppImages.bella},
       {"name": "Simi Kosoko", "handle": "@symplysimi", "avatar": AppImages.dummyPerson},
+      {"name": "Wizkid Balogun", "handle": "@wizkidayo", "avatar": AppImages.kunle},
+      {"name": "Davido Adeleke", "handle": "@davido", "avatar": AppImages.queenie},
+      {"name": "Tiwa Savage", "handle": "@tiwasavage", "avatar": AppImages.bella},
+      {"name": "Odumodu Blvck", "handle": "@odumodublvck", "avatar": AppImages.dummyPerson},
     ];
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1C1813) : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          border: Border.all(
-            color: isDark ? Colors.white10 : const Color(0xFFE5DECE),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white24 : Colors.black26,
-                  borderRadius: BorderRadius.circular(2),
+      builder: (ctx) {
+        String query = "";
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final filtered = allContacts.where((c) {
+              final q = query.toLowerCase().trim();
+              if (q.isEmpty) return true;
+              return c["name"]!.toLowerCase().contains(q) ||
+                  c["handle"]!.toLowerCase().contains(q);
+            }).toList();
+
+            return Container(
+              height: MediaQuery.of(ctx).size.height * 0.72,
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 14,
+                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+              ),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1C1813) : Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                border: Border.all(
+                  color: isDark ? Colors.white10 : const Color(0xFFE5DECE),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "Select from Contacts",
-              style: GoogleFonts.raleway(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white : const Color(0xFF1E1A14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white24 : Colors.black12,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Select Contact",
+                        style: GoogleFonts.raleway(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFB57510).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          "${filtered.length} Contacts",
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFFB57510),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Search Bar
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF262017) : const Color(0xFFF4ECE1),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDark ? Colors.white12 : const Color(0xFFDFD4C4),
+                      ),
+                    ),
+                    child: TextField(
+                      autofocus: false,
+                      onChanged: (val) {
+                        setSheetState(() => query = val);
+                      },
+                      style: GoogleFonts.inter(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: "Search name or @handle...",
+                        hintStyle: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: isDark ? Colors.white38 : Colors.black38,
+                        ),
+                        prefixIcon: Icon(
+                          Icons.search_rounded,
+                          size: 20,
+                          color: isDark ? Colors.white60 : Colors.black45,
+                        ),
+                        suffixIcon: query.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.close_rounded, size: 18),
+                                onPressed: () {
+                                  setSheetState(() => query = "");
+                                },
+                              )
+                            : null,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 13,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  // Contacts List
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.search_off_rounded,
+                                  size: 48,
+                                  color: isDark ? Colors.white24 : Colors.black26,
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "No contacts found for \"$query\"",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    color: isDark ? Colors.white54 : Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: filtered.length,
+                            separatorBuilder: (_, __) => Divider(
+                              height: 1,
+                              thickness: 0.6,
+                              indent: 56,
+                              color: isDark ? Colors.white10 : Colors.black.withValues(alpha: 0.05),
+                            ),
+                            itemBuilder: (context, idx) {
+                              final c = filtered[idx];
+                              return ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 4,
+                                ),
+                                leading: CircleAvatar(
+                                  radius: 20,
+                                  backgroundImage: AssetImage(c["avatar"]!),
+                                ),
+                                title: Text(
+                                  c["name"]!,
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  c["handle"]!,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    color: isDark ? Colors.white60 : Colors.black54,
+                                  ),
+                                ),
+                                trailing: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    color: isDark ? const Color(0xFF2C2419) : const Color(0xFFEDE4D5),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    size: 12,
+                                    color: Color(0xFFB57510),
+                                  ),
+                                ),
+                                onTap: () {
+                                  Navigator.pop(ctx);
+                                  setState(() {
+                                    _selectedRecipient = c["handle"];
+                                    _selectedSendMethod = "contacts";
+                                  });
+                                  AppOverlays.showToast(
+                                    context: context,
+                                    title: "Recipient Set",
+                                    message: "Ready to spray ${c['name']} (${c['handle']})",
+                                    toastType: ToastificationType.success,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 14),
-            ...contacts.map((c) => ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: CircleAvatar(
-                radius: 20,
-                backgroundImage: AssetImage(c["avatar"]!),
-              ),
-              title: Text(
-                c["name"]!,
-                style: GoogleFonts.inter(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                  color: isDark ? Colors.white : const Color(0xFF1E1A14),
-                ),
-              ),
-              subtitle: Text(
-                c["handle"]!,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: isDark ? Colors.white60 : Colors.black54,
-                ),
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
-              onTap: () {
-                Navigator.pop(ctx);
-                setState(() {
-                  _selectedRecipient = c["handle"];
-                  _selectedSendMethod = "contacts";
-                });
-                AppOverlays.showToast(
-                  context: context,
-                  title: "Contact Selected",
-                  message: "Selected ${c['handle']}",
-                  toastType: ToastificationType.success,
-                );
-              },
-            )),
-          ],
-        ),
-      ),
+            );
+          },
+        );
+      },
     );
   }
 

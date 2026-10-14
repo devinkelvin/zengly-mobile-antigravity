@@ -194,9 +194,14 @@ class _InputSplitScreenState extends ConsumerState<InputSplitScreen> {
           width: double.infinity,
           child: AppButton(
             onPressed: () {
-              context.goNamed(AppRouter.splitBillDetailScreen);
+              AppOverlays.showToast(
+                context: context,
+                title: "Split Requests Sent!",
+                message: "Requests sent to 6 friends successfully.",
+              );
+              context.pushNamed(AppRouter.splitBillDetailScreen);
             },
-            actionText: "Send Request",
+            actionText: "Send Split Requests",
           ),
         ),
       ),

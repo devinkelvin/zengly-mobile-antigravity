@@ -264,63 +264,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           // Recent Transactions container
                           Builder(
                             builder: (context) {
-                              final transactions = <TransactionHistoryModel>[];
-                              if (transactions.isEmpty) {
-                                return Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 36,
-                                    horizontal: 20,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.outlineVariant,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        width: 52,
-                                        height: 52,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .secondaryContainer,
-                                        ),
-                                        child: Center(
-                                          child: Icon(
-                                            Icons.receipt_long_outlined,
-                                            size: 26,
-                                            color: Theme.of(context).colorScheme.scrim,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(height: 14),
-                                      Text(
-                                        "Your transactions will appear here",
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          color: Theme.of(context).colorScheme.scrim,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
+                              final historyState = ref.watch(historyProvider);
+                              final rawList = historyState.transactions.isNotEmpty
+                                  ? historyState.transactions
+                                  : TransactionHistoryModel.mockList();
+                              final transactions = rawList.take(5).toList();
 
                               final isDark = Theme.of(context).brightness == Brightness.dark;
                               return Container(
                                 decoration: BoxDecoration(
                                   color: isDark
                                       ? const Color(0xFF211D16)
-                                      : Theme.of(context).colorScheme.outlineVariant,
+                                      : Colors.white,
                                   borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.08)
+                                        : const Color(0xFFEADBCE),
+                                    width: 1,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: isDark ? 0.2 : 0.04,
+                                      ),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
                                 clipBehavior: Clip.antiAlias,
                                 child: ListView.separated(
                                   shrinkWrap: true,
+                                  padding: EdgeInsets.zero,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: transactions.length,
                                   separatorBuilder: (context, index) => Divider(

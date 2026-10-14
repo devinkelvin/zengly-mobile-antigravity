@@ -115,6 +115,7 @@ class NotificationScreen extends ConsumerWidget {
                             message: n.message,
                             date: n.date,
                             isRead: n.isRead,
+                            category: n.category,
                           ),
                         );
                       },
