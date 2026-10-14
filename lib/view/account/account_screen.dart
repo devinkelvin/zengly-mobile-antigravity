@@ -14,6 +14,8 @@ import '../../l10n/app_localizations.dart';
 import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
 import 'account_vm.dart';
+import 'about_zengly_screen.dart';
+import 'legal_privacy_hub_screen.dart';
 import 'widgets/widgets.dart';
 
 class AccountScreen extends ConsumerStatefulWidget {
@@ -437,6 +439,30 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               title: l10n.reportABug,
               subTitle: l10n.helpMakeUsBetter,
               onPressed: () => AppOverlays.reportBugSheet(context: context),
+            ),
+            AccountListTile(
+              iconData: Icons.gavel_outlined,
+              title: "Legal & Privacy",
+              subTitle: "Agreements, privacy centre & account closure",
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const LegalPrivacyHubScreen(),
+                  ),
+                );
+              },
+            ),
+            AccountListTile(
+              iconData: Icons.info_outline_rounded,
+              title: "About Zengly",
+              subTitle: "Lynexa Innovations Ltd. & regulatory disclosures",
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AboutZenglyScreen(),
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 24),

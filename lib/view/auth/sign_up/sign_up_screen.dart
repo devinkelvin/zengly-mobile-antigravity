@@ -9,6 +9,8 @@ import '../../../data/data.dart';
 import '../../../features/auth/providers/auth_provider.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
+import '../../legal/legal_document_viewer_screen.dart';
+import '../../legal/models/legal_doc_model.dart';
 import '../widgets/widgets.dart';
 
 class _PasswordReq {
@@ -153,6 +155,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
 
   String _phoneNumber = "";
   bool _isAgreedToTerms = false;
+  bool _isOptionalMarketingAgreed = false;
   bool _isEmailVerified = false;
   bool _isPhoneVerified = false;
   String _password = "";
@@ -456,66 +459,139 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   },
                   isPassword: true,
                 ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "I agree to the",
-                              style: GoogleFonts.raleway(
-                                fontWeight: FontWeight.w400,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 12,
+                const SizedBox(height: 18),
+                // Mandatory Terms & Privacy Agreement
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF1E1A14)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF2C241B)
+                          : const Color(0xFFEBE3D7),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: _isAgreedToTerms,
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            onChanged: (val) {
+                              setState(() => _isAgreedToTerms = val ?? false);
+                            },
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(
+                                    "I have read and agree to the ",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LegalDocumentViewerScreen(
+                                            document: LegalRepository.termsOfService,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Terms of Service",
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    " and ",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LegalDocumentViewerScreen(
+                                            document: LegalRepository.privacyPolicy,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      "Privacy Policy",
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Theme.of(context).colorScheme.primary,
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    " (Mandatory).",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 12,
+                                      color: Theme.of(context).colorScheme.onSurface,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            TextSpan(
-                              text: " Terms of Service",
-                              style: GoogleFonts.raleway(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 12,
-                              ),
-                            ),
-                            TextSpan(
-                              text: " and",
-                              style: GoogleFonts.raleway(
-                                fontWeight: FontWeight.w400,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 12,
-                              ),
-                            ),
-                            TextSpan(
-                              text: " Privacy Policy.",
-                              style: GoogleFonts.raleway(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Switch(
-                      value: _isAgreedToTerms,
-                      onChanged: (val) {
-                        setState(() => _isAgreedToTerms = val);
-                      },
-                      activeThumbColor: Theme.of(context).colorScheme.onPrimary,
-                      activeTrackColor: Theme.of(context).colorScheme.primary,
-                      inactiveThumbColor:
-                          Theme.of(context).colorScheme.onPrimary,
-                      inactiveTrackColor:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? const Color(0xFF3E3A32)
-                              : const Color(0xFFD6CEBF),
-                    ),
-                  ],
+                      const Divider(height: 12),
+                      // Optional Marketing & Promo Consent
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Checkbox(
+                            value: _isOptionalMarketingAgreed,
+                            activeColor: Theme.of(context).colorScheme.primary,
+                            onChanged: (val) {
+                              setState(() => _isOptionalMarketingAgreed = val ?? false);
+                            },
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child: Text(
+                                "I would like to receive product updates, lifestyle event perks, and promotional offers (Optional, withdrawable anytime).",
+                                style: GoogleFonts.inter(
+                                  fontSize: 11.5,
+                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.75),
+                                  height: 1.35,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 28),
 
                 SizedBox(
                   width: double.infinity,

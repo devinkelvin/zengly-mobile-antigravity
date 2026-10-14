@@ -43,56 +43,12 @@ class _TransferReceiptScreenState extends ConsumerState<TransferReceiptScreen> {
   }
 
   void _reportIssue() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: Theme.of(context).brightness == Brightness.dark
-            ? const Color(0xFF221D17)
-            : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            const Icon(Icons.help_outline_rounded,
-                color: Color(0xFFB57510), size: 22),
-            const SizedBox(width: 8),
-            Text(
-              "Report Transaction",
-              style: GoogleFonts.raleway(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
-        ),
-        content: Text(
-          "Need help with transaction #${widget.transfer.transactionReference}?\n\nOur 24/7 financial support team is available to assist you immediately.",
-          style: GoogleFonts.inter(fontSize: 13, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFB57510),
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            onPressed: () {
-              Navigator.pop(ctx);
-              AppOverlays.showToast(
-                context: context,
-                message: "Support ticket opened. Ref #${widget.transfer.transactionReference}",
-                toastType: ToastificationType.success,
-              );
-            },
-            child: const Text("Contact Support"),
-          ),
-        ],
-      ),
+    context.pushNamed(
+      AppRouter.transactionDispute,
+      extra: {
+        'ref': widget.transfer.transactionReference,
+        'amount': widget.transfer.amount,
+      },
     );
   }
 

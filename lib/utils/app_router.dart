@@ -81,6 +81,11 @@ class AppRouter {
   static const String p2pLending = "p2pLending";
   static const String voiceBanking = "voiceBanking";
   static const String zCoins = "zCoins";
+  static const String legalPrivacyHub = "legalPrivacyHub";
+  static const String privacyCentre = "privacyCentre";
+  static const String aboutZengly = "aboutZengly";
+  static const String accountDeletion = "accountDeletion";
+  static const String transactionDispute = "transactionDispute";
 
   static final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -552,6 +557,37 @@ class AppRouter {
             path: zCoins,
             name: zCoins,
             builder: (context, state) => const ZCoinsScreen(),
+          ),
+          GoRoute(
+            path: legalPrivacyHub,
+            name: legalPrivacyHub,
+            builder: (context, state) => const LegalPrivacyHubScreen(),
+          ),
+          GoRoute(
+            path: privacyCentre,
+            name: privacyCentre,
+            builder: (context, state) => const PrivacyCentreScreen(),
+          ),
+          GoRoute(
+            path: aboutZengly,
+            name: aboutZengly,
+            builder: (context, state) => const AboutZenglyScreen(),
+          ),
+          GoRoute(
+            path: accountDeletion,
+            name: accountDeletion,
+            builder: (context, state) => const AccountDeletionScreen(),
+          ),
+          GoRoute(
+            path: transactionDispute,
+            name: transactionDispute,
+            builder: (context, state) {
+              final extra = state.extra as Map<String, dynamic>?;
+              return TransactionDisputeScreen(
+                preselectedRef: extra?['ref'] as String?,
+                preselectedAmount: extra?['amount'] as String?,
+              );
+            },
           ),
         ],
       ),

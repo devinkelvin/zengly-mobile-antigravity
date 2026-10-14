@@ -11,11 +11,71 @@ import '../controller/storage/storage.dart';
 import '../data/data.dart';
 import '../view/account/widgets/widgets.dart';
 import '../view/home/widgets/widgets.dart';
+import '../view/legal/widgets/terms_of_use_bottom_sheet.dart';
+import '../view/special_features/widgets/leaderboard_podium.dart';
 import '../view/view.dart';
 import '../utils/utils.dart';
 import 'widgets.dart';
 
 class AppOverlays {
+  static Future<bool?> termsOfUseSheet({
+    required BuildContext context,
+    VoidCallback? onAccept,
+  }) {
+    return TermsOfUseBottomSheet.show(context, onAccept: onAccept);
+  }
+
+  static void vanitiLeaderboardSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          decoration: const BoxDecoration(
+            color: Color(0xFF1B1B1C),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Leaderboard",
+                    style: GoogleFonts.inter(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white70),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              const LeaderboardPodium(),
+              const SizedBox(height: 16),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   // Wraps modal content with a full-screen blurred backdrop. showModalBottomSheet
   // only sizes itself to the sheet's content, so the blur must be painted behind
   // it via a Stack rather than relying on the route's default barrier.

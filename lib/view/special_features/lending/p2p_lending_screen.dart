@@ -69,6 +69,53 @@ class _P2pLendingScreenState extends State<P2pLendingScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Regulatory Sandbox Notice Banner
+            Container(
+              margin: const EdgeInsets.only(bottom: 14),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF2C1E0A) : const Color(0xFFFFF7EB),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: primaryColor.withValues(alpha: 0.5)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.shield_outlined, size: 22, color: primaryColor),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "REGULATORY SANDBOX PREVIEW",
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w800,
+                                color: primaryColor,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "P2P Lending and Credit are currently in a test sandbox environment. In compliance with FCCPC 2025 and CBN lending guidelines, live loan disbursements are disabled until formal licensed partner bank clearance is finalized.",
+                          style: GoogleFonts.inter(
+                            fontSize: 11.5,
+                            color: textSecondary,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // Credit Limit Card
             Container(
               width: double.infinity,

@@ -93,16 +93,16 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            const Icon(Icons.check_circle_rounded, color: Color(0xFF34C759), size: 48),
+            const Icon(Icons.shield_outlined, color: Color(0xFFB57510), size: 48),
             const SizedBox(height: 12),
             Text(
-              "Application Approved!",
+              "Simulation Application Received",
               textAlign: TextAlign.center,
               style: GoogleFonts.raleway(fontSize: 18, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
-              "Your credit facility of ${currencyFormat.format(_amount)} has been approved and credited to your Zengly Wallet.",
+              "In compliance with FCCPC & CBN digital lending guidelines, live loan disbursements are paused until regulated banking partner clearance is completed. Your simulated application is recorded under Reference SIM-LEND-8921.",
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(fontSize: 12.5, color: Theme.of(context).colorScheme.scrim, height: 1.4),
             ),
@@ -359,7 +359,7 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
 
             // Submit Button
             AppButton.primary(
-              actionText: "Accept Offer • Instant Disbursal",
+              actionText: "Submit for Sandbox Review • Testing",
               onPressed: _submitApplication,
             ),
             const SizedBox(height: 30),

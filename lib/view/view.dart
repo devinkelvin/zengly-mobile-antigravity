@@ -13,3 +13,7 @@ export './transfer/transfer.dart';
 export './bill_payments/bill_payments.dart';
 export './special_features/special_features.dart';
 export './cards/cards.dart';
+export './privacy/privacy_centre_screen.dart';
+export './support/transaction_dispute_screen.dart';
+export './legal/legal_document_viewer_screen.dart';
+export './legal/models/legal_doc_model.dart';
