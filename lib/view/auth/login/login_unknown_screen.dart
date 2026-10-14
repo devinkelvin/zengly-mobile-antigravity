@@ -172,20 +172,37 @@ class _LoginUnknownScreenState extends ConsumerState<LoginUnknownScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 32),
                 Center(
-                  child: TextButton(
-                    onPressed: () {
-                      context.pushNamed(AppRouter.signUp);
-                    },
-                    child: Text(
-                      l10n.openAnAccount,
-                      style: GoogleFonts.inter(
-                        letterSpacing: 0,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
+                  child: Column(
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          context.pushNamed(AppRouter.signUp);
+                        },
+                        child: Text(
+                          l10n.openAnAccount,
+                          style: GoogleFonts.inter(
+                            letterSpacing: 0,
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
+                      TextButton(
+                        onPressed: () {
+                          context.goNamed(AppRouter.dashboard);
+                        },
+                        child: Text(
+                          "Explore App (Demo Mode) →",
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFB57510),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

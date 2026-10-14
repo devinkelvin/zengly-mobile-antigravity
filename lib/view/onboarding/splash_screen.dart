@@ -53,7 +53,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final isFirstTimeUser = await authNotifier.isFirstTimeUser();
       if (isFirstTimeUser) {
         if (!mounted) return;
-        context.goNamed(AppRouter.chooseSignUp);
+        context.goNamed(AppRouter.onboarding);
         return;
       }
 

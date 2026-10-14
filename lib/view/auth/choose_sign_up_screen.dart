@@ -73,7 +73,6 @@ class _ChooseSignUpScreenState extends ConsumerState<ChooseSignUpScreen> {
                               actionText: l10n.createAnAccount,
                             ),
                           ),
-                          SizedBox(height: 7),
                           SizedBox(
                             width: double.infinity,
                             child: AppButton(
@@ -84,6 +83,39 @@ class _ChooseSignUpScreenState extends ConsumerState<ChooseSignUpScreen> {
                               borderRadius: 15,
                               actionText: l10n.login,
                             ),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  context.pushNamed(AppRouter.onboarding);
+                                },
+                                child: Text(
+                                  "View Onboarding",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ),
+                              const Text(" • ", style: TextStyle(color: Colors.white38)),
+                              TextButton(
+                                onPressed: () {
+                                  context.goNamed(AppRouter.dashboard);
+                                },
+                                child: Text(
+                                  "Explore Demo →",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFE5A93C),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
