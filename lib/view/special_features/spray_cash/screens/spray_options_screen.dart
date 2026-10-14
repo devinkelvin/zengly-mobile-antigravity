@@ -383,11 +383,15 @@ class _SprayOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = isDark ? const Color(0xFF221D17) : Colors.white;
+    final cardBg = isSelected
+        ? const Color(0xFFB57510).withValues(alpha: isDark ? 0.16 : 0.08)
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.035)
+            : Colors.white);
     final borderColor = isSelected
         ? const Color(0xFFB57510)
         : (isDark
-            ? Colors.white.withValues(alpha: 0.07)
+            ? Colors.white.withValues(alpha: 0.08)
             : const Color(0xFFE8E0D2));
     final catColor = _categoryBadgeColor(item.category);
 
@@ -406,9 +410,9 @@ class _SprayOptionCard extends StatelessWidget {
           boxShadow: [
             BoxShadow(
               color: isSelected
-                  ? const Color(0xFFB57510).withValues(alpha: 0.3)
-                  : Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
-              blurRadius: isSelected ? 12 : 6,
+                  ? const Color(0xFFB57510).withValues(alpha: 0.25)
+                  : Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+              blurRadius: isSelected ? 14 : 6,
               offset: const Offset(0, 3),
             ),
           ],
@@ -454,15 +458,17 @@ class _SprayOptionCard extends StatelessWidget {
               ],
             ),
 
+            // Floating 3D Cash Asset with generous size and transparent background
             Expanded(
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Image.asset(
                     item.image,
-                    height: 88,
-                    width: 88,
+                    height: 94,
+                    width: 94,
                     fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
                     errorBuilder: (context, error, stackTrace) => const Icon(
                       Icons.payments_rounded,
                       size: 50,

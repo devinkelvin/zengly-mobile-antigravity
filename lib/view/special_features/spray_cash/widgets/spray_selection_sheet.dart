@@ -176,12 +176,16 @@ class _SprayItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = isDark
-        ? const Color(0xFF231E18)
-        : const Color(0xFFF3F4F6);
+    final cardBg = isSelected
+        ? const Color(0xFFC87D0E).withValues(alpha: isDark ? 0.16 : 0.08)
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.035)
+            : const Color(0xFFF9F5EC));
     final borderColor = isSelected
         ? const Color(0xFFC87D0E)
-        : Colors.transparent;
+        : (isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : const Color(0xFFE8E0D2));
 
     return GestureDetector(
       onTap: onTap,
@@ -191,7 +195,7 @@ class _SprayItemCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: cardBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: borderColor, width: 2),
+          border: Border.all(color: borderColor, width: isSelected ? 2 : 1),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -201,6 +205,7 @@ class _SprayItemCard extends StatelessWidget {
                 child: Image.asset(
                   item.image,
                   fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
                   errorBuilder: (context, error, stackTrace) =>
                       const Icon(Icons.wallet, size: 40, color: Color(0xFFC87D0E)),
                 ),
