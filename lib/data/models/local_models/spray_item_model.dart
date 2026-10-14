@@ -31,7 +31,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "spray_preset",
-          name: "Cash Bundles",
+          name: "Quick Spray Stack",
           category: "Spray",
           amount: 10000.0,
           displayAmount: "Preset amount",
@@ -40,7 +40,7 @@ class SprayItem {
         // Bundles
         SprayItem(
           id: "bundle_10k",
-          name: "Cash Bundles",
+          name: "₦10,000 Cash Bundle",
           category: "Bundles",
           amount: 10000.0,
           displayAmount: "₦10,000.00",
@@ -48,7 +48,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "bundle_20k",
-          name: "Cash Bundles",
+          name: "₦20,000 Cash Bundle",
           category: "Bundles",
           amount: 20000.0,
           displayAmount: "₦20,000.00",
@@ -56,7 +56,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "bundle_50k",
-          name: "Cash Bundles",
+          name: "₦50,000 Cash Brick",
           category: "Bundles",
           amount: 50000.0,
           displayAmount: "₦50,000.00",
@@ -64,7 +64,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "bundle_100k",
-          name: "Cash Bundles",
+          name: "₦100,000 Baller Stack",
           category: "Bundles",
           amount: 100000.0,
           displayAmount: "₦100,000.00",
@@ -73,7 +73,7 @@ class SprayItem {
         // Gifts
         SprayItem(
           id: "gift_200k",
-          name: "Cash Bundles",
+          name: "Bronze Cash Envelope",
           category: "Gifts",
           amount: 200000.0,
           displayAmount: "₦200,000.00",
@@ -81,7 +81,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "gift_300k",
-          name: "Cash Bundles",
+          name: "Silver Silk Envelope",
           category: "Gifts",
           amount: 300000.0,
           displayAmount: "₦300,000.00",
@@ -89,7 +89,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "gift_500k",
-          name: "Cash Bundles",
+          name: "Gold Cash Bouquet",
           category: "Gifts",
           amount: 500000.0,
           displayAmount: "₦500,000.00",
@@ -97,7 +97,7 @@ class SprayItem {
         ),
         SprayItem(
           id: "gift_1m",
-          name: "Cash Bundles",
+          name: "Platinum Gift Box",
           category: "Gifts",
           amount: 1000000.0,
           displayAmount: "₦1M",

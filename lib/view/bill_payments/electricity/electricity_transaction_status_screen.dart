@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
+import 'electricity_vm.dart';
 
 class ElectricityTransactionStatusScreen extends ConsumerStatefulWidget {
   const ElectricityTransactionStatusScreen({super.key});
@@ -20,139 +22,282 @@ class _ElectricityTransactionStatusScreenState
     extends ConsumerState<ElectricityTransactionStatusScreen> {
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final vm = ref.watch(electricityVm);
+    final isPrepaid = vm.selectedElectricityType == ElectricityType.prepaid;
+
     return Scaffold(
+      backgroundColor:
+          isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        surfaceTintColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           onPressed: () {
-            context.pop();
+            context.goNamed(AppRouter.dashboard);
           },
-          color: Theme.of(context).colorScheme.onSurface,
-          icon: Icon(Icons.close_outlined),
+          color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+          icon: const Icon(Icons.close_rounded),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: AppDimensions.viewPadding,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(width: double.infinity),
-            RotatingCoinIcon(size: 130),
-            SizedBox(height: 16),
+            const SizedBox(height: 10),
+            const RotatingCoinIcon(size: 110),
+            const SizedBox(height: 20),
             Text(
-              "Transaction Complete",
+              "Recharge Successful!",
               textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                letterSpacing: -1,
+              style: GoogleFonts.raleway(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : const Color(0xFF1E1A14),
               ),
             ),
+            const SizedBox(height: 6),
             Text(
-              "Your Payment Has Been Processed Successfully",
+              isPrepaid
+                  ? "Your 20-digit prepaid meter token is ready. Load it directly into your meter keypad."
+                  : "Your postpaid electricity bill payment has been processed and settled with ${vm.selectedDisco}.",
               style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.scrim,
-                letterSpacing: 0,
+                color: isDark ? Colors.white60 : Colors.black54,
+                height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 16),
-            Container(
-              padding: EdgeInsetsDirectional.only(
-                top: 8,
-                start: 16,
-                bottom: 16,
-                end: 16,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        "Here is your token",
-                        style: GoogleFonts.inter(
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0,
-                          color: Theme.of(context).colorScheme.scrim,
+            const SizedBox(height: 24),
+
+            // Token or Payment Confirmation Card
+            if (isPrepaid) ...[
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: isDark ? const Color(0xFF221D17) : Colors.white,
+                  border: Border.all(
+                    color: const Color(0xFFB57510).withValues(alpha: 0.3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color:
+                          const Color(0xFFB57510).withValues(alpha: 0.15),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.vpn_key_rounded,
+                              size: 18,
+                              color: Color(0xFFB57510),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              "Meter Token (20 Digits)",
+                              style: GoogleFonts.inter(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                                color: isDark ? Colors.white70 : Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Spacer(),
-                      Row(
-                        children: [
-                          Container(
-                            height: 18,
-                            width: 1,
-                            color:
-                                Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                          SizedBox(width: 5),
-                          SvgPicture.asset(AppImages.copy),
-                          SizedBox(width: 5),
-                          Text(
-                            "Copy",
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: 0,
-                              color: Theme.of(context).colorScheme.scrim,
+                        InkWell(
+                          borderRadius: BorderRadius.circular(8),
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: vm.generatedToken),
+                            );
+                            AppOverlays.showToast(
+                              context: context,
+                              title: "Token Copied",
+                              message:
+                                  "Electricity token copied to clipboard",
+                              toastType: ToastificationType.success,
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFB57510)
+                                  .withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(
+                                  Icons.copy_rounded,
+                                  size: 14,
+                                  color: Color(0xFFB57510),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  "Copy",
+                                  style: GoogleFonts.inter(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12,
+                                    color: const Color(0xFFB57510),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? const Color(0xFF17130E)
+                            : const Color(0xFFF7F2E7),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: isDark ? Colors.white10 : const Color(0xFFE5DEC8),
+                        ),
                       ),
-                    ],
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      "2124-5467-8576-7484-8474",
-                      style: GoogleFonts.inter(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        letterSpacing: 1,
+                      child: Text(
+                        vm.generatedToken,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.sourceCodePro(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 17,
+                          letterSpacing: 1.5,
+                          color: const Color(0xFFB57510),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Estimated Power: ${vm.estimatedUnits}",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white54 : Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          "Meter: ${vm.meterNumber}",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white54 : Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16),
+            ] else ...[
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: isDark ? const Color(0xFF221D17) : Colors.white,
+                  border: Border.all(
+                    color: const Color(0xFF2B8A3E).withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      size: 40,
+                      color: Color(0xFF2B8A3E),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Settlement Confirmed",
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      "Payment of ₦${vm.amount}.00 received and credited to Account ${vm.meterNumber}",
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        fontSize: 12.5,
+                        color: isDark ? Colors.white60 : Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 28),
+
+            // Download Receipt and Share Actions
             Row(
               children: [
                 Expanded(
-                  child: AppButton(
-                    onPressed: () {},
-                    fontSize: 13,
-                    horizontalPadding: 10,
-                    actionText: "Download Receipt",
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      final receipt = vm.getReceiptData();
+                      context.pushNamed(
+                        AppRouter.shareReceipt,
+                        extra: receipt,
+                      );
+                    },
+                    icon: const Icon(Icons.receipt_outlined, size: 18),
+                    label: const Text("View Receipt"),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFB57510),
+                      side: const BorderSide(color: Color(0xFFB57510)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: AppButton(
-                    onPressed: () {},
-                    fontSize: 13,
-                    horizontalPadding: 10,
-                    actionText: "View Transaction",
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.goNamed(AppRouter.dashboard);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB57510),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      "Back to Home",
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 80),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton(
-                onPressed: () {
-                  context.pop();
-                },
-                actionText: "Continue",
-              ),
-            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),

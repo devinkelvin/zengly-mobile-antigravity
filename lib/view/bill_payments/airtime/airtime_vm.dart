@@ -37,6 +37,16 @@ class AirtimeNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  void selectNetworkByName(String name) {
+    final idx = networks.indexWhere(
+      (n) => n.name.toUpperCase() == name.toUpperCase(),
+    );
+    if (idx != -1) {
+      _selectedNetwork = networks[idx];
+      notifyListeners();
+    }
+  }
+
   Future<void> getContacts() async {
     try {
       if (await FlutterContacts.requestPermission(readonly: true)) {

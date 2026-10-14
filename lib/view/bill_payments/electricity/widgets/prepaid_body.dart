@@ -4,10 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../../data/data.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widgets/widgets.dart';
+import '../electricity_vm.dart';
 import 'widgets.dart';
 
 class PrepaidBody extends ConsumerStatefulWidget {
@@ -18,10 +20,27 @@ class PrepaidBody extends ConsumerStatefulWidget {
 }
 
 class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
-  final TextEditingController _meterNumberController = TextEditingController();
-  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _meterNumberController =
+      TextEditingController(text: "04289104821");
+  final TextEditingController _amountController =
+      TextEditingController(text: "10,000");
   String _selectedDisco = "Ikeja Electric (IKEDC)";
-  final List<int> _quickAmounts = [1000, 2000, 5000, 10000, 20000];
+  final List<int> _quickAmounts = [2000, 5000, 10000, 20000, 50000];
+
+  final List<Map<String, String>> _savedMeters = [
+    {
+      "label": "Home Lekki",
+      "number": "04289104821",
+      "disco": "Ikeja Electric (IKEDC)",
+      "address": "14 Admiralty Way, Lekki Phase 1, Lagos",
+    },
+    {
+      "label": "Office VI",
+      "number": "01948201942",
+      "disco": "Eko Electricity (EKEDC)",
+      "address": "Plot 24 Adeola Odeku, Victoria Island, Lagos",
+    },
+  ];
 
   final List<Map<String, String>> _discos = [
     {"name": "Ikeja Electric (IKEDC)", "code": "IKEDC"},
@@ -31,6 +50,8 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
     {"name": "Enugu Electricity (EEDC)", "code": "EEDC"},
     {"name": "Kano Electricity (KEDCO)", "code": "KEDCO"},
     {"name": "Port Harcourt (PHED)", "code": "PHED"},
+    {"name": "Jos Electricity (JED)", "code": "JED"},
+    {"name": "Kaduna Electric (KAEDCO)", "code": "KAEDCO"},
   ];
 
   @override
@@ -51,24 +72,99 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
     final text = _amountController.text.replaceAll(',', '').trim();
     final amount = double.tryParse(text) ?? 0;
     if (amount <= 0) return 0;
-    // Standard Band A/B tariff estimate ~₦68/kWh
     return (amount / 68.0);
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
     final isMeterValid = _meterNumberController.text.length >= 10;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Select Disco Dropdown
+        // Saved Meters Quick Pills
+        Text(
+          "Saved Meter Profiles",
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white70 : const Color(0xFF6B5E4A),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: _savedMeters.map((m) {
+            final isSelected = _meterNumberController.text == m["number"];
+            return GestureDetector(
+              onTap: () {
+                setState(() {
+                  _meterNumberController.text = m["number"]!;
+                  _selectedDisco = m["disco"]!;
+                });
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                margin: const EdgeInsets.only(right: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? const Color(0xFFB57510).withValues(alpha: 0.15)
+                      : (isDark ? const Color(0xFF241F18) : Colors.white),
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                    color: isSelected
+                        ? const Color(0xFFB57510)
+                        : (isDark ? Colors.white10 : const Color(0xFFE2D6C5)),
+                    width: isSelected ? 1.5 : 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.home_outlined,
+                      size: 14,
+                      color: isSelected
+                          ? const Color(0xFFB57510)
+                          : (isDark ? Colors.white60 : Colors.black54),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      m["label"]!,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected
+                            ? const Color(0xFFB57510)
+                            : (isDark ? Colors.white : Colors.black87),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Select Disco Dropdown Card
+        Text(
+          "Electric Distribution Company",
+          style: GoogleFonts.inter(
+            fontSize: 12.5,
+            fontWeight: FontWeight.w600,
+            color: isDark ? Colors.white70 : const Color(0xFF6B5E4A),
+          ),
+        ),
+        const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.outlineVariant,
+            color: isDark ? const Color(0xFF221D17) : Colors.white,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
               color: isDark ? Colors.white10 : const Color(0xFFE2D6C5),
@@ -78,6 +174,7 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
             child: DropdownButton<String>(
               value: _selectedDisco,
               isExpanded: true,
+              dropdownColor: isDark ? const Color(0xFF221D17) : Colors.white,
               icon: const Icon(Icons.keyboard_arrow_down_rounded),
               items: _discos.map((d) {
                 return DropdownMenuItem<String>(
@@ -87,12 +184,12 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: primaryColor.withValues(alpha: 0.15),
+                          color: const Color(0xFFB57510).withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.bolt_rounded,
-                          color: primaryColor,
+                          color: Color(0xFFB57510),
                           size: 16,
                         ),
                       ),
@@ -102,7 +199,7 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
                         style: GoogleFonts.inter(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
+                          color: isDark ? Colors.white : const Color(0xFF1E1A14),
                         ),
                       ),
                     ],
@@ -159,25 +256,27 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
           runSpacing: 8,
           children: _quickAmounts.map((amt) {
             final formatted = NumberFormat("#,##0").format(amt);
-            final isSelected = _amountController.text.replaceAll(',', '') == amt.toString();
+            final isSelected =
+                _amountController.text.replaceAll(',', '') == amt.toString();
 
             return ChoiceChip(
               label: Text("₦$formatted"),
               selected: isSelected,
-              selectedColor: primaryColor,
-              backgroundColor: Theme.of(context).colorScheme.outlineVariant,
+              selectedColor: const Color(0xFFB57510),
+              backgroundColor:
+                  isDark ? const Color(0xFF241F18) : const Color(0xFFF2ECE1),
               labelStyle: GoogleFonts.inter(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: isSelected
                     ? Colors.white
-                    : Theme.of(context).colorScheme.onSurface,
+                    : (isDark ? Colors.white : const Color(0xFF1E1A14)),
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
                 side: BorderSide(
                   color: isSelected
-                      ? primaryColor
+                      ? const Color(0xFFB57510)
                       : (isDark ? Colors.white12 : const Color(0xFFE2D6C5)),
                 ),
               ),
@@ -193,27 +292,33 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.1),
+              color: const Color(0xFFB57510).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: primaryColor.withValues(alpha: 0.25)),
+              border: Border.all(
+                color: const Color(0xFFB57510).withValues(alpha: 0.25),
+              ),
             ),
             child: Row(
               children: [
-                Icon(Icons.electric_meter_outlined, size: 18, color: primaryColor),
+                const Icon(
+                  Icons.electric_meter_outlined,
+                  size: 20,
+                  color: Color(0xFFB57510),
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  "Estimated Power: ",
+                  "Estimated Energy Units: ",
                   style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: 12.5,
+                    color: isDark ? Colors.white70 : Colors.black87,
                   ),
                 ),
                 Text(
                   "~${_estimatedUnits.toStringAsFixed(1)} kWh",
                   style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: primaryColor,
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFFB57510),
                   ),
                 ),
               ],
@@ -232,6 +337,7 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
                 AppOverlays.showToast(
                   context: context,
                   message: "Please enter your meter number",
+                  toastType: ToastificationType.error,
                 );
                 return;
               }
@@ -239,14 +345,26 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
                 AppOverlays.showToast(
                   context: context,
                   message: "Please enter a recharge amount",
+                  toastType: ToastificationType.error,
                 );
                 return;
               }
+
+              ref.read(electricityVm).setTransactionDetails(
+                    disco: _selectedDisco,
+                    meterNumber: _meterNumberController.text,
+                    amount: _amountController.text,
+                    customerName: "Kelvin Ekuhoho",
+                    address: "14 Admiralty Way, Lekki Phase 1, Lagos",
+                    type: ElectricityType.prepaid,
+                  );
+
               context.pushNamed(AppRouter.electricityConfirmation);
             },
             actionText: "Continue to Payment",
           ),
         ),
+        const SizedBox(height: 16),
       ],
     );
   }
