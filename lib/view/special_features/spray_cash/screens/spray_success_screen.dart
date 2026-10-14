@@ -340,48 +340,47 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
                 ),
               ),
 
-              const SizedBox(height: 18),
-
-              // Hands holding yellow poster "Pressure ti wa!" (Screenshot 1)
+              // Centered Vibe Text "Money na water!" matching Screenshot
               Expanded(
                 child: Center(
-                  child: Image.asset(
-                    AppImages.vanitiSprayHands,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => Container(
-                      height: 140,
-                      width: 200,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF3A610),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        "Pressure ti wa!",
-                        style: GoogleFonts.raleway(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                        ),
-                      ),
+                  child: Text(
+                    "Money na water!",
+                    style: GoogleFonts.inter(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
                 ),
               ),
 
-              const SizedBox(height: 16),
+              // Button 1: "View On Leaderboard" above Go Home matching Screenshot
+              GestureDetector(
+                onTap: () {
+                  AppOverlays.vanitiLeaderboardSheet(context);
+                },
+                child: Text(
+                  "View On Leaderboard",
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
 
-              // Bottom Button 1: "Go Home" (Amber solid button from Screenshot 1)
+              // Button 2: "Go Home" (Solid Amber button from Screenshot)
               SizedBox(
                 width: double.infinity,
-                height: 52,
+                height: 54,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFB57510),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: () {
@@ -391,32 +390,13 @@ class _SpraySuccessScreenState extends ConsumerState<SpraySuccessScreen> {
                   child: Text(
                     "Go Home",
                     style: GoogleFonts.inter(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
-
-              // Bottom Button 2: "View On Leaderboard"
-              GestureDetector(
-                onTap: () {
-                  AppOverlays.vanitiLeaderboardSheet(context);
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    "View On Leaderboard",
-                    style: GoogleFonts.inter(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white70,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
             ],
           ),
         ),

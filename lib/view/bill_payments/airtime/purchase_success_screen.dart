@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../data/data.dart';
 import '../../../utils/utils.dart';
@@ -17,137 +17,276 @@ class PurchaseSuccessScreen extends StatefulWidget {
 }
 
 class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
-  bool _saveBeneficiary = false;
+  bool _isMuted = false;
+
+  void _onDownloadReceipt() {
+    AppOverlays.showToast(
+      context: context,
+      title: "Receipt Downloaded",
+      message: "PDF Receipt successfully saved to your downloads folder",
+      toastType: ToastificationType.success,
+    );
+  }
+
+  void _onShare() {
+    AppOverlays.showToast(
+      context: context,
+      title: "Receipt Link Copied",
+      message: "Shareable official purchase receipt link copied to clipboard!",
+      toastType: ToastificationType.info,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final receipt = widget.receipt;
+    final formattedAmount = receipt.amount.startsWith("₦")
+        ? receipt.amount
+        : "₦${receipt.amount}";
+
     return Scaffold(
+      backgroundColor: const Color(0xFF16140F),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
+        elevation: 0,
         automaticallyImplyLeading: false,
-        centerTitle: false,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 4.0),
-          child: _PillButton(
-            imageIcon: AppImages.arrowDownloadIcon,
-            label: "Download",
-            onPressed: () {},
+        titleSpacing: 20,
+        title: GestureDetector(
+          onTap: _onDownloadReceipt,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Download",
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.arrow_downward_rounded,
+                  size: 15,
+                  color: Colors.white,
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
-          _PillButton(
-            imageIcon: AppImages.shareAndroidIcon,
-            label: "Share",
-            onPressed: () {},
+          // Audio mute/unmute circle button
+          GestureDetector(
+            onTap: () {
+              setState(() => _isMuted = !_isMuted);
+            },
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                _isMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
+                size: 18,
+                color: Colors.white,
+              ),
+            ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 10),
+          // Share pill button
+          GestureDetector(
+            onTap: _onShare,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.share_outlined,
+                    size: 16,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    "Share",
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
         ],
       ),
       body: SafeArea(
         child: Padding(
-          padding: AppDimensions.viewPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             children: [
-              SizedBox(height: 24),
-              RotatingCoinIcon(size: 210),
-              SizedBox(height: 16),
-              Text(
-                "${receipt.type} purchase successful",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.raleway(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text.rich(
-                TextSpan(
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: Theme.of(context).colorScheme.scrim,
+              const SizedBox(height: 12),
+
+              // Flying Green Banknote (Screenshot top visual)
+              Center(
+                child: Image.asset(
+                  AppImages.flyingMoneyBill,
+                  height: 64,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(
+                    Icons.payments_rounded,
+                    size: 54,
+                    color: Color(0xFF34C759),
                   ),
-                  children: [
-                    TextSpan(text: "You have successfully purchased "),
-                    TextSpan(
-                      text: receipt.amount,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    TextSpan(text: " ${receipt.type.toLowerCase()} for "),
-                    TextSpan(
-                      text: receipt.phoneNumber,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 14),
+
+              // Title
+              Text(
+                "${receipt.type} sent successfully!",
+                style: GoogleFonts.raleway(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              // Amount
+              Text(
+                formattedAmount,
+                style: GoogleFonts.inter(
+                  fontSize: 34,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+
+              // Subtitle
+              Text(
+                "sent to ${receipt.phoneNumber}",
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white70,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Leaderboard & Rank Up Card with View Receipt (Screenshot)
               Container(
+                width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
+                  color: const Color(0xFF231E18),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.06),
+                  ),
                 ),
                 child: Column(
                   children: [
                     Padding(
-                      padding: EdgeInsets.fromLTRB(16, 4, 8, 4),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              "Save this beneficiary number",
-                              style: GoogleFonts.inter(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "+2",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFE5A93C),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "RANK UP",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white60,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Switch(
-                            value: _saveBeneficiary,
-                            onChanged:
-                                (val) => setState(() => _saveBeneficiary = val),
-                            activeThumbColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            activeTrackColor:
-                                Theme.of(context).colorScheme.tertiary,
-                            inactiveThumbColor:
-                                Theme.of(context).colorScheme.onPrimary,
-                            inactiveTrackColor:
-                                Theme.of(context).colorScheme.surfaceDim,
+                          Container(
+                            height: 32,
+                            width: 1,
+                            color: Colors.white12,
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Text(
+                                  "#3",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFE5A93C),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "LEADERBOARD",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white60,
+                                    letterSpacing: 0.8,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
                     Divider(
                       height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                      color: Theme.of(context).colorScheme.surface,
+                      color: Colors.white.withValues(alpha: 0.06),
                     ),
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
                         context.pushNamed(
                           AppRouter.purchaseReceipt,
                           extra: receipt,
                         );
                       },
+                      borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(20),
+                      ),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        child: Text(
-                          "View Receipt",
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.inter(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.onSurface,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        child: Center(
+                          child: Text(
+                            "View Receipt",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
@@ -155,81 +294,65 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                   ],
                 ),
               ),
-              Spacer(),
+
+              // Centered Vibe Text "Money na water!" matching Screenshot
+              Expanded(
+                child: Center(
+                  child: Text(
+                    "Money na water!",
+                    style: GoogleFonts.inter(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Button 1: "View On Leaderboard" above Go Home matching Screenshot
+              GestureDetector(
+                onTap: () {
+                  AppOverlays.vanitiLeaderboardSheet(context);
+                },
+                child: Text(
+                  "View On Leaderboard",
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 18),
+
+              // Button 2: "Go Home" (Solid Amber button from Screenshot)
               SizedBox(
                 width: double.infinity,
-                child: AppButton(
+                height: 54,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFB57510),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () {
                     context.goNamed(AppRouter.dashboard);
                   },
-                  actionText: "Back to Home",
+                  child: Text(
+                    "Go Home",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 12),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PillButton extends StatelessWidget {
-  final IconData? icon;
-  final String? svgIcon;
-  final String? imageIcon;
-  final String label;
-  final VoidCallback onPressed;
-
-  const _PillButton({
-    this.icon,
-    this.svgIcon,
-    this.imageIcon,
-    required this.label,
-    required this.onPressed,
-  }) : assert(icon != null || svgIcon != null || imageIcon != null);
-
-  @override
-  Widget build(BuildContext context) {
-    final Widget iconWidget =
-        imageIcon != null
-            ? Image.asset(imageIcon!, width: 14, height: 14)
-            : svgIcon != null
-            ? SvgPicture.asset(
-              svgIcon!,
-              width: 14,
-              height: 14,
-              colorFilter: ColorFilter.mode(
-                Theme.of(context).colorScheme.onSurface,
-                BlendMode.srcIn,
-              ),
-            )
-            : Icon(
-              icon,
-              size: 14,
-              color: Theme.of(context).colorScheme.onSurface,
-            );
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.55),
-          borderRadius: BorderRadius.circular(100),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(width: 6),
-            iconWidget,
-          ],
         ),
       ),
     );

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
 import '../cards_vm.dart';
@@ -36,66 +37,32 @@ class _FundCardScreenState extends ConsumerState<FundCardScreen> {
     final amount = _enteredUsd;
     if (amount <= 0) return;
 
-    ref.read(cardsProvider.notifier).fundCard(widget.cardId, amount);
+    TransactionPinBottomSheet.show(
+      context,
+      actionText: "Fund Virtual Card",
+      onPinEntered: (pin) {
+        ref.read(cardsProvider.notifier).fundCard(widget.cardId, amount);
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Theme.of(ctx).colorScheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Color(0xFFE8F5E9),
-              ),
-              child: const Icon(
-                Icons.check_circle_rounded,
-                color: Color(0xFF2E7D32),
-                size: 36,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "Card Funded Successfully!",
-              style: GoogleFonts.raleway(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "Added \$${amount.toStringAsFixed(2)} (₦${_totalNgn.toStringAsFixed(2)}) to your virtual card.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton(
-                actionText: "Done",
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  context.pop();
-                },
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-        ),
-      ),
+        final now = DateTime.now();
+        final transferResult = TransferResult(
+          recipientName: "USD Virtual Card",
+          recipientAccountNumber: "**** 4821",
+          recipientBank: "Zengly Card Services",
+          sourceBank: "Zed Wallet",
+          sourceAccountNumber: "ZNG-847291",
+          amount: _totalNgn,
+          note: "Fund \$${amount.toStringAsFixed(2)} Virtual Card",
+          fee: 0.0,
+          date: now,
+          transactionReference: "FND${now.millisecondsSinceEpoch}",
+          providerReference: "PRV|FND|${now.millisecondsSinceEpoch}",
+        );
+
+        context.pushNamed(
+          AppRouter.transferSuccess,
+          extra: transferResult,
+        );
+      },
     );
   }
 
