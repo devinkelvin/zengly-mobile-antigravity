@@ -10,7 +10,6 @@ import '../controller/storage/storage.dart';
 import '../data/data.dart';
 import '../view/account/widgets/widgets.dart';
 import '../view/home/widgets/widgets.dart';
-import '../view/transfer/widgets/widgets.dart';
 import '../view/view.dart';
 import '../utils/utils.dart';
 import 'widgets.dart';
@@ -267,6 +266,15 @@ class AppOverlays {
           const SizedBox(height: 12),
         ],
       ),
+    );
+  }
+
+  static void profileCoverSheet({required BuildContext context}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => const ProfileCoverSheet(),
     );
   }
 

@@ -245,6 +245,11 @@ class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
                               email: _emailController.text.trim(),
                               phone: _phoneController.text.trim(),
                             );
+                        if (_avatarFile != null) {
+                          ref
+                              .read(accountProvider.notifier)
+                              .setCustomAvatar(_avatarFile!.path);
+                        }
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(
