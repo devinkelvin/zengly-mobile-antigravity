@@ -1,23 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
 
 class TransactionDisputeScreen extends StatefulWidget {
   final String? preselectedRef;
   final String? preselectedAmount;
+  final bool isBottomSheet;
 
   const TransactionDisputeScreen({
     super.key,
     this.preselectedRef,
     this.preselectedAmount,
+    this.isBottomSheet = true,
   });
 
+  static Future<void> show(
+    BuildContext context, {
+    String? preselectedRef,
+    String? preselectedAmount,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withValues(alpha: 0.75),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+        ),
+        child: TransactionDisputeScreen(
+          preselectedRef: preselectedRef,
+          preselectedAmount: preselectedAmount,
+          isBottomSheet: true,
+        ),
+      ),
+    );
+  }
+
   @override
-  State<TransactionDisputeScreen> createState() => _TransactionDisputeScreenState();
+  State<TransactionDisputeScreen> createState() =>
+      _TransactionDisputeScreenState();
 }
 
 class _TransactionDisputeScreenState extends State<TransactionDisputeScreen> {
@@ -25,11 +49,12 @@ class _TransactionDisputeScreenState extends State<TransactionDisputeScreen> {
   final TextEditingController _descController = TextEditingController();
   String _selectedCategory = "Debited but recipient did not receive";
   bool _isSubmitted = false;
+  bool _isLoading = false;
   String _disputeTicket = "";
 
   final List<String> _categories = [
     "Debited but recipient did not receive",
-    "Failed bill payment (Electricity token not issued)",
+    "Failed bill payment (Token not issued)",
     "Airtime or Data purchase not delivered",
     "Unauthorized or duplicate debit",
     "Vaniti digital cash spray dispute",
@@ -49,13 +74,13 @@ class _TransactionDisputeScreenState extends State<TransactionDisputeScreen> {
     super.dispose();
   }
 
-  void _submitDispute() {
+  void _submitDispute() async {
     if (_refController.text.trim().isEmpty) {
       AppOverlays.showToast(
         context: context,
         title: "Reference Required",
-        message: "Please enter the transaction reference or session ID.",
-        toastType: ToastificationType.error,
+        message: "Please enter the transaction reference.",
+        toastType: ToastificationType.warning,
       );
       return;
     }
@@ -63,119 +88,197 @@ class _TransactionDisputeScreenState extends State<TransactionDisputeScreen> {
     if (_descController.text.trim().isEmpty) {
       AppOverlays.showToast(
         context: context,
-        title: "Details Required",
-        message: "Please briefly describe the transaction issue.",
-        toastType: ToastificationType.error,
+        title: "Description Required",
+        message: "Please explain the transaction issue.",
+        toastType: ToastificationType.warning,
       );
       return;
     }
 
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
+
     setState(() {
-      _disputeTicket = "DISP-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}";
+      _isLoading = false;
+      _disputeTicket =
+          "DISP-${DateTime.now().millisecondsSinceEpoch.toString().substring(7)}";
       _isSubmitted = true;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = Theme.of(context).colorScheme.primary;
-    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
-    final textSecondary = isDark ? const Color(0xFF9E9E9E) : const Color(0xFF6B655D);
-    final cardBg = isDark ? const Color(0xFF1E1A14) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF2C241B) : const Color(0xFFEBE3D7);
+    const bgColor = Color(0xFF1E1C18);
+    const cardColor = Color(0xFF262420);
+    const primaryAmber = Color(0xFFC58314);
 
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: textPrimary),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          "Transaction Issue",
-          style: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 18, color: textPrimary),
-        ),
-        centerTitle: true,
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.88,
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: _isSubmitted
-            ? _buildSubmittedView(isDark, primaryColor, textPrimary, textSecondary, cardBg, borderColor)
-            : _buildFormView(isDark, primaryColor, textPrimary, textSecondary, cardBg, borderColor),
+      decoration: const BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag Handle
+          const SizedBox(height: 10),
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.white24,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Header Row
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF2E2C28),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.white70,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                Text(
+                  "Report Transaction",
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 36),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // Body Content
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: _isSubmitted ? _buildSubmittedState() : _buildForm(cardColor, primaryAmber),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildFormView(
-    bool isDark,
-    Color primaryColor,
-    Color textPrimary,
-    Color textSecondary,
-    Color cardBg,
-    Color borderColor,
-  ) {
+  Widget _buildForm(Color cardColor, Color primaryAmber) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Top SLA info banner
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.timer_outlined, size: 24, color: primaryColor),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Resolution Guarantee",
-                      style: GoogleFonts.raleway(fontSize: 14, fontWeight: FontWeight.w700, color: textPrimary),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      "Interbank and utility reversals are investigated within 24 to 48 banking hours in line with CBN standards.",
-                      style: GoogleFonts.inter(fontSize: 12, color: textSecondary, height: 1.35),
-                    ),
-                  ],
-                ),
+        // Transaction Summary Pill
+        if (widget.preselectedAmount != null) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: primaryAmber.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: primaryAmber.withValues(alpha: 0.35),
               ),
-            ],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.receipt_long,
+                  color: primaryAmber,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  "Transaction Amount: ${widget.preselectedAmount}",
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+        ],
+
+        // Reference input
+        Text(
+          "Transaction Reference",
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.white70,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: TextField(
+            controller: _refController,
+            style: GoogleFonts.inter(fontSize: 14, color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: "e.g. TXN-9482019482",
+              hintStyle: TextStyle(color: Colors.white38),
+              border: InputBorder.none,
+            ),
           ),
         ),
 
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
 
+        // Dispute Category
         Text(
-          "Problem Category",
-          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary),
+          "Dispute Category",
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.white70,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            color: cardBg,
+            color: cardColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: borderColor),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               isExpanded: true,
+              dropdownColor: cardColor,
               value: _selectedCategory,
-              items: _categories.map((c) {
-                return DropdownMenuItem<String>(
-                  value: c,
-                  child: Text(c, style: GoogleFonts.inter(fontSize: 13, color: textPrimary)),
+              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white70),
+              style: GoogleFonts.inter(fontSize: 13.5, color: Colors.white),
+              items: _categories.map((cat) {
+                return DropdownMenuItem(
+                  value: cat,
+                  child: Text(cat, maxLines: 1, overflow: TextOverflow.ellipsis),
                 );
               }).toList(),
               onChanged: (val) {
@@ -187,156 +290,135 @@ class _TransactionDisputeScreenState extends State<TransactionDisputeScreen> {
 
         const SizedBox(height: 16),
 
+        // Issue Description
         Text(
-          "Transaction Reference / Session ID",
-          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary),
+          "Issue Description",
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.white70,
+          ),
         ),
         const SizedBox(height: 8),
-        TextField(
-          controller: _refController,
-          style: GoogleFonts.inter(fontSize: 13, color: textPrimary),
-          decoration: InputDecoration(
-            hintText: "e.g. ZNG-TRX-20261014-9842",
-            hintStyle: GoogleFonts.inter(fontSize: 13, color: textSecondary),
-            filled: true,
-            fillColor: cardBg,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
+        Container(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: TextField(
+            controller: _descController,
+            maxLines: 4,
+            style: GoogleFonts.inter(fontSize: 13.5, color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: "Describe what happened in detail...",
+              hintStyle: TextStyle(color: Colors.white38),
+              border: InputBorder.none,
+            ),
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
 
-        Text(
-          "Description & Details",
-          style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: textPrimary),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _descController,
-          maxLines: 4,
-          style: GoogleFonts.inter(fontSize: 13, color: textPrimary),
-          decoration: InputDecoration(
-            hintText: "Explain what happened, amount involved, and any error message displayed...",
-            hintStyle: GoogleFonts.inter(fontSize: 13, color: textSecondary),
-            filled: true,
-            fillColor: cardBg,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: borderColor)),
-          ),
-        ),
-
-        const SizedBox(height: 28),
-
+        // Submit Button
         SizedBox(
           width: double.infinity,
+          height: 50,
           child: ElevatedButton(
+            onPressed: _isLoading ? null : _submitDispute,
             style: ElevatedButton.styleFrom(
-              backgroundColor: primaryColor,
+              backgroundColor: primaryAmber,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
             ),
-            onPressed: _submitDispute,
-            child: Text("Submit Dispute Ticket", style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+            child: _isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Text(
+                    "Submit Dispute",
+                    style: GoogleFonts.inter(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
         ),
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
       ],
     );
   }
 
-  Widget _buildSubmittedView(
-    bool isDark,
-    Color primaryColor,
-    Color textPrimary,
-    Color textSecondary,
-    Color cardBg,
-    Color borderColor,
-  ) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF34C759).withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.check_circle_outline_rounded, size: 54, color: Color(0xFF34C759)),
-          ),
-          const SizedBox(height: 18),
-          Text(
-            "Dispute Ticket Logged",
-            style: GoogleFonts.raleway(fontSize: 22, fontWeight: FontWeight.w700, color: textPrimary),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Text(
-              "Ticket: $_disputeTicket",
-              style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: primaryColor),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            "Our Dispute & Reconciliation Desk has received your request. A confirmation and updates will be routed to your registered email address.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 13, color: textSecondary, height: 1.45),
-          ),
-          const SizedBox(height: 28),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: borderColor),
-            ),
-            child: Column(
-              children: [
-                _buildSummaryRow("Category", _selectedCategory, textPrimary),
-                const Divider(height: 18),
-                _buildSummaryRow("Reference", _refController.text, textPrimary),
-                const Divider(height: 18),
-                _buildSummaryRow("Expected SLA", "Within 24–48 Banking Hours", const Color(0xFF34C759)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onPressed: () => context.pop(),
-              child: Text("Done", style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSummaryRow(String label, String value, Color valueColor) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildSubmittedState() {
+    return Column(
       children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 12.5, color: Colors.grey)),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: GoogleFonts.inter(fontSize: 12.5, fontWeight: FontWeight.w600, color: valueColor),
+        const SizedBox(height: 20),
+        Container(
+          width: 64,
+          height: 64,
+          decoration: const BoxDecoration(
+            color: Color(0xFF00B050),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.check,
+            color: Colors.white,
+            size: 36,
           ),
         ),
+        const SizedBox(height: 16),
+        Text(
+          "Dispute Logged",
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          "Ticket ID: $_disputeTicket",
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: const Color(0xFFC58314),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          "Our compliance and settlements team will investigate with the partner banking switch. Updates will be sent to your email within 24 hours.",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: Colors.white60,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 28),
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFC58314),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text("Done"),
+          ),
+        ),
+        const SizedBox(height: 20),
       ],
     );
   }

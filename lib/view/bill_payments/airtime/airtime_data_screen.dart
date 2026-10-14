@@ -46,12 +46,21 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: Theme.of(context).colorScheme.onSurface,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF25231F),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
           ),
         ),
         title: AnimatedBuilder(

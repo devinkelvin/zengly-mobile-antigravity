@@ -5,37 +5,45 @@ import 'package:google_fonts/google_fonts.dart';
 
 class TransactionPinBottomSheet extends StatefulWidget {
   final String title;
-  final String subtitle;
+  final String? subtitle;
+  final String actionText;
   final String? amountSummary;
   final ValueChanged<String>? onPinSubmitted;
   final Future<bool> Function(String pin)? onValidate;
+  final VoidCallback? onForgotPin;
 
   const TransactionPinBottomSheet({
     super.key,
     this.title = "Enter Transaction PIN",
-    this.subtitle = "Enter your 4-digit security PIN to authorize this transaction",
+    this.subtitle,
+    this.actionText = "Send Transfer",
     this.amountSummary,
     this.onPinSubmitted,
     this.onValidate,
+    this.onForgotPin,
   });
 
   static Future<String?> show(
     BuildContext context, {
     String title = "Enter Transaction PIN",
-    String subtitle = "Enter your 4-digit security PIN to authorize this transaction",
+    String? subtitle,
+    String actionText = "Send Transfer",
     String? amountSummary,
     Future<bool> Function(String pin)? onValidate,
+    VoidCallback? onForgotPin,
   }) {
     return showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.65),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       builder: (ctx) => TransactionPinBottomSheet(
         title: title,
         subtitle: subtitle,
+        actionText: actionText,
         amountSummary: amountSummary,
         onValidate: onValidate,
+        onForgotPin: onForgotPin,
       ),
     );
   }
@@ -56,7 +64,7 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
   void initState() {
     super.initState();
     _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 350),
       vsync: this,
     );
   }
@@ -79,10 +87,6 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
         _errorMessage = null;
         _pin += digit;
       });
-
-      if (_pin.length == 4) {
-        _submitPin();
-      }
     }
   }
 
@@ -97,19 +101,9 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
     }
   }
 
-  void _onClear() {
-    if (_isLoading) return;
-    HapticFeedback.mediumImpact();
-    setState(() {
-      _errorMessage = null;
-      _pin = "";
-    });
-  }
-
   void _onBiometrics() {
     if (_isLoading) return;
     HapticFeedback.mediumImpact();
-    // Biometric simulated authorization with default PIN
     setState(() {
       _pin = "1234";
     });
@@ -145,6 +139,7 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
       }
     } else if (widget.onPinSubmitted != null) {
       widget.onPinSubmitted!(_pin);
+      Navigator.of(context).pop(_pin);
     } else {
       Navigator.of(context).pop(_pin);
     }
@@ -152,29 +147,20 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = const Color(0xFFB57510);
-    final sheetBg = isDark ? const Color(0xFF1B1712) : Colors.white;
-    final textColor = isDark ? Colors.white : const Color(0xFF1E1A14);
-    final keyBg = isDark ? const Color(0xFF262017) : const Color(0xFFF4F0E8);
-    final keyTextColor = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    const primaryAmber = Color(0xFFC58314);
+    const sheetBg = Color(0xFF1E1E1E);
+    const boxBg = Color(0xFF282828);
+    const keyBg = Color(0xFF2E2E2E);
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: sheetBg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       padding: EdgeInsets.only(
-        top: 14,
-        left: 24,
-        right: 24,
+        top: 10,
+        left: 20,
+        right: 20,
         bottom: MediaQuery.of(context).padding.bottom + 16,
       ),
       child: Column(
@@ -183,81 +169,74 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
           // Drag handle
           Center(
             child: Container(
-              width: 40,
+              width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white24 : Colors.black12,
+                color: Colors.white24,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 12),
 
-          // Header Row with Title and Close
+          // Header Row matching Screenshot 1
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const SizedBox(width: 32),
+              // Circular Dark Close Button
+              GestureDetector(
+                onTap: () => Navigator.of(context).pop(),
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF2B2B2B),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.white70,
+                    size: 20,
+                  ),
+                ),
+              ),
+
+              // Title
               Expanded(
                 child: Text(
                   widget.title,
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.raleway(
-                    fontSize: 18,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: textColor,
+                    color: Colors.white,
                   ),
                 ),
               ),
-              IconButton(
-                onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(
-                  Icons.close_rounded,
-                  size: 22,
-                  color: isDark ? Colors.white60 : Colors.black54,
+
+              // Amber Circular Biometric Icon Button
+              GestureDetector(
+                onTap: _onBiometrics,
+                child: Container(
+                  width: 38,
+                  height: 38,
+                  decoration: const BoxDecoration(
+                    color: primaryAmber,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.fingerprint_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
                 ),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
               ),
             ],
           ),
-          const SizedBox(height: 6),
-
-          Text(
-            widget.subtitle,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.inter(
-              fontSize: 12.5,
-              color: isDark ? Colors.white60 : const Color(0xFF6B5E4A),
-              height: 1.35,
-            ),
-          ),
-
-          if (widget.amountSummary != null) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: primaryColor.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(
-                  color: primaryColor.withValues(alpha: 0.3),
-                ),
-              ),
-              child: Text(
-                widget.amountSummary!,
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: primaryColor,
-                ),
-              ),
-            ),
-          ],
 
           const SizedBox(height: 24),
 
-          // Animated PIN Indicator Dots with Error Shake
+          // 4 PIN Boxes matching Screenshot 1
           AnimatedBuilder(
             animation: _shakeController,
             builder: (context, child) {
@@ -271,38 +250,33 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(4, (index) {
                 final isFilled = index < _pin.length;
-                final isError = _errorMessage != null;
+                final isActive = index == _pin.length;
 
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  width: 20,
-                  height: 20,
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  width: 58,
+                  height: 58,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isError
-                        ? const Color(0xFFEF4444)
-                        : (isFilled
-                            ? primaryColor
-                            : (isDark ? const Color(0xFF2E271E) : const Color(0xFFE5DDD0))),
+                    color: boxBg,
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isError
+                      color: _errorMessage != null
                           ? const Color(0xFFEF4444)
-                          : (isFilled
-                              ? primaryColor
-                              : (isDark ? Colors.white12 : const Color(0xFFD2C7B4))),
-                      width: 1.5,
+                          : (isActive ? primaryAmber : Colors.transparent),
+                      width: 1.8,
                     ),
-                    boxShadow: isFilled && !isError
-                        ? [
-                            BoxShadow(
-                              color: primaryColor.withValues(alpha: 0.4),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                        : null,
                   ),
+                  alignment: Alignment.center,
+                  child: isFilled
+                      ? Text(
+                          "*",
+                          style: GoogleFonts.inter(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        )
+                      : null,
                 );
               }),
             ),
@@ -320,111 +294,138 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
             ),
           ],
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
 
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 40),
-              child: CircularProgressIndicator(
-                color: Color(0xFFB57510),
-                strokeWidth: 2.8,
+          // "Forgot Transaction Pin?" Link
+          GestureDetector(
+            onTap: widget.onForgotPin ??
+                () {
+                  Navigator.of(context).pop();
+                },
+            child: Text(
+              "Forgot Transaction Pin?",
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
               ),
-            )
-          else ...[
-            // 3x4 Number Keypad
-            _buildKeypadRow(["1", "2", "3"], keyBg, keyTextColor),
-            const SizedBox(height: 12),
-            _buildKeypadRow(["4", "5", "6"], keyBg, keyTextColor),
-            const SizedBox(height: 12),
-            _buildKeypadRow(["7", "8", "9"], keyBg, keyTextColor),
-            const SizedBox(height: 12),
-            Row(
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // Custom Dark Numeric Keypad matching Screenshot 1
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
               children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: _onBiometrics,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF262017)
-                            : const Color(0xFFF4F0E8),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        Icons.fingerprint_rounded,
-                        size: 26,
-                        color: primaryColor,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _buildKeypadButton("0", keyBg, keyTextColor),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: InkWell(
-                    onTap: _onDelete,
-                    onLongPress: _onClear,
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      height: 52,
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? const Color(0xFF262017)
-                            : const Color(0xFFF4F0E8),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Icon(
-                        Icons.backspace_outlined,
-                        size: 20,
-                        color: keyTextColor,
+                _buildKeypadRow(["1", "2", "3"], keyBg),
+                const SizedBox(height: 10),
+                _buildKeypadRow(["4", "5", "6"], keyBg),
+                const SizedBox(height: 10),
+                _buildKeypadRow(["7", "8", "9"], keyBg),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Expanded(child: SizedBox(height: 48)),
+                    const SizedBox(width: 10),
+                    Expanded(child: _buildKeypadButton("0", keyBg)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: InkWell(
+                        onTap: _onDelete,
+                        borderRadius: BorderRadius.circular(10),
+                        child: Container(
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: keyBg,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Icon(
+                            Icons.backspace_outlined,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Bottom Primary Button "Send Transfer" matching Screenshot 1
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: ElevatedButton(
+              onPressed: _pin.length == 4 && !_isLoading ? _submitPin : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryAmber,
+                disabledBackgroundColor: primaryAmber.withValues(alpha: 0.4),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2.2,
+                      ),
+                    )
+                  : Text(
+                      widget.actionText,
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildKeypadRow(List<String> digits, Color bg, Color textColor) {
+  Widget _buildKeypadRow(List<String> digits, Color bg) {
     return Row(
-      children: digits.asMap().entries.map((entry) {
-        final isLast = entry.key == digits.length - 1;
+      children: digits.map((d) {
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(right: isLast ? 0 : 12),
-            child: _buildKeypadButton(entry.value, bg, textColor),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            child: _buildKeypadButton(d, bg),
           ),
         );
       }).toList(),
     );
   }
 
-  Widget _buildKeypadButton(String digit, Color bg, Color textColor) {
+  Widget _buildKeypadButton(String digit, Color bg) {
     return InkWell(
       onTap: () => _onDigit(digit),
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        height: 52,
+        height: 48,
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(10),
         ),
         alignment: Alignment.center,
         child: Text(
           digit,
           style: GoogleFonts.inter(
             fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: textColor,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
           ),
         ),
       ),

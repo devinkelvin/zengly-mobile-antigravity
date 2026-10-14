@@ -292,51 +292,57 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF25231F),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
           ),
-          onPressed: () => context.pop(),
         ),
         title: Text(
-          "QR Code",
-          style: GoogleFonts.raleway(
+          "QR Code Pay",
+          style: GoogleFonts.inter(
             fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+            fontSize: 18,
+            color: Colors.white,
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
+          preferredSize: const Size.fromHeight(56),
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF241F18)
-                  : const Color(0xFFEDE4D4),
-              borderRadius: BorderRadius.circular(100),
+              color: const Color(0xFF22201D),
+              borderRadius: BorderRadius.circular(14),
             ),
             child: TabBar(
               controller: _tabController,
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
               indicator: BoxDecoration(
-                color: primaryColor,
-                borderRadius: BorderRadius.circular(100),
+                color: const Color(0xFFC58314),
+                borderRadius: BorderRadius.circular(10),
               ),
               labelColor: Colors.white,
-              unselectedLabelColor:
-                  isDark ? Colors.white60 : const Color(0xFF7A6F62),
+              unselectedLabelColor: Colors.white60,
               labelStyle: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
               ),
               unselectedLabelStyle: GoogleFonts.inter(
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
               tabs: const [
@@ -344,9 +350,9 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.qr_code_scanner_rounded, size: 16),
+                      Icon(Icons.qr_code_scanner_rounded, size: 18),
                       SizedBox(width: 8),
-                      Text("Scan Code"),
+                      Text("Scan QR"),
                     ],
                   ),
                 ),
@@ -354,7 +360,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.qr_code_2_rounded, size: 16),
+                      Icon(Icons.qr_code_2_rounded, size: 18),
                       SizedBox(width: 8),
                       Text("My QR Code"),
                     ],

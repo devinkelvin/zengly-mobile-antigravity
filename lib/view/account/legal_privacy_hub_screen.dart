@@ -215,11 +215,7 @@ class LegalPrivacyHubScreen extends StatelessWidget {
               title: "Transaction Disputes & Issues",
               subTitle: "Report a debited transfer, missing token, or billing issue",
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const TransactionDisputeScreen(),
-                  ),
-                );
+                TransactionDisputeScreen.show(context);
               },
             ),
             AccountListTile(

@@ -12,14 +12,26 @@ import 'electricity_vm.dart';
 import 'widgets/widgets.dart';
 
 class ElectricityConfirmationScreen extends ConsumerWidget {
-  const ElectricityConfirmationScreen({super.key});
+  final String? meterNumber;
+  final double? amount;
+  final String? meterType;
+
+  const ElectricityConfirmationScreen({
+    super.key,
+    this.meterNumber,
+    this.amount,
+    this.meterType,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final vm = ref.watch(electricityVm);
-    final totalAmount =
-        (double.tryParse(vm.amount.replaceAll(',', '')) ?? 0) + vm.fee;
+    final effectiveAmount = amount ??
+        (double.tryParse(vm.amount.replaceAll(',', '')) ?? 10000.0);
+    final totalAmount = effectiveAmount + vm.fee;
+    final effectiveMeter = meterNumber ?? vm.meterNumber;
+    final effectiveType = meterType ?? (vm.selectedElectricityType == ElectricityType.prepaid ? "Prepaid" : "Postpaid");
 
     return Scaffold(
       backgroundColor:

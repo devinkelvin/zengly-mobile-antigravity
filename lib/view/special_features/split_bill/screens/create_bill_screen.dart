@@ -90,24 +90,34 @@ class _CreateBillScreenState extends ConsumerState<CreateBillScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF14120E),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          icon: Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 20,
-            color: Theme.of(context).colorScheme.onSurface,
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF25231F),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
           ),
         ),
         title: Text(
           "Split Bill",
-          style: GoogleFonts.raleway(
+          style: GoogleFonts.inter(
             fontWeight: FontWeight.w700,
-            fontSize: 20,
-            letterSpacing: 0,
+            fontSize: 18,
+            color: Colors.white,
           ),
         ),
         actions: const [

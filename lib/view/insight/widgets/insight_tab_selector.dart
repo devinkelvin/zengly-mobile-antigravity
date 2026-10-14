@@ -35,15 +35,14 @@ class InsightTabSelector extends StatelessWidget {
                   onTap: () => onChanged(value),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
+                      horizontal: 16,
+                      vertical: 9,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          isSelected
-                              ? Color(0xFF171717)
-                              : Colors.transparent,
-                      borderRadius: BorderRadius.circular(20),
+                      color: isSelected
+                          ? const Color(0xFFC58314)
+                          : const Color(0xFF22201D),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -51,17 +50,13 @@ class InsightTabSelector extends StatelessWidget {
                         Text(
                           label,
                           style: GoogleFonts.inter(
-                            fontSize: 15,
-                            fontWeight:
-                                isSelected
-                                    ? FontWeight.w700
-                                    : FontWeight.w500,
-                            color:
-                                isSelected
-                                    ? Colors.white
-                                    : Theme.of(
-                                      context,
-                                    ).colorScheme.onSurface,
+                            fontSize: 14,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? Colors.white
+                                : Colors.white60,
                           ),
                         ),
                         if (hasDot) ...[

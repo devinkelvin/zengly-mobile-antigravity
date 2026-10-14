@@ -16,6 +16,10 @@ import '../../widgets/widgets.dart';
 import 'account_vm.dart';
 import 'about_zengly_screen.dart';
 import 'legal_privacy_hub_screen.dart';
+import 'security_screen.dart';
+import 'support_screen.dart';
+import 'transaction_limits_screen.dart';
+import 'report_bug_screen.dart';
 import 'widgets/widgets.dart';
 
 class AccountScreen extends ConsumerStatefulWidget {
@@ -414,13 +418,25 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               icon: AppImages.transaction,
               title: l10n.transactionLimit,
               subTitle: l10n.viewAccountTransactionLimits,
-              onPressed: () => AppOverlays.transactionLimitsSheet(context: context),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const TransactionLimitsScreen(),
+                  ),
+                );
+              },
             ),
             AccountListTile(
               icon: AppImages.security,
               title: l10n.security,
               subTitle: l10n.managePasswordAndPin,
-              onPressed: () => AppOverlays.securitySettingsSheet(context: context),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SecurityScreen(),
+                  ),
+                );
+              },
             ),
             AccountListTile(
               iconData: Icons.brightness_6_outlined,
@@ -432,13 +448,25 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
               icon: AppImages.support,
               title: l10n.support,
               subTitle: l10n.talkWithCustomerService,
-              onPressed: () => AppOverlays.supportHelpSheet(context: context),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SupportScreen(),
+                  ),
+                );
+              },
             ),
             AccountListTile(
               icon: AppImages.bug,
               title: l10n.reportABug,
               subTitle: l10n.helpMakeUsBetter,
-              onPressed: () => AppOverlays.reportBugSheet(context: context),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const ReportBugScreen(),
+                  ),
+                );
+              },
             ),
             AccountListTile(
               iconData: Icons.gavel_outlined,

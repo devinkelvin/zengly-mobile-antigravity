@@ -21,22 +21,36 @@ class _InsightScreenState extends ConsumerState<InsightScreen> {
     final vm = ref.watch(insightVm);
 
     return Scaffold(
+      backgroundColor: const Color(0xFF14120E),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => ref.read(dashboardVm).switchPage(0),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => ref.read(dashboardVm).switchPage(0),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF25231F),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
         ),
         title: Text(
           "AI Insights",
-          style: GoogleFonts.raleway(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            letterSpacing: 0,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: Colors.white,
           ),
         ),
+        centerTitle: false,
       ),
       body: Padding(
         padding: AppDimensions.viewPadding,

@@ -11,6 +11,7 @@ import 'package:toastification/toastification.dart';
 import '../../data/data.dart';
 import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
+import '../support/transaction_dispute_screen.dart';
 import 'widgets/widgets.dart';
 
 class TransferReceiptScreen extends ConsumerStatefulWidget {
@@ -43,12 +44,10 @@ class _TransferReceiptScreenState extends ConsumerState<TransferReceiptScreen> {
   }
 
   void _reportIssue() {
-    context.pushNamed(
-      AppRouter.transactionDispute,
-      extra: {
-        'ref': widget.transfer.transactionReference,
-        'amount': widget.transfer.amount,
-      },
+    TransactionDisputeScreen.show(
+      context,
+      preselectedRef: widget.transfer.transactionReference,
+      preselectedAmount: "₦${widget.transfer.amount}",
     );
   }
 
