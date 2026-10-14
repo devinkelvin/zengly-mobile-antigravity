@@ -37,8 +37,9 @@ class _ElectricityScreenState extends ConsumerState<ElectricityScreen> {
             color: textPrimary,
           ),
         ),
+        titleSpacing: 0,
         title: Text(
-          "Buy Electricity",
+          "Electricity",
           style: GoogleFonts.raleway(
             fontSize: 18,
             fontWeight: FontWeight.w700,

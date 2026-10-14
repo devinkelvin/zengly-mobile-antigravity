@@ -276,37 +276,40 @@ class _PostpaidBodyState extends ConsumerState<PostpaidBody> {
         const SizedBox(height: 24),
 
         // Continue Button
-        AppButton.primary(
-          onPressed: () {
-            if (_meterNumberController.text.trim().isEmpty) {
-              AppOverlays.showToast(
-                context: context,
-                message: "Enter your postpaid account number",
-                toastType: ToastificationType.error,
-              );
-              return;
-            }
-            if (_amountController.text.trim().isEmpty) {
-              AppOverlays.showToast(
-                context: context,
-                message: "Enter an amount to settle",
-                toastType: ToastificationType.error,
-              );
-              return;
-            }
-
-            ref.read(electricityVm).setTransactionDetails(
-                  disco: _selectedDisco,
-                  meterNumber: _meterNumberController.text,
-                  amount: _amountController.text,
-                  customerName: "Kelvin Ekuhoho",
-                  address: "14 Admiralty Way, Lekki Phase 1, Lagos",
-                  type: ElectricityType.postpaid,
+        SizedBox(
+          width: double.infinity,
+          child: AppButton.primary(
+            onPressed: () {
+              if (_meterNumberController.text.trim().isEmpty) {
+                AppOverlays.showToast(
+                  context: context,
+                  message: "Enter your postpaid account number",
+                  toastType: ToastificationType.error,
                 );
+                return;
+              }
+              if (_amountController.text.trim().isEmpty) {
+                AppOverlays.showToast(
+                  context: context,
+                  message: "Enter an amount to settle",
+                  toastType: ToastificationType.error,
+                );
+                return;
+              }
 
-            context.pushNamed(AppRouter.electricityConfirmation);
-          },
-          actionText: "Settle Postpaid Bill",
+              ref.read(electricityVm).setTransactionDetails(
+                    disco: _selectedDisco,
+                    meterNumber: _meterNumberController.text,
+                    amount: _amountController.text,
+                    customerName: "Kelvin Ekuhoho",
+                    address: "14 Admiralty Way, Lekki Phase 1, Lagos",
+                    type: ElectricityType.postpaid,
+                  );
+
+              context.pushNamed(AppRouter.electricityConfirmation);
+            },
+            actionText: "Settle Postpaid Bill",
+          ),
         ),
         const SizedBox(height: 16),
       ],
