@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../legal/legal_document_viewer_screen.dart';
 import '../legal/models/legal_doc_model.dart';
 import '../legal/widgets/terms_of_use_bottom_sheet.dart';
+import 'legal_privacy_hub_screen.dart';
 
 class AboutZenglyScreen extends StatelessWidget {
   const AboutZenglyScreen({super.key});
@@ -155,10 +156,18 @@ class AboutZenglyScreen extends StatelessWidget {
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                     leading: Icon(Icons.article_outlined, size: 20, color: primaryColor),
-                    title: Text("Term of use", style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600, color: textPrimary)),
+                    title: Text("Terms of Use", style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600, color: textPrimary)),
                     subtitle: Text("Wallet funds, liabilities & responsibilities", style: GoogleFonts.inter(fontSize: 11.5, color: textSecondary)),
                     trailing: const Icon(Icons.chevron_right, size: 18),
-                    onTap: () => TermsOfUseBottomSheet.show(context),
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => LegalDocumentViewerScreen(
+                            document: LegalRepository.termsOfUse,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   Divider(height: 12, color: borderColor),
                   ListTile(
@@ -195,6 +204,35 @@ class AboutZenglyScreen extends StatelessWidget {
                         ),
                       );
                     },
+                  ),
+                  Divider(height: 14, color: borderColor),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LegalPrivacyHubScreen(),
+                        ),
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(10),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "View All Legal Agreements & Disclosures",
+                            style: GoogleFonts.inter(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: primaryColor,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.arrow_forward_rounded, size: 14, color: primaryColor),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

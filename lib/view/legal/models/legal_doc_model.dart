@@ -38,6 +38,49 @@ class LegalRepository {
   static const String privacyContact = "privacy@zengly.com";
   static const String supportContact = "support@zengly.com";
 
+  static LegalDoc get termsOfUse => const LegalDoc(
+        id: "terms_of_use",
+        title: "Terms of Use",
+        subtitle: "Wallet funds, reversal rules, liability & platform responsibilities",
+        effectiveDate: "November 1, 2026",
+        lastUpdatedDate: "October 14, 2026",
+        version: "v1.0.0-MVP",
+        operatorEntity: operatorName,
+        sections: [
+          LegalDocSection(
+            title: "1. Wallet Funds and Usage",
+            content:
+                "By creating a wallet within this application, you acknowledge and agree that all funds deposited into the wallet are strictly intended for use within the platform. Such funds shall not be withdrawn, transferred, or otherwise utilized outside the app, whether electronically, physically, or by any other means. The wallet is intended solely as a medium to facilitate transactions, purchases, or services available through the app.",
+          ),
+          LegalDocSection(
+            title: "2. Failed or Reversed Transactions",
+            content:
+                "In the event that a debit is processed on a payment card or other linked financial instrument and such transaction fails or is declined, the amount in question shall be automatically credited back to your wallet. The platform shall not be held liable for any delay or failure in the reversal of funds due to circumstances beyond its reasonable control, including banking system delays.",
+          ),
+          LegalDocSection(
+            title: "3. Limitation of Liability",
+            content:
+                "The wallet, its operation, and the funds therein are provided on an “as is” basis. The platform disclaims any liability for indirect, incidental, or consequential losses arising from wallet usage, including but not limited to failed transactions, technical errors, or unauthorized access, except as expressly provided by law.",
+          ),
+          LegalDocSection(
+            title: "4. User Responsibilities & Security",
+            content:
+                "You agree to maintain the confidentiality of your wallet credentials, Transaction PIN, and biometric access. You shall not permit any third party to access or use your wallet without explicit authorization. You are solely responsible for all activity occurring under your account. The platform reserves the right to suspend, restrict, or terminate wallet access in cases of suspected fraud, misuse, or breach of these terms.",
+          ),
+          LegalDocSection(
+            title: "5. Digital Gifting & Vaniti Interaction",
+            content:
+                "Funds utilized for Vaniti cash spraying, gifts, or event tipping are debited immediately and irrevocably from your active balance upon confirmation of your Transaction PIN or biometric approval. The platform is not responsible for misdirected gifts or spray transfers resulting from user input errors.",
+          ),
+          LegalDocSection(
+            title: "6. Regulatory Review Notice",
+            content:
+                "[LEGAL REVIEW REQUIRED]\nThis terms document is binding for all active wallet operations. Final formal updates are subject to periodic audit by Lynexa Innovations Ltd. Legal Counsel and our licensed banking partners.",
+            isDraftNotice: true,
+          ),
+        ],
+      );
+
   static LegalDoc get termsOfService => const LegalDoc(
         id: "terms",
         title: "Terms of Service",

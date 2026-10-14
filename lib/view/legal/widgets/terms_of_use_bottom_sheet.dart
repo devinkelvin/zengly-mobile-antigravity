@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../legal_document_viewer_screen.dart';
+import '../models/legal_doc_model.dart';
+
 class TermsOfUseBottomSheet extends StatelessWidget {
   final VoidCallback? onAccept;
 
@@ -44,7 +47,7 @@ class TermsOfUseBottomSheet extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          // Header: Close 'X' button on left, centered "Term of use"
+          // Header: Close 'X' button on left, centered "Terms of Use"
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Stack(
@@ -68,7 +71,7 @@ class TermsOfUseBottomSheet extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "Term of use",
+                  "Terms of Use",
                   style: GoogleFonts.raleway(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
@@ -120,13 +123,37 @@ class TermsOfUseBottomSheet extends StatelessWidget {
                     textPrimary: textPrimary,
                     textSecondary: textSecondary,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  Center(
+                    child: TextButton.icon(
+                      icon: const Icon(Icons.open_in_new_rounded, size: 16, color: Color(0xFFB57510)),
+                      label: Text(
+                        "Open Full Legal Document",
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFFB57510),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => LegalDocumentViewerScreen(
+                              document: LegalRepository.termsOfUse,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                 ],
               ),
             ),
           ),
 
-          // Sticky Bottom Red Button
+          // Sticky Bottom Solid Amber Button
           Container(
             padding: EdgeInsets.fromLTRB(20, 12, 20, MediaQuery.of(context).padding.bottom + 16),
             decoration: BoxDecoration(
@@ -142,7 +169,7 @@ class TermsOfUseBottomSheet extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFEF3838), // Vibrant red matching Screenshot 3
+                  backgroundColor: const Color(0xFFB57510), // Brand Amber
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
@@ -154,7 +181,7 @@ class TermsOfUseBottomSheet extends StatelessWidget {
                   if (onAccept != null) onAccept!();
                 },
                 child: Text(
-                  "I Accept this Terms",
+                  "I Accept These Terms",
                   style: GoogleFonts.inter(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,

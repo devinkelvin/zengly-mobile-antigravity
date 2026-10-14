@@ -77,14 +77,14 @@ class AccountListTile extends StatelessWidget {
               title,
               style:
                   isLogOut
-                      ? GoogleFonts.openSans(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
+                      ? GoogleFonts.inter(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
                         letterSpacing: 0,
                       )
                       : GoogleFonts.raleway(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
                       ),
             ),
           ),
@@ -93,7 +93,12 @@ class AccountListTile extends StatelessWidget {
                   ? null
                   : Text(
                     subTitle,
-                    style: GoogleFonts.raleway(fontSize: 10, letterSpacing: 0),
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      letterSpacing: 0,
+                      height: 1.35,
+                      color: Theme.of(context).colorScheme.scrim,
+                    ),
                   ),
           trailing:
               isBiometrics
