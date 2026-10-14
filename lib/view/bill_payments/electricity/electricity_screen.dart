@@ -20,28 +20,34 @@ class _ElectricityScreenState extends ConsumerState<ElectricityScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = ref.watch(electricityVm);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+
     return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
-       backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.onSurface,
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: textPrimary,
           ),
         ),
         title: Text(
           "Buy Electricity",
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          style: GoogleFonts.raleway(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0,
+            color: textPrimary,
           ),
         ),
         centerTitle: false,
-        actions: [BalanceWidget()],
+        actions: const [BalanceWidget()],
       ),
       body: SingleChildScrollView(
         padding: AppDimensions.viewPadding,

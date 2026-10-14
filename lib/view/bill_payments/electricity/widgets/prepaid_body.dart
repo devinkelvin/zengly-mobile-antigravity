@@ -329,40 +329,37 @@ class _PrepaidBodyState extends ConsumerState<PrepaidBody> {
         const SizedBox(height: 24),
 
         // Continue Button
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            onPressed: () {
-              if (_meterNumberController.text.trim().isEmpty) {
-                AppOverlays.showToast(
-                  context: context,
-                  message: "Please enter your meter number",
-                  toastType: ToastificationType.error,
-                );
-                return;
-              }
-              if (_amountController.text.trim().isEmpty) {
-                AppOverlays.showToast(
-                  context: context,
-                  message: "Please enter a recharge amount",
-                  toastType: ToastificationType.error,
-                );
-                return;
-              }
+        AppButton.primary(
+          onPressed: () {
+            if (_meterNumberController.text.trim().isEmpty) {
+              AppOverlays.showToast(
+                context: context,
+                message: "Please enter your meter number",
+                toastType: ToastificationType.error,
+              );
+              return;
+            }
+            if (_amountController.text.trim().isEmpty) {
+              AppOverlays.showToast(
+                context: context,
+                message: "Please enter a recharge amount",
+                toastType: ToastificationType.error,
+              );
+              return;
+            }
 
-              ref.read(electricityVm).setTransactionDetails(
-                    disco: _selectedDisco,
-                    meterNumber: _meterNumberController.text,
-                    amount: _amountController.text,
-                    customerName: "Kelvin Ekuhoho",
-                    address: "14 Admiralty Way, Lekki Phase 1, Lagos",
-                    type: ElectricityType.prepaid,
-                  );
+            ref.read(electricityVm).setTransactionDetails(
+                  disco: _selectedDisco,
+                  meterNumber: _meterNumberController.text,
+                  amount: _amountController.text,
+                  customerName: "Kelvin Ekuhoho",
+                  address: "14 Admiralty Way, Lekki Phase 1, Lagos",
+                  type: ElectricityType.prepaid,
+                );
 
-              context.pushNamed(AppRouter.electricityConfirmation);
-            },
-            actionText: "Continue to Payment",
-          ),
+            context.pushNamed(AppRouter.electricityConfirmation);
+          },
+          actionText: "Continue to Payment",
         ),
         const SizedBox(height: 16),
       ],
