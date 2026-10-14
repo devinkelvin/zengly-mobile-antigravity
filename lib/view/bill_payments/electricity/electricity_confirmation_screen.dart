@@ -190,7 +190,11 @@ class ElectricityConfirmationScreen extends ConsumerWidget {
               width: double.infinity,
               child: AppButton(
                 onPressed: () async {
-                  final pin = await context.push(AppRouter.enterTransactionPin);
+                  final pin = await TransactionPinBottomSheet.show(
+                    context,
+                    title: "Authorize Electricity Recharge",
+                    amountSummary: "₦${NumberFormat("#,##0.00").format(totalAmount)} • ${vm.selectedDisco}",
+                  );
                   if (pin == null || !context.mounted) return;
 
                   AppOverlays.showLoadingDialog(context: context);

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../data/data.dart';
 import '../../utils/utils.dart';
@@ -155,23 +156,67 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       ),
                       const SizedBox(width: 12),
                     ],
-                    Text(
-                      "Transaction History",
-                      style: GoogleFonts.raleway(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
+                    Expanded(
+                      child: Text(
+                        "Transaction History",
+                        style: GoogleFonts.raleway(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () {
+                        AppOverlays.showToast(
+                          context: context,
+                          message: "Account statement exported to your email",
+                          toastType: ToastificationType.success,
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFB57510).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(
+                            color: const Color(0xFFB57510).withValues(alpha: 0.25),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.download_rounded,
+                              size: 15,
+                              color: Color(0xFFB57510),
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              "Statement",
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFFB57510),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 HistorySearchBar(
                   onChanged: (value) => setState(() => _query = value),
                   hasActiveFilters: _filter?.hasActiveFilters ?? false,
                   onFilterChanged: (result) => setState(() => _filter = result),
                 ),
                 if (_filter?.hasActiveFilters ?? false) ...[
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -194,17 +239,71 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                     ],
                   ),
                 ],
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 if (_filteredTransactions.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Text(
-                      "No transactions found",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.scrim,
-                      ),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? const Color(0xFF211D16)
+                          : Theme.of(context).colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 56,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: const Color(0xFFB57510).withValues(alpha: 0.15),
+                          ),
+                          child: const Icon(
+                            Icons.receipt_long_rounded,
+                            size: 28,
+                            color: Color(0xFFB57510),
+                          ),
+                        ),
+                        const SizedBox(height: 14),
+                        Text(
+                          "No transactions found",
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "Try adjusting your search terms or active filters",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(
+                            fontSize: 12.5,
+                            color: Theme.of(context).colorScheme.scrim,
+                          ),
+                        ),
+                        if ((_filter?.hasActiveFilters ?? false) || _query.isNotEmpty) ...[
+                          const SizedBox(height: 16),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _filter = null;
+                                _query = "";
+                              });
+                            },
+                            child: Text(
+                              "Reset Filters",
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFFB57510),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   )
                 else
@@ -244,35 +343,33 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                       },
                     ),
                   ),
-                SizedBox(height: 8),
+                const SizedBox(height: 12),
                 if ((_filter?.hasActiveFilters ?? false) || _query.isNotEmpty)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.outlineVariant,
+                      color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      "You've reached the end",
+                      "All matching transactions displayed",
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
-                        fontSize: 14,
+                        fontSize: 12.5,
                         fontWeight: FontWeight.w500,
                         color: Theme.of(context).colorScheme.scrim,
                       ),
                     ),
                   )
                 else
-                  SizedBox(
-                    width: double.infinity,
-                    child: GestureDetector(
-                      onTap: () {},
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       child: Text(
-                        "Load More Transactions",
-                        textAlign: TextAlign.center,
+                        "Showing recent 30-day activity",
                         style: GoogleFonts.inter(
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.scrim,
                         ),

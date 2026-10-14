@@ -39,11 +39,24 @@ class _GiftCardScreenState extends ConsumerState<GiftCardScreen> {
 
   double get _totalNaira => _selectedDenomination * _quantity * _exchangeRate;
 
-  void _showPurchaseConfirmation() {
+  void _showPurchaseConfirmation() async {
+    final pin = await TransactionPinBottomSheet.show(
+      context,
+      title: "Authorize Gift Card Purchase",
+      amountSummary: "₦${NumberFormat('#,##0.00').format(_totalNaira)} • $_selectedBrand",
+    );
+    if (pin == null || !mounted) return;
+
+    AppOverlays.showLoadingDialog(context: context);
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (!mounted) return;
+    context.pop(); // close loader
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
     final generatedCode = "ZG-${_selectedBrand.substring(0, 3).toUpperCase()}-9482-1049-5512";
 
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

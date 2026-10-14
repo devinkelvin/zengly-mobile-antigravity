@@ -36,35 +36,7 @@ class PreSpecialFeaturesScreen extends ConsumerWidget {
           style: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 20),
         ),
         actions: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? const Color(0xFF26211A)
-                  : Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Balance ",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.scrim,
-                  ),
-                ),
-                Text(
-                  "₦345,778.90",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          const BalanceWidget(),
           IconButton(
             onPressed: () => AppOverlays.vanitiIntroDialog(
               context: context,
@@ -84,216 +56,217 @@ class PreSpecialFeaturesScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Card 1: Spray Money (Deep Indigo Gradient)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(22),
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF2D2575), Color(0xFF1E1A56)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+            // Card 1: Spray Money (Deep Indigo Luxury Gradient)
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF2E2478), Color(0xFF191448)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: -16,
-                      bottom: -16,
-                      child: Opacity(
-                        opacity: 0.85,
-                        child: Image.asset(
-                          AppImages.money,
-                          height: 140,
-                          fit: BoxFit.contain,
-                        ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF2E2478).withValues(alpha: 0.35),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  width: 1.2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: -10,
+                    bottom: -10,
+                    child: Opacity(
+                      opacity: 0.9,
+                      child: Image.asset(
+                        AppImages.money,
+                        height: 145,
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 22, 110, 22),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "SPRAY MONEY",
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.2,
-                              color: Colors.white.withValues(alpha: 0.7),
-                            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 22, 120, 22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(100),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "Make it rain, digitally",
-                            style: GoogleFonts.inter(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.3,
-                              height: 1.2,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "Celebrate people and moments by spraying money in real time. Connect using QR, NFC, or username and send money with style.",
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              height: 1.4,
-                              letterSpacing: 0,
-                              color: Colors.white.withValues(alpha: 0.75),
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                          GestureDetector(
-                            onTap:
-                                () => context.pushNamed(AppRouter.sprayCash),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 22,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFB300),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Text(
-                                "Start Spraying",
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text("🎉", style: TextStyle(fontSize: 11)),
+                              const SizedBox(width: 4),
+                              Text(
+                                "LIVE CELEBRATION",
                                 style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.8,
+                                  color: Colors.white,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Make It Rain, Digitally",
+                          style: GoogleFonts.inter(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                            height: 1.2,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Celebrate real moments by spraying money live with QR, NFC, or username with customized currency styles.",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: Colors.white.withValues(alpha: 0.82),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        AppButton.compact(
+                          onPressed: () => context.pushNamed(AppRouter.sprayCash),
+                          actionText: "Start Spraying",
+                          icon: Icons.celebration_rounded,
+                          backgroundColor: const Color(0xFFFFB300),
+                          textColor: Colors.black,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 16),
 
-            // Card 2: Host An Event (Golden/Champagne Card with Vault Safe)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(22),
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFF9D896), Color(0xFFECC06E)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+            // Card 2: Host An Event (Golden Champagne Card with Vault Safe)
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFDEAC4), Color(0xFFECC272)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      right: -5,
-                      bottom: -5,
-                      child: Image.asset(
-                        AppImages.vaultSafe,
-                        height: 145,
-                        width: 145,
-                        fit: BoxFit.contain,
-                      ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFECC272).withValues(alpha: 0.35),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+                border: Border.all(
+                  color: const Color(0xFFB57510).withValues(alpha: 0.3),
+                  width: 1.2,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: -5,
+                    bottom: -5,
+                    child: Image.asset(
+                      AppImages.vaultSafe,
+                      height: 145,
+                      width: 145,
+                      fit: BoxFit.contain,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 22, 130, 22),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "HOST AN EVENT",
-                            style: GoogleFonts.inter(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.2,
-                              color: const Color(0xFF5A4416),
-                            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 22, 125, 22),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF5A4416).withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(100),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "Own the moment",
-                            style: GoogleFonts.inter(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: -0.3,
-                              height: 1.2,
-                              color: const Color(0xFF231908),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            "Create your event, share your QR, invite people to spray you, and watch the love roll in live.",
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              height: 1.4,
-                              letterSpacing: 0,
-                              color: const Color(0xFF4A3815),
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                          GestureDetector(
-                            onTap: () => VanitiHostEventSheet.show(context),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 22,
-                                vertical: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1B1917),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Text(
-                                "Host My Event",
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text("👑", style: TextStyle(fontSize: 11)),
+                              const SizedBox(width: 4),
+                              Text(
+                                "VIP EVENT HOSTING",
                                 style: GoogleFonts.inter(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.8,
+                                  color: const Color(0xFF47340D),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Own the Moment",
+                          style: GoogleFonts.inter(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.3,
+                            height: 1.2,
+                            color: const Color(0xFF221706),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Create your event, generate your unique QR code, invite guests to spray you, and track cash gifts live.",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: const Color(0xFF4A3815),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        AppButton.compact(
+                          onPressed: () => VanitiHostEventSheet.show(context),
+                          actionText: "Host My Event",
+                          icon: Icons.qr_code_2_rounded,
+                          backgroundColor: const Color(0xFF1E1810),
+                          textColor: Colors.white,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),
 
             // Top Sprayers Section
             TopSprayersSection(onSeeMore: () => VanitiLeaderboardSheet.show(context)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
-            // See More Sprayers button
-            GestureDetector(
-              onTap: () => VanitiLeaderboardSheet.show(context),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? const Color(0xFF26211B)
-                      : Theme.of(context).colorScheme.outlineVariant,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: Text(
-                  "See More Sprayers",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                ),
+            // See More Sprayers standardized button
+            SizedBox(
+              width: double.infinity,
+              child: AppButton.secondary(
+                onPressed: () => VanitiLeaderboardSheet.show(context),
+                actionText: "See Live Leaderboard",
+                icon: Icons.leaderboard_rounded,
               ),
             ),
             const SizedBox(height: 24),

@@ -17,3 +17,5 @@ export './appp_error_widget.dart';
 export './rotating_coin_icon.dart';
 export './kyc_prompt_card.dart';
 export './compact_calendar_sheet.dart';
+export './transaction_pin_bottom_sheet.dart';
+export '../view/bill_payments/widgets/balance_widget.dart';

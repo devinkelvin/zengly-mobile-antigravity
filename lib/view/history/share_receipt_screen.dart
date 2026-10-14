@@ -2,6 +2,7 @@ import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../data/data.dart';
 import '../../utils/utils.dart';
@@ -15,6 +16,9 @@ class ShareReceiptScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B5E4A);
     final dashColor = Theme.of(
       context,
     ).colorScheme.onSurface.withValues(alpha: 0.16);
@@ -33,17 +37,29 @@ class ShareReceiptScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Share Receipt",
+          "Official Receipt",
           style: GoogleFonts.raleway(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
             fontSize: 18,
             letterSpacing: 0,
           ),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              AppOverlays.showToast(
+                context: context,
+                message: "Receipt shared",
+                toastType: ToastificationType.info,
+              );
+            },
+            icon: const Icon(Icons.share_outlined, size: 22),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
-      padding: AppDimensions.newViewPadding,
-
+        padding: AppDimensions.newViewPadding,
         child: Column(
           children: [
             Stack(
@@ -52,58 +68,76 @@ class ShareReceiptScreen extends StatelessWidget {
                   child: CustomPaint(
                     painter: ReceiptShapePainter(
                       context: context,
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: isDark
+                          ? const Color(0xFF221D17)
+                          : Theme.of(context).colorScheme.surfaceContainerHighest,
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24.0,
-                    vertical: 8,
+                    vertical: 16,
                   ),
                   child: Column(
                     children: [
-                      SizedBox(height: 40),
+                      const SizedBox(height: 28),
                       Row(
                         children: [
                           const _DistributionLogo(),
-                          Spacer(),
-                          Text(
-                            "Transaction Receipt",
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(100),
+                              border: Border.all(
+                                color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFF10B981),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  "Successful",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFF10B981),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      SizedBox(height: 24),
-                      Text(
-                        "Successful",
-                        style: GoogleFonts.inter(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 24),
                       Text(
                         receipt.amount,
                         style: GoogleFonts.inter(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w700,
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: textPrimary,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
                         receipt.date,
                         style: GoogleFonts.inter(
                           fontSize: 12,
-                          color: Colors.white.withValues(alpha: 0.72),
+                          color: textSecondary,
                         ),
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 24),
                       DottedDashedLine(
                         height: 1,
                         width: double.infinity,
@@ -112,7 +146,7 @@ class ShareReceiptScreen extends StatelessWidget {
                         dashSpace: 8,
                         dashColor: dashColor,
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       LineDetail(
                         title: "Distribution Company",
                         detail: receipt.distributionCompany,
@@ -140,7 +174,7 @@ class ShareReceiptScreen extends StatelessWidget {
                       LineDetail(title: "Token", detail: receipt.token),
                       LineDetail(title: "Cost of Unit", detail: receipt.amount),
                       LineDetail(title: "Date", detail: receipt.date),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       DottedDashedLine(
                         height: 1,
                         width: double.infinity,
@@ -149,7 +183,7 @@ class ShareReceiptScreen extends StatelessWidget {
                         dashSpace: 8,
                         dashColor: dashColor,
                       ),
-                      SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       LineDetail(
                         title: "Transaction ID",
                         detail: receipt.transactionId,
@@ -160,35 +194,47 @@ class ShareReceiptScreen extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 28),
             Row(
               children: [
                 Expanded(
                   child: AppButton(
-                    onPressed: () {},
-                    actionText: "Share as image",
+                    onPressed: () {
+                      AppOverlays.showToast(
+                        context: context,
+                        message: "Receipt saved to downloads as PDF",
+                        toastType: ToastificationType.success,
+                      );
+                    },
+                    actionText: "Download PDF",
+                    icon: Icons.picture_as_pdf_outlined,
                     fontSize: 13,
                     horizontalPadding: 10,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.outlineVariant,
-                    textColor: Theme.of(context).colorScheme.onSurface,
+                    backgroundColor: isDark
+                        ? const Color(0xFF26211B)
+                        : Theme.of(context).colorScheme.outlineVariant,
+                    textColor: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: AppButton(
-                    onPressed: () {},
-                    actionText: "Share as PDF",
+                    onPressed: () {
+                      AppOverlays.showToast(
+                        context: context,
+                        message: "Opening share options...",
+                        toastType: ToastificationType.info,
+                      );
+                    },
+                    actionText: "Share Receipt",
+                    icon: Icons.share_outlined,
                     fontSize: 13,
                     horizontalPadding: 10,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.outlineVariant,
-                    textColor: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
           ],
         ),
       ),

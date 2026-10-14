@@ -41,7 +41,7 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
   double get _totalInterest => _amount * _monthlyInterestRate * (_tenorDays / 30);
   double get _totalRepayment => _amount + _totalInterest + _processingFee;
 
-  void _submitApplication() {
+  void _submitApplication() async {
     if (!_agreedToTerms) {
       AppOverlays.showToast(
         context: context,
@@ -53,7 +53,19 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
     }
 
     final currencyFormat = NumberFormat.currency(symbol: "₦", decimalDigits: 0);
+    final pin = await TransactionPinBottomSheet.show(
+      context,
+      title: "Authorize Credit Facility",
+      amountSummary: "${currencyFormat.format(_amount)} • $_tenorDays Days",
+    );
+    if (pin == null || !mounted) return;
 
+    AppOverlays.showLoadingDialog(context: context);
+    await Future.delayed(const Duration(milliseconds: 1500));
+    if (!mounted) return;
+    context.pop(); // close loader
+
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

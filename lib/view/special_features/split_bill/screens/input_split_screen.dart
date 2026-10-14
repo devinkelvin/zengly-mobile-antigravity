@@ -157,38 +157,8 @@ class _InputSplitScreenState extends ConsumerState<InputSplitScreen> {
             letterSpacing: 0,
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Balance ",
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.scrim,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "₦345,778.90",
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+        actions: const [
+          BalanceWidget(),
         ],
       ),
       bottomNavigationBar: SafeArea(
@@ -430,38 +400,25 @@ class _InputSplitScreenState extends ConsumerState<InputSplitScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final pin = await EnterTransactionPinScreen.show(context);
-                  if (pin != null && context.mounted) {
-                    AppOverlays.showToast(
-                      context: context,
-                      title: "Split Requests Sent!",
-                      message: "Successfully created split bill and sent requests to ${_friends.length} participants.",
-                      toastType: ToastificationType.success,
-                    );
-                    context.pushReplacementNamed(AppRouter.splitBillDetailScreen);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFB57510),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                ),
-                child: Text(
-                  "Send Split Requests",
-                  style: GoogleFonts.inter(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+            AppButton.primary(
+              actionText: "Send Split Requests",
+              onPressed: () async {
+                final pin = await TransactionPinBottomSheet.show(
+                  context,
+                  title: "Authorize Split Bill",
+                  subtitle: "Enter your 4-digit PIN to dispatch split requests",
+                  amountSummary: "₦${_totalBillAmount.round()}",
+                );
+                if (pin != null && context.mounted) {
+                  AppOverlays.showToast(
+                    context: context,
+                    title: "Split Requests Sent!",
+                    message: "Successfully created split bill and sent requests to ${_friends.length} participants.",
+                    toastType: ToastificationType.success,
+                  );
+                  context.pushReplacementNamed(AppRouter.splitBillDetailScreen);
+                }
+              },
             ),
             const SizedBox(height: 24),
           ],

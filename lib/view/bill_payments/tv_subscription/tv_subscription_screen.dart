@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../data/data.dart';
 import '../../../utils/utils.dart';
@@ -432,14 +433,27 @@ class _TvSubscriptionScreenState extends ConsumerState<TvSubscriptionScreen> {
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_smartNumberController.text.trim().isEmpty) {
                     AppOverlays.showToast(
                       context: context,
                       message: "Please enter your smartcard or IUC number",
+                      toastType: ToastificationType.error,
                     );
                     return;
                   }
+                  final pin = await TransactionPinBottomSheet.show(
+                    context,
+                    title: "Authorize TV Subscription",
+                    amountSummary: "$_selectedPackage • $_selectedProviderName",
+                  );
+                  if (pin == null || !context.mounted) return;
+
+                  AppOverlays.showLoadingDialog(context: context);
+                  await Future.delayed(const Duration(milliseconds: 1500));
+                  if (!context.mounted) return;
+                  context.pop(); // close loader
+
                   _showSuccessReceipt();
                 },
                 actionText: "Renew Subscription",

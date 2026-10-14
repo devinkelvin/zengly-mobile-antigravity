@@ -589,39 +589,8 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
             color: isDark ? Colors.white : const Color(0xFF1A1A1A),
           ),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF262017) : const Color(0xFFF0EBE0),
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: const Color(0xFFB57510).withValues(alpha: 0.2),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Balance ",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: isDark ? Colors.white60 : Colors.black54,
-                  ),
-                ),
-                Text(
-                  "₦345,778.90",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        actions: const [
+          BalanceWidget(),
         ],
       ),
       body: Column(

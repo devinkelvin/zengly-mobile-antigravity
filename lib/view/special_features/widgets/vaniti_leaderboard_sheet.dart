@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/data.dart';
+import '../../../widgets/widgets.dart';
 import 'top_sprayers_section.dart';
 
 class VanitiLeaderboardSheet extends StatefulWidget {
@@ -378,25 +379,12 @@ class _VanitiLeaderboardSheetState extends State<VanitiLeaderboardSheet>
                       ],
                     ),
                   ),
-                  ElevatedButton(
+                  AppButton.compact(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      "Spray More",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                    actionText: "Spray More",
+                    icon: Icons.celebration_rounded,
                   ),
                 ],
               ),

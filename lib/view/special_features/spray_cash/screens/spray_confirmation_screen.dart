@@ -119,36 +119,8 @@ class _SprayConfirmationScreenState
             color: isDark ? Colors.white : Colors.black,
           ),
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-            decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF26211B) : const Color(0xFFE5E7EB),
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Balance ",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: isDark ? Colors.white60 : Colors.black54,
-                  ),
-                ),
-                Text(
-                  "₦345,778.90",
-                  style: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        actions: const [
+          BalanceWidget(),
         ],
       ),
       body: Column(
