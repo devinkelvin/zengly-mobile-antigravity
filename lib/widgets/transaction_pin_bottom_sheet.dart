@@ -327,25 +327,32 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Expanded(child: SizedBox(height: 48)),
-                    const SizedBox(width: 10),
-                    Expanded(child: _buildKeypadButton("0", keyBg)),
-                    const SizedBox(width: 10),
                     Expanded(
-                      child: InkWell(
-                        onTap: _onDelete,
-                        borderRadius: BorderRadius.circular(10),
-                        child: Container(
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: keyBg,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.backspace_outlined,
-                            color: Colors.white,
-                            size: 20,
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: _buildKeypadButton("0", keyBg),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: InkWell(
+                          onTap: _onDelete,
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: keyBg,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Icon(
+                              Icons.backspace_outlined,
+                              color: Colors.white,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),
@@ -363,10 +370,22 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
             width: double.infinity,
             height: 52,
             child: ElevatedButton(
-              onPressed: _pin.length == 4 && !_isLoading ? _submitPin : null,
+              onPressed: !_isLoading
+                  ? () {
+                      if (_pin.length == 4) {
+                        _submitPin();
+                      } else {
+                        HapticFeedback.heavyImpact();
+                        setState(() {
+                          _errorMessage = "Please enter 4 digits";
+                        });
+                        _triggerShake();
+                      }
+                    }
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryAmber,
-                disabledBackgroundColor: primaryAmber.withValues(alpha: 0.4),
+                disabledBackgroundColor: primaryAmber.withValues(alpha: 0.6),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -22,26 +21,39 @@ class ConfirmTransactionScreen extends ConsumerStatefulWidget {
 
 class _ConfirmTransactionScreenState
     extends ConsumerState<ConfirmTransactionScreen> {
-  String _pin = "";
+  bool _isSubmitting = false;
 
-  void _onDigit(String digit) {
-    if (_pin.length >= 4) return;
-    setState(() => _pin += digit);
-    if (_pin.length == 4) {
-      Future.delayed(const Duration(milliseconds: 200), _submit);
+  @override
+  void initState() {
+    super.initState();
+    // Automatically trigger the transaction PIN bottom sheet after review renders
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _promptTransactionPin();
+    });
+  }
+
+  Future<void> _promptTransactionPin() async {
+    final pin = await TransactionPinBottomSheet.show(
+      context,
+      title: "Enter Transaction PIN",
+      actionText: "Send Transfer",
+      amountSummary: "₦${NumberFormat("#,##0.00").format(widget.transfer.amount)}",
+    );
+
+    if (pin != null && pin.length == 4) {
+      _submit();
     }
   }
 
-  void _onDelete() {
-    if (_pin.isEmpty) return;
-    setState(() => _pin = _pin.substring(0, _pin.length - 1));
-  }
-
   Future<void> _submit() async {
+    if (_isSubmitting) return;
+    setState(() => _isSubmitting = true);
+
     AppOverlays.showLoadingDialog(context: context);
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     context.pop();
+
     final now = DateTime.now();
     final reference = "TRF${now.millisecondsSinceEpoch}";
     final t = widget.transfer;
@@ -65,163 +77,294 @@ class _ConfirmTransactionScreenState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryColor = const Color(0xFFB57510);
+    const bgColor = Color(0xFF14120E);
+    const cardColor = Color(0xFF1F1D19);
+    const dividerColor = Color(0xFF2C2822);
+    const primaryAmber = Color(0xFFB57510);
+    final currencyFormat = NumberFormat("#,##0.00");
+
+    final t = widget.transfer;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF16130E) : const Color(0xFFFAF7F2),
+      backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          onPressed: () => context.pop(),
-          color: Theme.of(context).colorScheme.onSurface,
-          icon: const Icon(Icons.close_rounded),
+        leading: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: GestureDetector(
+            onTap: () => Navigator.of(context).pop(),
+            child: Container(
+              width: 38,
+              height: 38,
+              decoration: const BoxDecoration(
+                color: Color(0xFF25231F),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+          ),
         ),
+        title: Text(
+          "Review Transfer",
+          style: GoogleFonts.inter(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: AppDimensions.viewPadding,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                "Authorize Transfer",
-                style: GoogleFonts.raleway(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 22,
-                  color: isDark ? Colors.white : const Color(0xFF1E1A14),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Transfer context summary pill
+              // Amount Highlight Card
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF262017) : const Color(0xFFEDE5D8),
-                  borderRadius: BorderRadius.circular(100),
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: primaryColor.withValues(alpha: 0.25),
+                    color: primaryAmber.withValues(alpha: 0.2),
+                    width: 1,
                   ),
                 ),
-                child: Text(
-                  "₦${NumberFormat("#,##0.00").format(widget.transfer.amount)} to ${widget.transfer.recipientName}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w600,
-                    color: isDark ? Colors.white : const Color(0xFF1E1A14),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              IntrinsicWidth(
-                child: Container(
-                  padding: const EdgeInsets.all(10.0),
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF241F18) : const Color(0xFFEBE4D8),
-                    borderRadius: const BorderRadius.all(Radius.circular(100)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: List.generate(
-                      4,
-                      (index) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                        width: 16.0,
-                        height: 16.0,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              index < _pin.length
-                                  ? Theme.of(context).colorScheme.onSurface
-                                  : Theme.of(context).colorScheme.surfaceDim,
-                        ),
+                child: Column(
+                  children: [
+                    Text(
+                      "Transfer Amount",
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.white60,
                       ),
                     ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              GestureDetector(
-                child: Text(
-                  "I forgot my PIN",
-                  style: GoogleFonts.inter(fontSize: 12, letterSpacing: 0),
-                ),
-              ),
-              SizedBox(height: 32),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    childAspectRatio: 1.2,
-                    crossAxisSpacing: 16.0,
-                    mainAxisSpacing: 16.0,
-                  ),
-                  itemCount: 12,
-                  itemBuilder: (context, index) {
-                    String buttonText;
-                    if (index < 9) {
-                      buttonText = "${index + 1}";
-                    } else if (index == 9) {
-                      buttonText = "";
-                    } else if (index == 10) {
-                      buttonText = "0";
-                    } else {
-                      buttonText = "";
-                    }
-
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.heavyImpact();
-                        if (index == 9) {
-                          _onDelete();
-                        } else if (index == 11) {
-                          if (_pin.length == 4) _submit();
-                        } else if (buttonText.isNotEmpty) {
-                          _onDigit(buttonText);
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              index == 11
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(
-                                    context,
-                                  ).colorScheme.outlineVariant,
-                        ),
-                        child: Center(
-                          child:
-                              index == 9
-                                  ? SvgPicture.asset(AppImages.deleteIcon)
-                                  : index == 11
-                                  ? SvgPicture.asset(AppImages.arrowForwardIcon)
-                                  : Text(
-                                    buttonText,
-                                    style: GoogleFonts.albertSans(
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).colorScheme.onSurface,
-                                    ),
-                                  ),
-                        ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "₦${currencyFormat.format(t.amount)}",
+                      style: GoogleFonts.inter(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: primaryAmber.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            color: primaryAmber,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            "Zero Fee Transfer",
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: primaryAmber,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Transaction Details Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Recipient Details",
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white54,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Recipient Name Row
+                    Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: primaryAmber.withValues(alpha: 0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            t.recipientName.isNotEmpty
+                                ? t.recipientName[0].toUpperCase()
+                                : "Z",
+                            style: GoogleFonts.inter(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: primaryAmber,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                t.recipientName,
+                                style: GoogleFonts.inter(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "${t.recipientBank} • ${t.recipientAccountNumber}",
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: Colors.white60,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                    const Divider(color: dividerColor, height: 1),
+                    const SizedBox(height: 16),
+
+                    _buildDetailRow("Source Account", "Zengly Main Wallet"),
+                    const SizedBox(height: 12),
+                    _buildDetailRow(
+                      "Transaction Fee",
+                      t.fee != null && t.fee! > 0
+                          ? "₦${currencyFormat.format(t.fee)}"
+                          : "₦0.00 (Free)",
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDetailRow(
+                      "Total Debit",
+                      "₦${currencyFormat.format(t.amount + (t.fee ?? 0))}",
+                      isHighlighted: true,
+                    ),
+
+                    if (t.note != null && t.note!.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      _buildDetailRow("Description / Note", t.note!),
+                    ],
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Security Guarantee Pill
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.security_rounded,
+                    color: primaryAmber,
+                    size: 16,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Protected by Zengly End-to-End Encryption",
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white54,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 32),
+
+              // Solid Amber Action Button
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: _isSubmitting ? null : _promptTransactionPin,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryAmber,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    "Send Transfer",
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, {bool isHighlighted = false}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.white60,
+          ),
+        ),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 13.5,
+            fontWeight: isHighlighted ? FontWeight.w700 : FontWeight.w600,
+            color: isHighlighted ? const Color(0xFFC58314) : Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }
