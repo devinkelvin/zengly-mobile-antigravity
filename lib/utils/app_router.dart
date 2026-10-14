@@ -80,6 +80,7 @@ class AppRouter {
   static const String ajoHub = "ajoHub";
   static const String p2pLending = "p2pLending";
   static const String voiceBanking = "voiceBanking";
+  static const String zCoins = "zCoins";
 
   static final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -539,6 +540,11 @@ class AppRouter {
             path: voiceBanking,
             name: voiceBanking,
             builder: (context, state) => const VoiceBankingScreen(),
+          ),
+          GoRoute(
+            path: zCoins,
+            name: zCoins,
+            builder: (context, state) => const ZCoinsScreen(),
           ),
         ],
       ),

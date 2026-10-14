@@ -27,6 +27,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
   late final TabController _tabController;
   SprayItem? _selectedSprayItem;
   String _selectedSendMethod = "qr";
+  String? _selectedRecipient = "@tiwa_savage";
   bool _isAutoSprayMode = false;
 
   @override
@@ -59,6 +60,355 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
     }
   }
 
+  void _showNfcRadarSheet() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1C1813) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(
+            color: isDark ? Colors.white10 : const Color(0xFFE5DECE),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white24 : Colors.black26,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: const Color(0xFFB57510).withValues(alpha: 0.15),
+                border: Border.all(
+                  color: const Color(0xFFB57510),
+                  width: 2,
+                ),
+              ),
+              child: const Icon(
+                Icons.nfc_rounded,
+                size: 38,
+                color: Color(0xFFB57510),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "NFC Radar Scanning",
+              style: GoogleFonts.raleway(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.white : const Color(0xFF1E1A14),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "Hold your phone near the recipient's phone or Vaniti band",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                color: isDark ? Colors.white60 : Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFFB57510).withValues(alpha: 0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundImage: AssetImage(AppImages.queenie),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Tiwa Savage (VIP Host)",
+                          style: GoogleFonts.inter(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 14,
+                            color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                          ),
+                        ),
+                        Text(
+                          "@tiwa_savage • Signal: Strong (0.5m)",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            color: const Color(0xFFB57510),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      setState(() {
+                        _selectedRecipient = "@tiwa_savage";
+                        _selectedSendMethod = "nfc";
+                      });
+                      AppOverlays.showToast(
+                        context: context,
+                        title: "NFC Target Paired",
+                        message: "Connected to @tiwa_savage",
+                        toastType: ToastificationType.success,
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB57510),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text("Connect", style: TextStyle(color: Colors.white, fontSize: 12)),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showContactsPickerSheet() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final contacts = [
+      {"name": "Kunle Afolayan", "handle": "@kunle_a", "avatar": AppImages.kunle},
+      {"name": "Teni Apata", "handle": "@tenientertainer", "avatar": AppImages.queenie},
+      {"name": "Burna Boy", "handle": "@burna_live", "avatar": AppImages.bella},
+      {"name": "Simi Kosoko", "handle": "@symplysimi", "avatar": AppImages.dummyPerson},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1C1813) : Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(
+            color: isDark ? Colors.white10 : const Color(0xFFE5DECE),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.black26,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              "Select from Contacts",
+              style: GoogleFonts.raleway(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: isDark ? Colors.white : const Color(0xFF1E1A14),
+              ),
+            ),
+            const SizedBox(height: 14),
+            ...contacts.map((c) => ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: CircleAvatar(
+                radius: 20,
+                backgroundImage: AssetImage(c["avatar"]!),
+              ),
+              title: Text(
+                c["name"]!,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                  color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                ),
+              ),
+              subtitle: Text(
+                c["handle"]!,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: isDark ? Colors.white60 : Colors.black54,
+                ),
+              ),
+              trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+              onTap: () {
+                Navigator.pop(ctx);
+                setState(() {
+                  _selectedRecipient = c["handle"];
+                  _selectedSendMethod = "contacts";
+                });
+                AppOverlays.showToast(
+                  context: context,
+                  title: "Contact Selected",
+                  message: "Selected ${c['handle']}",
+                  toastType: ToastificationType.success,
+                );
+              },
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showUsernameLookupSheet() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final controller = TextEditingController(text: _selectedRecipient ?? "");
+    final suggestions = ["@davido", "@wizkidayo", "@burnaboy", "@asakemusic", "@tiwasavage"];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1C1813) : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border.all(
+              color: isDark ? Colors.white10 : const Color(0xFFE5DECE),
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white24 : Colors.black26,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "Enter Zengly @Username",
+                style: GoogleFonts.raleway(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: const Color(0xFFB57510).withValues(alpha: 0.3),
+                  ),
+                ),
+                child: TextField(
+                  controller: controller,
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "e.g. @asakemusic",
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "Suggested Stars & Ballers:",
+                style: GoogleFonts.inter(fontSize: 12, color: isDark ? Colors.white54 : Colors.black54),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: suggestions.map((s) => InkWell(
+                  onTap: () {
+                    controller.text = s;
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF28231A) : const Color(0xFFF0EBE0),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      s,
+                      style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFFB57510)),
+                    ),
+                  ),
+                )).toList(),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final target = controller.text.trim();
+                    if (target.isNotEmpty) {
+                      Navigator.pop(ctx);
+                      setState(() {
+                        _selectedRecipient = target.startsWith("@") ? target : "@$target";
+                        _selectedSendMethod = "username";
+                      });
+                      AppOverlays.showToast(
+                        context: context,
+                        title: "Target Confirmed",
+                        message: "Selected $_selectedRecipient",
+                        toastType: ToastificationType.success,
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFB57510),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: const Text("Confirm Recipient", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _onStartSpray() async {
     final pin = await EnterTransactionPinScreen.show(context);
     if (pin == null || !mounted) return;
@@ -77,7 +427,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF161410) : const Color(0xFFF9FAFB),
+      backgroundColor: isDark ? const Color(0xFF181511) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -86,7 +436,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
           onPressed: () => context.pop(),
           icon: Icon(
             Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black,
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
           ),
         ),
         title: Text(
@@ -94,7 +444,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
           style: GoogleFonts.raleway(
             fontWeight: FontWeight.w700,
             fontSize: 20,
-            color: isDark ? Colors.white : Colors.black,
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
           ),
         ),
         actions: [
@@ -102,8 +452,11 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF26211B) : const Color(0xFFE5E7EB),
+              color: isDark ? const Color(0xFF262017) : const Color(0xFFF0EBE0),
               borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: const Color(0xFFB57510).withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -121,7 +474,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
                   style: GoogleFonts.inter(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: isDark ? Colors.white : Colors.black,
+                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                   ),
                 ),
               ],
@@ -137,13 +490,13 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
               height: 44,
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF26211B) : const Color(0xFFE5E7EB),
+                color: isDark ? const Color(0xFF262017) : const Color(0xFFEBE4D8),
                 borderRadius: BorderRadius.circular(100),
               ),
               child: TabBar(
                 controller: _tabController,
                 indicator: BoxDecoration(
-                  color: isDark ? const Color(0xFF3D3327) : Colors.white,
+                  color: isDark ? const Color(0xFF382E20) : Colors.white,
                   borderRadius: BorderRadius.circular(100),
                 ),
                 indicatorSize: TabBarIndicatorSize.tab,
@@ -178,8 +531,8 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
 
   Widget _buildBallerMode(BuildContext context, bool isDark) {
     final vm = ref.watch(sprayCashVm);
-    final cardBg = isDark ? const Color(0xFF26211B) : Colors.white;
-    final cardBorder = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black12;
+    final cardBg = isDark ? const Color(0xFF241F18) : Colors.white;
+    final cardBorder = isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE5DEC8);
 
     final currencyLabel = vm.selectedCurrencyType != null
         ? "${vm.selectedCurrencyType!.name} (${vm.selectedCurrencyType!.symbol})"
@@ -263,8 +616,8 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
             "Send to",
             style: GoogleFonts.inter(
               fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: isDark ? Colors.white60 : Colors.black54,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.white70 : const Color(0xFF6B5E4A),
             ),
           ),
           const SizedBox(height: 12),
@@ -281,6 +634,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
                   setState(() => _selectedSendMethod = "qr");
                   final result = await context.push<String>(AppRouter.qrScanner);
                   if (result != null && mounted) {
+                    setState(() => _selectedRecipient = result);
                     _onStartSpray();
                   }
                 },
@@ -291,7 +645,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
                 label: "NFC Tap",
                 icon: Icons.nfc,
                 isDark: isDark,
-                onTap: () => setState(() => _selectedSendMethod = "nfc"),
+                onTap: _showNfcRadarSheet,
               ),
               const SizedBox(width: 10),
               _buildSendOption(
@@ -299,7 +653,7 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
                 label: "Contacts",
                 icon: Icons.people_outline,
                 isDark: isDark,
-                onTap: () => setState(() => _selectedSendMethod = "contacts"),
+                onTap: _showContactsPickerSheet,
               ),
               const SizedBox(width: 10),
               _buildSendOption(
@@ -307,11 +661,79 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
                 label: "Username",
                 icon: Icons.alternate_email,
                 isDark: isDark,
-                onTap: () => setState(() => _selectedSendMethod = "username"),
+                onTap: _showUsernameLookupSheet,
               ),
             ],
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 18),
+
+          // Selected Recipient Status Card
+          if (_selectedRecipient != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: const Color(0xFFB57510).withValues(alpha: 0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFB57510),
+                    ),
+                    child: const Icon(Icons.person_rounded, color: Colors.white, size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Target Recipient",
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.white60 : Colors.black54,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            const Icon(Icons.verified, size: 13, color: Color(0xFFB57510)),
+                          ],
+                        ),
+                        Text(
+                          _selectedRecipient!,
+                          style: GoogleFonts.inter(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: _showUsernameLookupSheet,
+                    child: Text(
+                      "Change",
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFFB57510),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 20),
 
           // Auto Spray Mode Row
           Row(

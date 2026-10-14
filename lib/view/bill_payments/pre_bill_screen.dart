@@ -43,7 +43,7 @@ class _PreBillScreenState extends ConsumerState<PreBillScreen> {
             title: "Send Money",
             subtitle: "Instant Zengly & interbank transfers",
             iconSvg: AppImages.sendNew,
-            onTap: () => AppOverlays.transferOptionsSheet(context: context),
+            onTap: () => context.pushNamed(AppRouter.preTransferScreen),
           ),
           _MenuItemData(
             title: "Split Bill",

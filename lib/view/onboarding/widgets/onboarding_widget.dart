@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../data/data.dart';
 import '../../../utils/utils.dart';
-import '../../../widgets/widgets.dart';
 
 class OnboardingWidget extends StatelessWidget {
   final OnboardingModel model;
@@ -13,70 +11,82 @@ class OnboardingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: model.backgroundColor,
-      child: Padding(
-        padding: AppDimensions.horizontalPadding,
-        child: Stack(
-          children: [
-            Column(
-              children: [
-                SizedBox(height: Responsive.height(context) * 0.375),
-                Image.asset(model.image),
-                Spacer(),
-              ],
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+
+    return Padding(
+      padding: AppDimensions.horizontalPadding,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Spacer(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: primary.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: primary.withValues(alpha: 0.3),
+                width: 1,
+              ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Text(
+              model.badge,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: primary,
+                letterSpacing: 1.1,
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: Responsive.height(context) * 0.38,
+              maxWidth: 320,
+            ),
+            child: Image.asset(model.image, fit: BoxFit.contain),
+          ),
+          const Spacer(),
+          Text.rich(
+            TextSpan(
               children: [
-                SizedBox(height: 100),
-                SvgPicture.asset(AppImages.zenglyTextLogo),
-                SizedBox(height: 40),
-                Text(
-                  model.subTitle,
-                  style: GoogleFonts.inter(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 30,
-                    color: model.titleColor,
-                    letterSpacing: 0,
+                TextSpan(
+                  text: "${model.headline}\n",
+                  style: GoogleFonts.raleway(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : Colors.black87,
+                    height: 1.2,
+                  ),
+                ),
+                TextSpan(
+                  text: model.highlightedWord,
+                  style: GoogleFonts.raleway(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w800,
+                    color: primary,
+                    height: 1.2,
                   ),
                 ),
               ],
             ),
-            Positioned(
-              bottom: 20,
-              child: Center(
-                child: Column(
-                  children: [
-                    SizedBox(width: Responsive.width(context) - 32),
-                    SizedBox(
-                      width: Responsive.width(context) - 32,
-                      child: AppButton(
-                        backgroundColor: model.buttonColor1,
-                        onPressed: () {
-                          context.goNamed(AppRouter.chooseSignUp);
-                        },
-                        actionText: "Create an account",
-                        textColor: Color(0XFF171717),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      width: Responsive.width(context) - 32,
-                      child: AppButton(
-                        onPressed: () {
-                          context.goNamed(AppRouter.loginUnknown);
-                        },
-                        backgroundColor: model.buttonColor2,
-                        actionText: "Login",
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            model.description,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.inter(
+              fontSize: 13.5,
+              fontWeight: FontWeight.w400,
+              color: isDark ? Colors.white60 : Colors.black54,
+              height: 1.45,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
   }

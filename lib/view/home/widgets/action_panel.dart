@@ -19,7 +19,7 @@ class ActionPanel extends StatelessWidget {
         label: "Transfer",
         icon: AppImages.sendNew,
         isNew: false,
-        onTap: () => AppOverlays.transferOptionsSheet(context: context),
+        onTap: () => context.pushNamed(AppRouter.preTransferScreen),
       ),
       _ActionItem(
         label: "Vaniti",

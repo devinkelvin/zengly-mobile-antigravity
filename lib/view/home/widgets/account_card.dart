@@ -9,104 +9,12 @@ import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
 
-class AccountCard extends ConsumerStatefulWidget {
+class AccountCard extends StatelessWidget {
   const AccountCard({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _AccountCardState();
-}
-
-class _AccountCardState extends ConsumerState<AccountCard> {
-  @override
   Widget build(BuildContext context) {
-    return Center(
-      child: AspectRatio(
-        aspectRatio: 2 / 1,
-        child: Container(
-          width: Responsive.width(context) < 320 ? double.infinity : 320,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              stops: [0.99, 0.991],
-              colors: [Color(0xFF181818), Color(0xFF1E1E1E)],
-            ),
-          ),
-          child: Stack(
-            children: [
-              Row(
-                children: [
-                  Spacer(),
-                  SvgPicture.asset(
-                    AppImages.africa,
-                    // height: 180,
-                    width: 200,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 30),
-                      Image.asset(AppImages.nigerianFlag),
-                      Spacer(),
-                      Row(
-                        children: [
-                          Text(
-                            "ACC",
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: Color(0XFF5C616F),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "1029394838",
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
-                              color: Color(0XFFC4C4C4),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            "NGN",
-                            style: GoogleFonts.inter(
-                              fontSize: 10,
-                              color: Color(0XFF5C616F),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "252,865,342.00",
-                            style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
-                              color: Color(0XFFC4C4C4),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Icon(Icons.visibility),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                    ],
-                  ),
-
-                  //  Spacer(),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return const AccountCard2();
   }
 }
 
@@ -118,129 +26,211 @@ class AccountCard2 extends ConsumerStatefulWidget {
 }
 
 class _AccountCard2State extends ConsumerState<AccountCard2> {
-  bool _isVisible = false;
+  bool _isVisible = true;
 
   @override
   Widget build(BuildContext context) {
-    final muted = Theme.of(context).colorScheme.scrim;
-    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primary = Theme.of(context).colorScheme.primary;
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Theme.of(context).colorScheme.outlineVariant,
+        borderRadius: BorderRadius.circular(20),
+        gradient: isDark
+            ? const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF261F16),
+                  Color(0xFF181410),
+                  Color(0xFF0F0E0C),
+                ],
+              )
+            : const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFFFFDF9),
+                  Color(0xFFF7F1E6),
+                ],
+              ),
+        border: Border.all(
+          color: isDark
+              ? const Color(0xFFB57510).withValues(alpha: 0.35)
+              : const Color(0xFFE2D6C3),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.35)
+                : const Color(0xFFB57510).withValues(alpha: 0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top row: Available Balance label | Sterling account + copy
+          // Top row: Available Balance label | Sterling virtual account copy pill
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Available Balance",
-                style: GoogleFonts.inter(fontSize: 12, color: muted),
+                "AVAILABLE BALANCE",
+                style: GoogleFonts.inter(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: isDark ? Colors.white60 : const Color(0xFF7A7062),
+                ),
               ),
               const Spacer(),
               GestureDetector(
                 onTap: () {
+                  HapticFeedback.lightImpact();
                   Clipboard.setData(
                     const ClipboardData(text: "75847589495"),
                   ).then((_) {
                     if (!context.mounted) return;
                     AppOverlays.showToast(
                       context: context,
-                      message: "Copied to clipboard",
+                      message: "Sterling account copied!",
                       toastType: ToastificationType.success,
                     );
                   });
                 },
-                child: Row(
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "Sterling • ",
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              letterSpacing: 0,
-                              color: muted,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "75847589495",
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              letterSpacing: 0,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : const Color(0xFFEDE5D5),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isDark ? Colors.white12 : const Color(0xFFDCCFBC),
+                      width: 0.8,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Sterling • 75847589495",
+                        style: GoogleFonts.inter(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : Colors.black87,
+                          letterSpacing: 0.2,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    SvgPicture.asset(
-                      AppImages.newCopy,
-                      width: 14,
-                      height: 14,
-                      colorFilter: ColorFilter.mode(muted, BlendMode.srcIn),
-                    ),
-                  ],
+                      const SizedBox(width: 5),
+                      SvgPicture.asset(
+                        AppImages.newCopy,
+                        width: 12,
+                        height: 12,
+                        colorFilter: ColorFilter.mode(
+                          isDark ? Colors.white70 : Colors.black54,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
 
-          // Balance + eye toggle
+          const SizedBox(height: 14),
+
+          // Balance amount + eye toggle
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                _isVisible ? "₦2,000,000.00" : "₦*****",
+                _isVisible ? "₦2,000,000.00" : "₦••••••••",
                 style: GoogleFonts.inter(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  color: onSurface,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                  color: isDark ? Colors.white : const Color(0xFF1F1A12),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               GestureDetector(
-                onTap: () => setState(() => _isVisible = !_isVisible),
-                child: Icon(
-                  _isVisible
-                      ? Icons.visibility_off_outlined
-                      : Icons.remove_red_eye_outlined,
-                  size: 18,
-                  color: muted,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  setState(() => _isVisible = !_isVisible);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.05),
+                  ),
+                  child: Icon(
+                    _isVisible
+                        ? Icons.visibility_off_outlined
+                        : Icons.remove_red_eye_outlined,
+                    size: 16,
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
 
-          // Cashback line
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: "₦12,450.50 ",
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
+          const SizedBox(height: 14),
+
+          // Bottom Row: Cashback indicator pill + Currency tag
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00C27C).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF00C27C).withValues(alpha: 0.3),
+                    width: 0.8,
                   ),
                 ),
-                TextSpan(
-                  text: "Cashback",
-                  style: GoogleFonts.inter(
-                    fontSize: 13,
-                    color: const Color(0xFF00C27C),
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.redeem_rounded,
+                      size: 13,
+                      color: Color(0xFF00C27C),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      "+₦12,450.50 Cashback Available",
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF00C27C),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              const Spacer(),
+              Text(
+                "NGN WALLET",
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.8,
+                  color: primary,
+                ),
+              ),
+            ],
           ),
         ],
       ),

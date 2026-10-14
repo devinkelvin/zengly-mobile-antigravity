@@ -3,54 +3,45 @@ import 'package:flutter/material.dart';
 import '../../data.dart';
 
 class OnboardingModel {
-  final String title, titleAnnex, image, subTitle;
-  final Color titleColor, buttonColor1, buttonColor2, backgroundColor;
+  final String headline;
+  final String highlightedWord;
+  final String description;
+  final String image;
+  final String badge;
 
-  OnboardingModel({
-    required this.title,
-    required this.subTitle,
+  const OnboardingModel({
+    required this.headline,
+    required this.highlightedWord,
+    required this.description,
     required this.image,
-    required this.titleAnnex,
-    required this.titleColor,
-    required this.buttonColor1,
-    required this.buttonColor2,
-    required this.backgroundColor,
+    required this.badge,
   });
 }
 
 final List<OnboardingModel> _onboardingList = [
   OnboardingModel(
-    title: "Hey there! your money just got an",
-    titleAnnex: " Upgrade!",
-    subTitle:
-        "Seamless payments, automatic savings, and total financial control—right at your fingertips.",
+    headline: "Lifestyle Banking,",
+    highlightedWord: "Reimagined.",
+    description:
+        "Seamless zero-fee transfers, instant virtual dollar cards, and total financial clarity at your fingertips.",
     image: AppImages.part1,
-    titleColor: Color(0XFFD8D8D8),
-    buttonColor1: Color(0XFFFFFFFF),
-    buttonColor2: Color(0XFFB57510),
-    backgroundColor: Color(0XFF202020),
+    badge: "GLOBAL TRANSFERS & CARDS",
   ),
   OnboardingModel(
-    title: "Smarter banking,",
-    titleAnnex: " Zero Hassle.",
-    subTitle:
-        "Split bills in seconds, track expenses, Zengly keeps you one step ahead.",
+    headline: "Social Finance &",
+    highlightedWord: "Celebrations.",
+    description:
+        "Split dining bills in seconds, launch community Ajo circles, and shower friends with digital Vaniti cash spraying.",
     image: AppImages.part2,
-    titleColor: Color(0XFF090909),
-    buttonColor1: Color(0XFFFFFFFF),
-    buttonColor2: Color(0XFFB57510),
-    backgroundColor: Color(0XFFFFECCD),
+    badge: "VANITI & AJO CIRCLES",
   ),
   OnboardingModel(
-    title: "Power, Flexibility,",
-    titleAnnex: " Freedom.",
-    subTitle:
-        "Built for now. Designed for the future. Welcome to a new era of finance.",
+    headline: "Intelligence Built For",
+    highlightedWord: "Your Freedom.",
+    description:
+        "AI-driven spending insights, automated budget tracking, and bank-grade biometric security for your peace of mind.",
     image: AppImages.part3,
-    titleColor: Color(0XFFFFFFFF),
-    buttonColor1: Color(0XFFFFFFFF),
-    buttonColor2: Color(0XFF282828),
-    backgroundColor: Color(0XFFAAAAAA),
+    badge: "AI COMPANION & SECURITY",
   ),
 ];
 

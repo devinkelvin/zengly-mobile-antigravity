@@ -39,33 +39,36 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
         ),
         centerTitle: true,
         actions: [
-          SizedBox(
-            width: 80,
-            height: 38,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(100),
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(AppImages.tier1, width: 21),
-                  SizedBox(width: 4),
-                  Text(
-                    l10n.tier1,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color:
-                          Theme.of(context).colorScheme.onTertiaryFixedVariant,
+          GestureDetector(
+            onTap: () => AppOverlays.transactionLimitsSheet(context: context),
+            child: SizedBox(
+              width: 80,
+              height: 38,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(AppImages.tier1, width: 21),
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.tier1,
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryFixedVariant,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-          SizedBox(width: 16),
+          const SizedBox(width: 16),
         ],
       ),
       body: SingleChildScrollView(
@@ -145,20 +148,23 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Container(
-                          height: 130,
-                          width: 130,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.surface,
-                              width: 3,
+                        GestureDetector(
+                          onTap: () => AppOverlays.profilePhotoPickerSheet(context: context),
+                          child: Container(
+                            height: 130,
+                            width: 130,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.surface,
+                                width: 3,
+                              ),
                             ),
-                          ),
-                          child: ClipOval(
-                            child: Image.asset(
-                              AppImages.profilePicture,
-                              fit: BoxFit.cover,
+                            child: ClipOval(
+                              child: Image.asset(
+                                AppImages.profilePicture,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         ),
@@ -166,17 +172,17 @@ class _AccountScreenState extends ConsumerState<AccountScreen> {
                           bottom: 0,
                           right: 0,
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () => AppOverlays.profilePhotoPickerSheet(context: context),
                             child: Container(
-                              height: 26,
-                              width: 26,
+                              height: 28,
+                              width: 28,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Theme.of(context).colorScheme.onSurface,
                               ),
                               child: Icon(
                                 Icons.camera_alt,
-                                size: 14,
+                                size: 15,
                                 color: Theme.of(context).colorScheme.surface,
                               ),
                             ),

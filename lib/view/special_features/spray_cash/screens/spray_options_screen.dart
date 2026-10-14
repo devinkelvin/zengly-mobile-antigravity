@@ -43,7 +43,6 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF161410) : const Color(0xFFF9FAFB);
     final allItems = SprayItem.defaultItems;
 
     final filteredItems = _searchQuery.isEmpty
@@ -57,7 +56,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
             .toList();
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: isDark ? const Color(0xFF181511) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -66,7 +65,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
           onPressed: () => context.pop(),
           icon: Icon(
             Icons.arrow_back,
-            color: isDark ? Colors.white : Colors.black,
+            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
           ),
         ),
         title: _isSearching
@@ -74,12 +73,12 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
                 controller: _searchController,
                 autofocus: true,
                 style: GoogleFonts.inter(
-                  color: isDark ? Colors.white : Colors.black,
+                  color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                 ),
                 decoration: InputDecoration(
-                  hintText: "Search options...",
+                  hintText: "Search spray options...",
                   hintStyle: GoogleFonts.inter(
-                    color: isDark ? Colors.white54 : Colors.black54,
+                    color: isDark ? Colors.white54 : Colors.black45,
                   ),
                   border: InputBorder.none,
                 ),
@@ -90,7 +89,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
                 style: GoogleFonts.raleway(
                   fontWeight: FontWeight.w700,
                   fontSize: 20,
-                  color: isDark ? Colors.white : Colors.black,
+                  color: isDark ? Colors.white : const Color(0xFF1A1A1A),
                 ),
               ),
         actions: [
@@ -108,7 +107,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
             },
             icon: Icon(
               _isSearching ? Icons.close : Icons.search,
-              color: isDark ? Colors.white : Colors.black,
+              color: isDark ? Colors.white : const Color(0xFF1A1A1A),
             ),
           ),
           const SizedBox(width: 8),
@@ -141,13 +140,26 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          category,
-                          style: GoogleFonts.inter(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0xFFB57510),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              category,
+                              style: GoogleFonts.raleway(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                              ),
+                            ),
+                          ],
                         ),
                         Icon(
                           isExpanded
@@ -169,7 +181,7 @@ class _SprayOptionsScreenState extends State<SprayOptionsScreen> {
                       crossAxisCount: 2,
                       crossAxisSpacing: 14,
                       mainAxisSpacing: 14,
-                      childAspectRatio: 1.15,
+                      childAspectRatio: 1.1,
                     ),
                     itemCount: categoryItems.length,
                     itemBuilder: (context, idx) {
@@ -208,11 +220,11 @@ class _SprayOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardBg = isDark
-        ? const Color(0xFF26211B)
-        : const Color(0xFFF1F3F5);
+        ? const Color(0xFF241F18)
+        : Colors.white;
     final borderColor = isSelected
-        ? const Color(0xFFC87D0E)
-        : Colors.transparent;
+        ? const Color(0xFFB57510)
+        : (isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE8E0D2));
 
     return GestureDetector(
       onTap: onTap,
@@ -222,59 +234,104 @@ class _SprayOptionCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: cardBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: borderColor, width: 2),
+          border: Border.all(
+            color: borderColor,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: isSelected
+                  ? const Color(0xFFB57510).withValues(alpha: 0.25)
+                  : Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+              blurRadius: isSelected ? 10 : 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Stack(
           children: [
-            Expanded(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: isDark
-                          ? const Color(0xFF332A1C)
-                          : const Color(0xFFE5E7EB),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 58,
+                        height: 58,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isDark
+                              ? const Color(0xFF332A1C).withValues(alpha: 0.6)
+                              : const Color(0xFFF7F2E7),
+                        ),
+                      ),
+                      Center(
+                        child: Image.asset(
+                          item.image,
+                          height: 60,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.wallet, size: 40, color: Color(0xFFB57510)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  item.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? const Color(0xFFB57510).withValues(alpha: 0.15)
+                        : (isDark ? const Color(0xFF2E261A) : const Color(0xFFF3EEE3)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    item.displayAmount,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: isSelected
+                          ? const Color(0xFFB57510)
+                          : (isDark ? Colors.white70 : const Color(0xFF6B5E4A)),
                     ),
                   ),
-                  Center(
-                    child: Image.asset(
-                      item.image,
-                      height: 58,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.wallet, size: 40, color: Color(0xFFC87D0E)),
-                    ),
+                ),
+              ],
+            ),
+            if (isSelected)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  height: 18,
+                  width: 18,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Color(0xFFB57510),
                   ),
-                ],
+                  child: const Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 12,
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              item.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              item.displayAmount,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: GoogleFonts.inter(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: isDark ? Colors.white60 : Colors.black54,
-              ),
-            ),
           ],
         ),
       ),

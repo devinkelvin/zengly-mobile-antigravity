@@ -139,16 +139,7 @@ class AppOverlays {
   // }
 
   static void transferOptionsSheet({required BuildContext context}) {
-    _bottomSheetTemplate(
-      context: context,
-      isDismissible: true,
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: const TransferOptionsSheet(),
-      ),
-    );
+    context.pushNamed(AppRouter.preTransferScreen);
   }
 
   static void securitySettingsSheet({required BuildContext context}) {
@@ -180,6 +171,102 @@ class AppOverlays {
       context: context,
       isDismissible: true,
       child: const ReportBugSheet(),
+    );
+  }
+
+  static void profilePhotoPickerSheet({required BuildContext context}) {
+    _bottomSheetTemplate(
+      context: context,
+      isDismissible: true,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Change Profile Picture",
+            style: GoogleFonts.raleway(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            "Select how you would like to update your avatar",
+            style: GoogleFonts.inter(
+              fontSize: 13,
+              color: Theme.of(context).colorScheme.scrim,
+            ),
+          ),
+          const SizedBox(height: 20),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFB57510).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.camera_alt_rounded, color: Color(0xFFB57510), size: 20),
+            ),
+            title: Text("Take Photo", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
+            subtitle: Text("Use camera to snap a new selfie", style: GoogleFonts.inter(fontSize: 12)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () {
+              Navigator.pop(context);
+              showToast(
+                context: context,
+                title: "Camera Updated",
+                message: "Profile photo captured successfully",
+                toastType: ToastificationType.success,
+              );
+            },
+          ),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF3B82F6).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.photo_library_rounded, color: Color(0xFF3B82F6), size: 20),
+            ),
+            title: Text("Choose from Gallery", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
+            subtitle: Text("Select an image from device gallery", style: GoogleFonts.inter(fontSize: 12)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () {
+              Navigator.pop(context);
+              showToast(
+                context: context,
+                title: "Gallery Image",
+                message: "Photo selected and updated",
+                toastType: ToastificationType.success,
+              );
+            },
+          ),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.face_retouching_natural_rounded, color: Color(0xFF10B981), size: 20),
+            ),
+            title: Text("Avatar Presets", style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 14)),
+            subtitle: Text("Pick from curated Zengly 3D avatars", style: GoogleFonts.inter(fontSize: 12)),
+            trailing: const Icon(Icons.chevron_right, size: 20),
+            onTap: () {
+              Navigator.pop(context);
+              showToast(
+                context: context,
+                title: "Avatar Preset",
+                message: "New 3D avatar applied",
+                toastType: ToastificationType.success,
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
     );
   }
 
