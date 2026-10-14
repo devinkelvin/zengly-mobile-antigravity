@@ -400,25 +400,28 @@ class _InputSplitScreenState extends ConsumerState<InputSplitScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            AppButton.primary(
-              actionText: "Send Split Requests",
-              onPressed: () async {
-                final pin = await TransactionPinBottomSheet.show(
-                  context,
-                  title: "Authorize Split Bill",
-                  subtitle: "Enter your 4-digit PIN to dispatch split requests",
-                  amountSummary: "₦${_totalBillAmount.round()}",
-                );
-                if (pin != null && context.mounted) {
-                  AppOverlays.showToast(
-                    context: context,
-                    title: "Split Requests Sent!",
-                    message: "Successfully created split bill and sent requests to ${_friends.length} participants.",
-                    toastType: ToastificationType.success,
+            SizedBox(
+              width: double.infinity,
+              child: AppButton.primary(
+                actionText: "Send Split Requests",
+                onPressed: () async {
+                  final pin = await TransactionPinBottomSheet.show(
+                    context,
+                    title: "Authorize Split Bill",
+                    subtitle: "Enter your 4-digit PIN to dispatch split requests",
+                    amountSummary: "₦${_totalBillAmount.round()}",
                   );
-                  context.pushReplacementNamed(AppRouter.splitBillDetailScreen);
-                }
-              },
+                  if (pin != null && context.mounted) {
+                    AppOverlays.showToast(
+                      context: context,
+                      title: "Split Requests Sent!",
+                      message: "Successfully created split bill and sent requests to ${_friends.length} participants.",
+                      toastType: ToastificationType.success,
+                    );
+                    context.pushReplacementNamed(AppRouter.splitBillDetailScreen);
+                  }
+                },
+              ),
             ),
             const SizedBox(height: 24),
           ],

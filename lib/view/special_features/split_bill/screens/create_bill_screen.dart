@@ -234,11 +234,14 @@ class _CreateBillScreenState extends ConsumerState<CreateBillScreen> {
                 ),
               ),
               SizedBox(height: 32),
-              AppButton.primary(
-                onPressed: () {
-                  context.pushNamed(AppRouter.inputSplitScreen);
-                },
-                actionText: "Continue",
+              SizedBox(
+                width: double.infinity,
+                child: AppButton.primary(
+                  onPressed: () {
+                    context.pushNamed(AppRouter.inputSplitScreen);
+                  },
+                  actionText: "Continue",
+                ),
               ),
             ],
           ],
