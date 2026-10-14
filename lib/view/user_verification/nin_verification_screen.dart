@@ -28,16 +28,38 @@ class _NinVerificationScreenState extends ConsumerState<NinVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+
     return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        surfaceTintColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: textPrimary,
+          ),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(
+          "NIN Verification",
+          style: GoogleFonts.raleway(
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+            color: textPrimary,
+          ),
+        ),
+        centerTitle: true,
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: AppDimensions.viewPadding,
           width: double.infinity,
-          child: AppButton(
+          child: AppButton.primary(
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 context.pushNamed(

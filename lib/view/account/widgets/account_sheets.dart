@@ -214,15 +214,12 @@ class TransactionLimitsSheet extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        SizedBox(
-          width: double.infinity,
-          child: AppButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.pushNamed(AppRouter.preVerification);
-            },
-            actionText: "Upgrade to Tier 2 (Higher Limits)",
-          ),
+        AppButton.primary(
+          onPressed: () {
+            Navigator.pop(context);
+            context.pushNamed(AppRouter.preVerification);
+          },
+          actionText: "Upgrade to Tier 2 (Higher Limits)",
         ),
         const SizedBox(height: 12),
       ],

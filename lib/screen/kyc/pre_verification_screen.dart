@@ -69,12 +69,7 @@ class _PreVerificationScreenState extends ConsumerState<PreVerificationScreen> {
         child: Container(
           padding: AppDimensions.viewPadding,
           width: double.infinity,
-          child: AppButton(
-            backgroundColor: isDark ? const Color(0xFF262017) : Colors.white,
-            textColor: isDark ? Colors.white : const Color(0xFF1A1A1A),
-            borderSide: BorderSide(
-              color: isDark ? Colors.white24 : const Color(0xFFD4C8B5),
-            ),
+          child: AppButton.outline(
             onPressed: () => context.pop(),
             actionText: "Return to Home",
           ),

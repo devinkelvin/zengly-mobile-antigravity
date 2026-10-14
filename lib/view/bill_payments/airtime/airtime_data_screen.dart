@@ -49,7 +49,8 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(
-            Icons.arrow_back,
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
@@ -60,9 +61,9 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
                 _tabController.index == 1 ? "Data Bundles" : "Airtime Top-up";
             return Text(
               title,
-              style: GoogleFonts.inter(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              style: GoogleFonts.raleway(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
                 letterSpacing: 0,
               ),
             );

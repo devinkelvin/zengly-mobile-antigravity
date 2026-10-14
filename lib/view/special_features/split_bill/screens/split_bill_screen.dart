@@ -56,7 +56,8 @@ class _SplitBillScreenState extends ConsumerState<SplitBillScreen> {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(
-            Icons.arrow_back,
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
@@ -145,29 +146,12 @@ class _SplitBillScreenState extends ConsumerState<SplitBillScreen> {
                               color: Colors.white.withValues(alpha: 0.72),
                             ),
                           ),
-                          SizedBox(height: 18),
-                          GestureDetector(
-                            onTap:
-                                () => context.pushNamed(AppRouter.createBill),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 22,
-                                vertical: 13,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFE8A317),
-                                borderRadius: BorderRadius.circular(100),
-                              ),
-                              child: Text(
-                                "Create a Split Bill",
-                                style: GoogleFonts.inter(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
+                          const SizedBox(height: 18),
+                          AppButton.compact(
+                            onPressed: () => context.pushNamed(AppRouter.createBill),
+                            actionText: "Create a Split Bill",
+                            backgroundColor: const Color(0xFFE8A317),
+                            textColor: Colors.black,
                           ),
                         ],
                       ),

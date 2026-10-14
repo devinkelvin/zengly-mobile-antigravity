@@ -147,9 +147,8 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            AppButton(
+            AppButton.primary(
               actionText: "Done • View Wallet",
-              borderRadius: 100,
               onPressed: () {
                 Navigator.of(ctx).pop();
                 context.pop(); // Return to lending hub
@@ -171,19 +170,26 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
     final currencyFormat = NumberFormat.currency(symbol: "₦", decimalDigits: 0);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: textPrimary),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: textPrimary,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           "Apply for Micro-Credit",
           style: GoogleFonts.raleway(fontWeight: FontWeight.w700, fontSize: 18, color: textPrimary),
         ),
+        actions: const [
+          BalanceWidget(),
+        ],
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -352,9 +358,8 @@ class _ApplyLoanScreenState extends State<ApplyLoanScreen> {
             const SizedBox(height: 20),
 
             // Submit Button
-            AppButton(
+            AppButton.primary(
               actionText: "Accept Offer • Instant Disbursal",
-              borderRadius: 100,
               onPressed: _submitApplication,
             ),
             const SizedBox(height: 30),

@@ -78,7 +78,7 @@ class _ProfileCompletionScreenState
         child: Container(
           padding: AppDimensions.viewPadding,
           width: double.infinity,
-          child: AppButton(
+          child: AppButton.primary(
             onPressed: _submit,
             actionText: "Save Profile",
           ),

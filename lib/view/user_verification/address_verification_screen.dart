@@ -88,7 +88,7 @@ class _AddressVerificationScreenState
         child: Container(
           padding: AppDimensions.viewPadding,
           width: double.infinity,
-          child: AppButton(
+          child: AppButton.primary(
             onPressed: _submit,
             actionText: "Submit Proof of Address",
           ),

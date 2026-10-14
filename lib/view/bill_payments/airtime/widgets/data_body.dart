@@ -362,33 +362,30 @@ class _DataBodyState extends ConsumerState<DataBody> {
           const SizedBox(height: 24),
 
           // Action Button
-          SizedBox(
-            width: double.infinity,
-            child: AppButton(
-              onPressed: () {
-                final selectedPlan =
-                    _selectedPlan ?? (plans.isNotEmpty ? plans.first : null);
-                if (selectedPlan == null) {
-                  AppOverlays.showToast(
+          AppButton.primary(
+            onPressed: () {
+              final selectedPlan =
+                  _selectedPlan ?? (plans.isNotEmpty ? plans.first : null);
+              if (selectedPlan == null) {
+                AppOverlays.showToast(
+                  context: context,
+                  message: "Select a data plan to proceed",
+                  toastType: ToastificationType.error,
+                );
+                return;
+              }
+              ref.read(airtimeVm).startPurchase(
                     context: context,
-                    message: "Select a data plan to proceed",
-                    toastType: ToastificationType.error,
+                    type: "Data",
+                    amount: selectedPlan.price,
+                    phoneNumber: _phoneController.text.replaceAll('-', ''),
+                    planLabel: selectedPlan.duration,
+                    cashback: selectedPlan.cashback.isEmpty
+                        ? null
+                        : selectedPlan.cashback,
                   );
-                  return;
-                }
-                ref.read(airtimeVm).startPurchase(
-                      context: context,
-                      type: "Data",
-                      amount: selectedPlan.price,
-                      phoneNumber: _phoneController.text.replaceAll('-', ''),
-                      planLabel: selectedPlan.duration,
-                      cashback: selectedPlan.cashback.isEmpty
-                          ? null
-                          : selectedPlan.cashback,
-                    );
-              },
-              actionText: "Purchase Data Bundle",
-            ),
+            },
+            actionText: "Purchase Data Bundle",
           ),
           const SizedBox(height: 16),
         ],

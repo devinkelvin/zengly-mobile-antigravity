@@ -97,7 +97,8 @@ class _CreateBillScreenState extends ConsumerState<CreateBillScreen> {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(
-            Icons.arrow_back,
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
             color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
@@ -233,14 +234,11 @@ class _CreateBillScreenState extends ConsumerState<CreateBillScreen> {
                 ),
               ),
               SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: AppButton(
-                  onPressed: () {
-                    context.pushNamed(AppRouter.inputSplitScreen);
-                  },
-                  actionText: "Continue",
-                ),
+              AppButton.primary(
+                onPressed: () {
+                  context.pushNamed(AppRouter.inputSplitScreen);
+                },
+                actionText: "Continue",
               ),
             ],
           ],

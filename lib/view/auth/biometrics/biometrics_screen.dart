@@ -128,88 +128,178 @@ class _BiometricsScreenState extends ConsumerState<BiometricsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const goldColor = Color(0xFFB57510);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B7280);
+
     return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: textPrimary,
+          ),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: AppDimensions.viewPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Awesome! \nSet up your biometrics",
-                style: GoogleFonts.raleway(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0,
-                  fontSize: 20,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Fast & Secure Access",
+                      style: GoogleFonts.raleway(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 24,
+                        letterSpacing: -0.4,
+                        color: textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Set up Face ID or Fingerprint to unlock your wallet and approve payments instantly.",
+                      style: GoogleFonts.inter(
+                        fontSize: 13.5,
+                        height: 1.45,
+                        color: textSecondary,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
-                "Please re-enter your transaction pin to confirm",
-                style: GoogleFonts.inter(fontSize: 12, letterSpacing: 0),
-              ),
-              Spacer(),
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 30,
-                    vertical: 20,
+
+              const Spacer(),
+
+              // Concentric Glowing Biometric Rings
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: goldColor.withValues(alpha: isDark ? 0.05 : 0.03),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.circular(70),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      InkWell(
-                        onTap: _saveBiometrics,
-                        borderRadius: BorderRadius.circular(35),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: SvgPicture.asset(
-                            AppImages.fingerPrint,
-                            height: 34,
-                            width: 34,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 32,
+                  Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: goldColor.withValues(alpha: isDark ? 0.1 : 0.06),
+                      border: Border.all(
+                        color: goldColor.withValues(alpha: 0.15),
                         width: 1,
-                        color: Theme.of(context).colorScheme.outline,
                       ),
-                      InkWell(
-                        onTap: _saveBiometrics,
-                        borderRadius: BorderRadius.circular(35),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: SvgPicture.asset(
-                            AppImages.iconFaceId,
-                            height: 34,
-                            width: 34,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      _saveBiometrics();
+                    },
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      width: 96,
+                      height: 96,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: isDark
+                              ? [const Color(0xFF382709), const Color(0xFF1E1810)]
+                              : [const Color(0xFFFFF4E0), const Color(0xFFF3E2C3)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        border: Border.all(
+                          color: goldColor.withValues(alpha: 0.5),
+                          width: 2,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: goldColor.withValues(alpha: 0.3),
+                            blurRadius: 28,
+                            spreadRadius: 2,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          AppImages.fingerPrint,
+                          width: 48,
+                          height: 48,
+                          colorFilter: const ColorFilter.mode(
+                            goldColor,
+                            BlendMode.srcIn,
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 24),
+
+              // Dual-support pill
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF262017) : Colors.white,
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                    color: isDark ? Colors.white12 : const Color(0xFFEADBCE),
                   ),
                 ),
-              ),
-              Spacer(),
-              SizedBox(
-                width: double.infinity,
-                child: AppButton(
-                  onPressed: _skipForNow,
-                  backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-                  actionText: "I will do this later",
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.shield_rounded,
+                      size: 16,
+                      color: Color(0xFF34C759),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Hardware Keystore Protected",
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white70 : const Color(0xFF374151),
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+              const Spacer(),
+
+              // Primary & Secondary Buttons
+              AppButton.primary(
+                actionText: "Authenticate with Biometrics",
+                onPressed: _saveBiometrics,
+              ),
+              const SizedBox(height: 12),
+              AppButton.outline(
+                actionText: "I'll do this later",
+                onPressed: _skipForNow,
+              ),
+              const SizedBox(height: 12),
             ],
           ),
         ),

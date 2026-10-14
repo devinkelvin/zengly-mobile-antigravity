@@ -141,7 +141,11 @@ class _SplitBillDetailScreenState extends ConsumerState<SplitBillDetailScreen> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => context.pop(),
-          icon: Icon(Icons.arrow_back, color: scheme.onSurface),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: scheme.onSurface,
+          ),
         ),
         title: Text(
           "Split Bill",
@@ -161,15 +165,9 @@ class _SplitBillDetailScreenState extends ConsumerState<SplitBillDetailScreen> {
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  icon: const Icon(Icons.share_rounded, size: 18),
-                  label: const Text("Share Link"),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                  ),
+                child: AppButton.outline(
+                  icon: Icons.share_rounded,
+                  actionText: "Share Link",
                   onPressed: () {
                     AppOverlays.showToast(
                       context: context,
@@ -182,7 +180,7 @@ class _SplitBillDetailScreenState extends ConsumerState<SplitBillDetailScreen> {
               const SizedBox(width: 12),
               Expanded(
                 flex: 2,
-                child: AppButton(
+                child: AppButton.primary(
                   onPressed: () {
                     AppOverlays.showToast(
                       context: context,

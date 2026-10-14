@@ -356,20 +356,17 @@ class _AirtimeBodyState extends ConsumerState<AirtimeBody> {
           const SizedBox(height: 24),
 
           // Continue Button
-          SizedBox(
-            width: double.infinity,
-            child: AppButton(
-              onPressed: () {
-                final amount = _amountController.text.trim();
-                ref.read(airtimeVm).startPurchase(
-                      context: context,
-                      type: "Airtime",
-                      amount: amount.isEmpty ? "" : "₦$amount",
-                      phoneNumber: _phoneController.text.replaceAll('-', ''),
-                    );
-              },
-              actionText: "Recharge Airtime",
-            ),
+          AppButton.primary(
+            onPressed: () {
+              final amount = _amountController.text.trim();
+              ref.read(airtimeVm).startPurchase(
+                    context: context,
+                    type: "Airtime",
+                    amount: amount.isEmpty ? "" : "₦$amount",
+                    phoneNumber: _phoneController.text.replaceAll('-', ''),
+                  );
+            },
+            actionText: "Recharge Airtime",
           ),
           const SizedBox(height: 16),
         ],

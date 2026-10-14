@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -842,18 +843,20 @@ class AppOverlays {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.black.withValues(alpha: 0.2),
+      barrierColor: Colors.black.withValues(alpha: 0.65),
       isScrollControlled: true,
       builder: (ctx) {
         return _blurredSheet(
           ctx,
           ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(34),
-              topRight: Radius.circular(34),
+              topLeft: Radius.circular(32),
+              topRight: Radius.circular(32),
             ),
             child: Container(
-              color: Theme.of(context).colorScheme.surface,
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF1E1A14)
+                  : const Color(0xFFFCF9F5),
               child: SafeArea(
                 child: _EnableBiometricsSheetContent(context: context),
               ),
@@ -876,89 +879,149 @@ class _EnableBiometricsSheetContent extends StatefulWidget {
 
 class _EnableBiometricsSheetContentState
     extends State<_EnableBiometricsSheetContent> {
-  bool _approveTxToggle = false;
+  bool _approveTxToggle = true;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const goldColor = Color(0xFFB57510);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final textSecondary = isDark ? Colors.white70 : const Color(0xFF6B7280);
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      padding: const EdgeInsets.fromLTRB(22, 14, 22, 28),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Drag handle
           Container(
-            width: 40,
-            height: 4,
+            width: 44,
+            height: 4.5,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(2),
+              color: isDark ? Colors.white24 : const Color(0xFFD4C8B5),
+              borderRadius: BorderRadius.circular(100),
             ),
           ),
           const SizedBox(height: 24),
+
+          // Glowing Biometric Hero Emblem
           Container(
-            width: 72,
-            height: 72,
+            width: 84,
+            height: 84,
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.outlineVariant,
+              borderRadius: BorderRadius.circular(26),
+              gradient: LinearGradient(
+                colors: isDark
+                    ? [const Color(0xFF3D2E14), const Color(0xFF20170A)]
+                    : [const Color(0xFFFFF6E6), const Color(0xFFF7E8CE)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              border: Border.all(
+                color: goldColor.withValues(alpha: 0.4),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: goldColor.withValues(alpha: 0.22),
+                  blurRadius: 22,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Center(
               child: SvgPicture.asset(
                 AppImages.fingerPrint,
-                width: 36,
-                height: 36,
-                colorFilter: ColorFilter.mode(
-                  Theme.of(context).colorScheme.primary,
+                width: 42,
+                height: 42,
+                colorFilter: const ColorFilter.mode(
+                  goldColor,
                   BlendMode.srcIn,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+
+          // Title & Subtitle
           Text(
             "Enable Biometrics",
             style: GoogleFonts.raleway(
-              fontWeight: FontWeight.w700,
-              fontSize: 20,
-              letterSpacing: 0,
+              fontWeight: FontWeight.w800,
+              fontSize: 22,
+              letterSpacing: -0.3,
+              color: textPrimary,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            "For a seamless and secure experience,\nenable Biometric Authentication",
+            "Experience seamless, lightning-fast authentication and protect your Zengly transactions with hardware security.",
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
               fontSize: 13,
-              color: Theme.of(context).colorScheme.scrim,
+              height: 1.45,
+              color: textSecondary,
             ),
           ),
           const SizedBox(height: 24),
+
+          // Feature Highlights Card
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outlineVariant,
-              borderRadius: BorderRadius.circular(14),
+              color: isDark ? const Color(0xFF262017) : Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : const Color(0xFFEADBCE),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Column(
               children: [
+                // Row 1: Login instantly
                 Row(
                   children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: goldColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.bolt_rounded,
+                        color: goldColor,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Login Instantly",
+                            "1-Tap Instant Unlock",
                             style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               fontSize: 14,
+                              color: textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            "No need to enter your password every time.",
+                            "Bypass passwords with Face ID or fingerprint.",
                             style: GoogleFonts.inter(
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.scrim,
+                              color: textSecondary,
                             ),
                           ),
                         ],
@@ -966,95 +1029,106 @@ class _EnableBiometricsSheetContentState
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
+                        horizontal: 9,
+                        vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(8),
+                        color: const Color(0xFF34C759).withValues(alpha: 0.14),
+                        borderRadius: BorderRadius.circular(100),
                       ),
                       child: Text(
                         "Default",
                         style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF34C759),
                         ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                Divider(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outline.withValues(alpha: 0.3),
-                  height: 1,
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  child: Divider(
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : const Color(0xFFF0EBE1),
+                    height: 1,
+                  ),
                 ),
-                const SizedBox(height: 12),
+                // Row 2: Payment Authorization
                 Row(
                   children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF34C759).withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.shield_rounded,
+                        color: Color(0xFF34C759),
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Approve Transactions Faster",
+                            "Authorize Transactions",
                             style: GoogleFonts.inter(
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w700,
                               fontSize: 14,
+                              color: textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            "Authorize payments with just a touch or glance.",
+                            "Quick approval for transfers & bill payments.",
                             style: GoogleFonts.inter(
                               fontSize: 12,
-                              color: Theme.of(context).colorScheme.scrim,
+                              color: textSecondary,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    Switch(
+                    Switch.adaptive(
                       value: _approveTxToggle,
-                      onChanged: (val) =>
-                          setState(() => _approveTxToggle = val),
-                      activeThumbColor:
-                          Theme.of(context).colorScheme.onPrimary,
-                      activeTrackColor:
-                          Theme.of(context).colorScheme.tertiary,
-                      inactiveThumbColor:
-                          Theme.of(context).colorScheme.onPrimary,
-                      inactiveTrackColor:
-                          Theme.of(context).colorScheme.outline,
+                      onChanged: (val) {
+                        HapticFeedback.lightImpact();
+                        setState(() => _approveTxToggle = val);
+                      },
+                      activeTrackColor: goldColor,
+                      activeColor: Colors.white,
                     ),
                   ],
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 26),
+
+          // Standardized Unified Buttons
           Row(
             children: [
               Expanded(
-                child: AppButton(
+                child: AppButton.outline(
                   onPressed: () => Navigator.pop(context),
                   actionText: "Maybe Later",
-                  horizontalPadding: 0,
-                  backgroundColor:
-                      Theme.of(context).colorScheme.outlineVariant,
-                  textColor: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: AppButton(
+                child: AppButton.primary(
                   onPressed: () {
                     Navigator.pop(context);
                     widget.context.goNamed(AppRouter.biometrics);
                   },
                   actionText: "Enable Now",
-                  horizontalPadding: 0,
                 ),
               ),
             ],

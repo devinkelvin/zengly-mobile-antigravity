@@ -31,14 +31,25 @@ class _SplitBillHistoryScreenState extends ConsumerState<SplitBillHistoryScreen>
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
         title: Text(
-          "Split Bill",
-          style: GoogleFonts.inter(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
+          "Split Bill History",
+          style: GoogleFonts.raleway(
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             letterSpacing: 0,
           ),
         ),
+        actions: const [
+          BalanceWidget(),
+        ],
         bottom: AppTab2(
           tabController: _tabController,
           titles: ["Pending Request", "My Request"],
