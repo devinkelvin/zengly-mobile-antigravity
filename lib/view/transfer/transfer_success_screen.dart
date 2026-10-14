@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../data/data.dart';
 import '../../utils/utils.dart';
@@ -33,7 +35,14 @@ class _TransferSuccessScreenState extends ConsumerState<TransferSuccessScreen> {
           child: _PillButton(
             imageIcon: AppImages.arrowDownloadIcon,
             label: "Download",
-            onTap: () {},
+            onTap: () {
+              AppOverlays.showToast(
+                context: context,
+                title: "Receipt Downloaded",
+                message: "PDF Receipt successfully saved to your downloads folder",
+                toastType: ToastificationType.success,
+              );
+            },
           ),
         ),
         actions: [
@@ -42,7 +51,14 @@ class _TransferSuccessScreenState extends ConsumerState<TransferSuccessScreen> {
             child: _PillButton(
               imageIcon: AppImages.shareAndroidIcon,
               label: "Share",
-              onTap: () {},
+              onTap: () {
+                AppOverlays.showToast(
+                  context: context,
+                  title: "Receipt Link Copied",
+                  message: "Shareable official transfer receipt link copied to clipboard!",
+                  toastType: ToastificationType.success,
+                );
+              },
             ),
           ),
         ],
@@ -51,32 +67,48 @@ class _TransferSuccessScreenState extends ConsumerState<TransferSuccessScreen> {
         padding: AppDimensions.viewPadding,
         child: Column(
           children: [
-            SizedBox(height: 32),
-            RotatingCoinIcon(size: 160),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
+            const RotatingCoinIcon(size: 140),
+            const SizedBox(height: 20),
             Text(
-              "Payment Successful",
-              style: GoogleFonts.inter(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0,
+              "Transfer Successful!",
+              style: GoogleFonts.raleway(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
-              "Funds are en route to the recipient/beneficiary and will arrive shortly. Thank you for your patience and trust in our services",
+              "₦${NumberFormat("#,##0.00").format(widget.transfer.amount)}",
+              style: GoogleFonts.inter(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: const Color(0xFFB57510),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              "Successfully sent to ${widget.transfer.recipientName} (${widget.transfer.recipientBank})",
               textAlign: TextAlign.center,
               style: GoogleFonts.inter(
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: FontWeight.w500,
                 color: Theme.of(context).colorScheme.scrim,
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 28),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF221D16)
+                    : Theme.of(context).colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white10
+                      : const Color(0xFFE8E0D2),
+                ),
               ),
               child: Column(
                 children: [
@@ -97,8 +129,8 @@ class _TransferSuccessScreenState extends ConsumerState<TransferSuccessScreen> {
                         ),
                         Switch(
                           value: _saveBeneficiary,
-                          activeThumbColor:
-                              Theme.of(context).colorScheme.primary,
+                          activeThumbColor: Colors.white,
+                          activeTrackColor: const Color(0xFFB57510),
                           onChanged:
                               (value) =>
                                   setState(() => _saveBeneficiary = value),
@@ -108,35 +140,78 @@ class _TransferSuccessScreenState extends ConsumerState<TransferSuccessScreen> {
                   ),
                   Divider(
                     height: 1,
-                    color: Colors.white.withValues(alpha: 0.06),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white10
+                        : Colors.black.withValues(alpha: 0.06),
                   ),
-                  GestureDetector(
+                  InkWell(
                     onTap:
                         () => context.pushNamed(
                           AppRouter.transferReceipt,
                           extra: widget.transfer,
                         ),
+                    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      child: Text(
-                        "View Receipt",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.receipt_long_rounded, size: 18, color: Color(0xFFB57510)),
+                          const SizedBox(width: 8),
+                          Text(
+                            "View Official Receipt",
+                            style: GoogleFonts.inter(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFB57510),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              child: AppButton(
+              height: 52,
+              child: ElevatedButton(
                 onPressed: () => context.goNamed(AppRouter.dashboard),
-                actionText: "Back to Home",
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFB57510),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  "Done & Back to Home",
+                  style: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: OutlinedButton(
+                onPressed: () => context.pushNamed(AppRouter.preTransferScreen),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFB57510)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  "Make Another Transfer",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: const Color(0xFFB57510),
+                  ),
+                ),
               ),
             ),
             SizedBox(height: 16),

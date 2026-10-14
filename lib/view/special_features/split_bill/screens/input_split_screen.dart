@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:toastification/toastification.dart';
+
 import '../../../../data/data.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widgets/widgets.dart';
+import '../../../auth/transaction_pin/enter_transaction_pin_screen.dart';
 
 class _SplitFriend {
   final String name;
@@ -375,6 +378,92 @@ class _InputSplitScreenState extends ConsumerState<InputSplitScreen> {
                 ),
               );
             }),
+            const SizedBox(height: 20),
+            // Live Allocation Summary Card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF241F18)
+                    : const Color(0xFFFAF7F2),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFFB57510).withValues(alpha: 0.25),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total Bill Amount",
+                        style: GoogleFonts.inter(fontSize: 13, color: Theme.of(context).colorScheme.scrim),
+                      ),
+                      Text(
+                        "₦${CurrencyFormatter.format(_totalBillAmount.round()).replaceFirst('₦', '').trim()}",
+                        style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total Allocated",
+                        style: GoogleFonts.inter(fontSize: 13, color: Theme.of(context).colorScheme.scrim),
+                      ),
+                      Text(
+                        "₦${CurrencyFormatter.format(_totalAllocated.round()).replaceFirst('₦', '').trim()}",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: (_totalAllocated - _totalBillAmount).abs() < 1
+                              ? const Color(0xFF10B981)
+                              : const Color(0xFFE53935),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: () async {
+                  final pin = await EnterTransactionPinScreen.show(context);
+                  if (pin != null && context.mounted) {
+                    AppOverlays.showToast(
+                      context: context,
+                      title: "Split Requests Sent!",
+                      message: "Successfully created split bill and sent requests to ${_friends.length} participants.",
+                      toastType: ToastificationType.success,
+                    );
+                    context.pushReplacementNamed(AppRouter.splitBillDetailScreen);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFB57510),
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                child: Text(
+                  "Send Split Requests",
+                  style: GoogleFonts.inter(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),

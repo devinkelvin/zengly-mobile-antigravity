@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../data/data.dart';
 import '../../utils/utils.dart';
 import '../../view/dashboard/dashboard_vm.dart';
-import '../../widgets/widgets.dart';
 
 class PreBillScreen extends ConsumerStatefulWidget {
   const PreBillScreen({super.key});
@@ -133,7 +132,8 @@ class _PreBillScreenState extends ConsumerState<PreBillScreen> {
           _MenuItemData(
             title: "Finance AI Insights",
             subtitle: "Smart spending categorisation & analytics",
-            iconSvg: AppImages.insightsIcon,
+            iconSvg: AppImages.insightFull,
+            iconData: Icons.auto_awesome_rounded,
             badge: "AI",
             onTap: () {
               ref.read(dashboardVm).switchPage(3);
@@ -327,11 +327,16 @@ class _PreBillScreenState extends ConsumerState<PreBillScreen> {
                                 ),
                                 padding: const EdgeInsets.all(9),
                                 child: item.iconSvg != null
-                                    ? SvgPicture.asset(
-                                        item.iconSvg!,
-                                        colorFilter: ColorFilter.mode(primaryColor, BlendMode.srcIn),
-                                      )
-                                    : Icon(item.iconData, color: primaryColor, size: 20),
+                                    ? (item.iconSvg!.endsWith('.svg')
+                                        ? SvgPicture.asset(
+                                            item.iconSvg!,
+                                            colorFilter: ColorFilter.mode(primaryColor, BlendMode.srcIn),
+                                          )
+                                        : Image.asset(
+                                            item.iconSvg!,
+                                            color: primaryColor,
+                                          ))
+                                    : Icon(item.iconData ?? Icons.stars_rounded, color: primaryColor, size: 20),
                               ),
                               const SizedBox(width: 14),
                               Expanded(

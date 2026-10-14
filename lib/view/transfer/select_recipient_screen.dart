@@ -1,27 +1,15 @@
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../data/data.dart';
 import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
-import 'widgets/widgets.dart';
-
-class _MockRecipient {
-  final String name;
-  final String accountNumber;
-  final String bankName;
-  final String logo;
-
-  _MockRecipient({
-    required this.name,
-    required this.accountNumber,
-    required this.bankName,
-    required this.logo,
-  });
-}
+import 'select_bank_screen.dart';
 
 class SelectRecipientScreen extends ConsumerStatefulWidget {
   final bool isZenglyTransfer;
@@ -33,149 +21,242 @@ class SelectRecipientScreen extends ConsumerStatefulWidget {
 }
 
 class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
-  final _accountNumberController = TextEditingController();
-  final _searchController = TextEditingController();
-  final _searchFocusNode = FocusNode();
-  String _query = "";
-  String _amountInput = "";
-  String _noteInput = "";
-  _MockRecipient? _selectedRecipient;
+  // Common
+  final _amountController = TextEditingController();
+  final _noteController = TextEditingController();
+  double _enteredAmount = 0.0;
+  static const double _walletBalance = 2000000.0;
 
-  static const double _fee = 100;
+  // Zengly Transfer
+  final _usernameController = TextEditingController();
+  String _selectedUsername = "";
+  String _resolvedFullName = "";
+  bool _isZenglyUserResolved = false;
 
-  static final _mockRecipients = [
-    _MockRecipient(
-      name: "Ability Elijah",
-      accountNumber: "5673658653",
-      bankName: "GTBank",
-      logo: AppImages.gtbankLogo,
-    ),
-    _MockRecipient(
-      name: "Chidi Okafor",
-      accountNumber: "0428658653",
-      bankName: "FCMB",
-      logo: AppImages.fcmbLogo,
-    ),
-    _MockRecipient(
-      name: "Ngozi Eze",
-      accountNumber: "7038271812",
-      bankName: "Zenith Bank",
-      logo: AppImages.zenithLogo,
-    ),
+  final List<Map<String, String>> _suggestedZenglyUsers = [
+    {"username": "@tiwasavage", "name": "Tiwa Savage", "role": "VIP Host"},
+    {"username": "@asakemusic", "name": "Ahmed Ololade (Asake)", "role": "Baller"},
+    {"username": "@burnaboy", "name": "Damini Ogulu (Burna)", "role": "Global Star"},
+    {"username": "@davido", "name": "David Adeleke (OBO)", "role": "VIP Baller"},
+    {"username": "@kelvin", "name": "Kelvin Ekuhoho", "role": "Lead Architect"},
+    {"username": "@yemialade", "name": "Yemi Eberechi Alade", "role": "Mama Africa"},
   ];
 
-  List<_MockRecipient> get _filteredRecipients {
-    if (_query.isEmpty) return [];
-    final query = _query.toLowerCase();
-    return _mockRecipients
-        .where(
-          (r) =>
-              r.name.toLowerCase().contains(query) ||
-              r.accountNumber.contains(query),
-        )
-        .toList();
-  }
+  // Bank Transfer
+  final _accountNumberController = TextEditingController();
+  BankAccountOption? _selectedBank;
+  String _resolvedAccountName = "";
+  bool _isValidatingAccount = false;
+  bool _isAccountResolved = false;
 
-  void _selectRecipient(_MockRecipient recipient) {
-    setState(() => _selectedRecipient = recipient);
-  }
+  static final List<Map<String, String>> _savedBeneficiaries = [
+    {
+      "name": "Adekunle Gold",
+      "account": "0123456789",
+      "bank": "Guaranty Trust Bank (GTBank)",
+    },
+    {
+      "name": "Chidi Okafor",
+      "account": "0428658653",
+      "bank": "Access Bank",
+    },
+    {
+      "name": "Ngozi Eze",
+      "account": "1012345678",
+      "bank": "Zenith Bank",
+    },
+    {
+      "name": "Zubby Michael",
+      "account": "2001234567",
+      "bank": "Kuda Microfinance Bank",
+    },
+  ];
 
-  Future<void> _pickBankAccount() async {
-    final result = await AppOverlays.selectBankSheet(context: context);
-    if (result == null) return;
-    _selectRecipient(
-      _MockRecipient(
-        name: result.accountName,
-        accountNumber: result.accountNumber,
-        bankName: result.bankName,
-        logo: result.logo,
-      ),
-    );
-  }
-
-  void _continue() {
-    final recipient = _selectedRecipient;
-    if (recipient == null) return;
-    final amount = double.tryParse(_amountInput.replaceAll(",", "")) ?? 0;
-    context.pushNamed(
-      AppRouter.confirmTransfer,
-      extra: TransferResult(
-        recipientName: recipient.name,
-        recipientAccountNumber: recipient.accountNumber,
-        recipientBank: recipient.bankName,
-        sourceBank: "Zengly Wallet",
-        sourceAccountNumber: "",
-        amount: amount,
-        note: _noteInput,
-        fee: _fee,
-        date: DateTime.now(),
-        transactionReference: "",
-        providerReference: "",
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isZenglyTransfer) {
+      _selectedBank = BankAccountOption(
+        bankName: "Guaranty Trust Bank (GTBank)",
+        accountNumber: "0428658653",
+        accountName: "Ability Elijah",
+        logo: AppImages.gtbankLogo,
+        bankCode: "058",
+        brandColor: const Color(0xFFE55300),
+      );
+    }
   }
 
   @override
   void dispose() {
+    _amountController.dispose();
+    _noteController.dispose();
+    _usernameController.dispose();
     _accountNumberController.dispose();
-    _searchController.dispose();
-    _searchFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onSelectSuggestedUser(Map<String, String> user) {
+    setState(() {
+      _selectedUsername = user["username"]!;
+      _usernameController.text = _selectedUsername;
+      _resolvedFullName = user["name"]!;
+      _isZenglyUserResolved = true;
+    });
+  }
+
+  void _onUsernameChanged(String value) {
+    final clean = value.trim();
+    if (clean.isEmpty) {
+      setState(() {
+        _isZenglyUserResolved = false;
+        _resolvedFullName = "";
+      });
+      return;
+    }
+    final formatted = clean.startsWith("@") ? clean : "@$clean";
+    final match = _suggestedZenglyUsers.firstWhere(
+      (u) => u["username"]!.toLowerCase() == formatted.toLowerCase(),
+      orElse: () => {
+        "username": formatted,
+        "name": "${formatted.substring(1).toUpperCase()} (Zengly User)",
+        "role": "Verified Member",
+      },
+    );
+    setState(() {
+      _selectedUsername = formatted;
+      _resolvedFullName = match["name"]!;
+      _isZenglyUserResolved = true;
+    });
+  }
+
+  Future<void> _pickBank() async {
+    final result = await AppOverlays.selectBankSheet(context: context);
+    if (result != null) {
+      setState(() {
+        _selectedBank = result;
+      });
+      if (_accountNumberController.text.length == 10) {
+        _resolveBankAccount(_accountNumberController.text);
+      }
+    }
+  }
+
+  void _onAccountNumberChanged(String val) {
+    final clean = val.replaceAll(RegExp(r'\D'), '');
+    if (clean.length == 10) {
+      _resolveBankAccount(clean);
+    } else {
+      setState(() {
+        _isAccountResolved = false;
+        _resolvedAccountName = "";
+      });
+    }
+  }
+
+  Future<void> _resolveBankAccount(String nuban) async {
+    setState(() {
+      _isValidatingAccount = true;
+      _isAccountResolved = false;
+    });
+    await Future.delayed(const Duration(milliseconds: 650));
+    if (!mounted) return;
+    setState(() {
+      _isValidatingAccount = false;
+      _isAccountResolved = true;
+      _resolvedAccountName = "ADEWALE BABATUNDE OLUWASEUN";
+    });
+  }
+
+  void _selectBeneficiary(Map<String, String> b) {
+    _accountNumberController.text = b["account"]!;
+    setState(() {
+      _isAccountResolved = true;
+      _resolvedAccountName = b["name"]!.toUpperCase();
+    });
+  }
+
+  void _setAmount(double amount) {
+    setState(() {
+      _enteredAmount = amount;
+      _amountController.text = NumberFormat("#,##0").format(amount);
+    });
+  }
+
+  void _setPercentage(double percent) {
+    _setAmount(_walletBalance * percent);
+  }
+
+  void _onContinue() {
+    final amount = double.tryParse(_amountController.text.replaceAll(",", "")) ?? 0;
+    if (amount <= 0) {
+      AppOverlays.showToast(
+        context: context,
+        title: "Invalid Amount",
+        message: "Please enter a transfer amount greater than ₦0.00",
+        toastType: ToastificationType.error,
+      );
+      return;
+    }
+    if (amount > _walletBalance) {
+      AppOverlays.showToast(
+        context: context,
+        title: "Insufficient Balance",
+        message: "You cannot transfer more than your available balance ₦2,000,000.00",
+        toastType: ToastificationType.error,
+      );
+      return;
+    }
+
+    final isZengly = widget.isZenglyTransfer;
+    final recipientName = isZengly ? _resolvedFullName : _resolvedAccountName;
+    final recipientAccount = isZengly ? _selectedUsername : _accountNumberController.text;
+    final recipientBank = isZengly ? "Zengly Wallet" : (_selectedBank?.bankName ?? "Interbank");
+
+    if (recipientName.isEmpty || recipientAccount.isEmpty) {
+      AppOverlays.showToast(
+        context: context,
+        title: "Recipient Required",
+        message: isZengly
+            ? "Please enter or select a valid Zengly @username"
+            : "Please enter and verify a 10-digit NUBAN account number",
+        toastType: ToastificationType.warning,
+      );
+      return;
+    }
+
+    final fee = isZengly ? 0.0 : 10.0;
+    final note = _noteController.text.trim().isEmpty ? "Funds Transfer" : _noteController.text.trim();
+
+    final transferResult = TransferResult(
+      recipientName: recipientName,
+      recipientAccountNumber: recipientAccount,
+      recipientBank: recipientBank,
+      sourceBank: "Zengly Core Wallet",
+      sourceAccountNumber: "028764637",
+      amount: amount,
+      note: note,
+      fee: fee,
+      date: DateTime.now(),
+      transactionReference: "TRF${DateTime.now().millisecondsSinceEpoch}",
+      providerReference: "PRV${DateTime.now().millisecondsSinceEpoch}",
+    );
+
+    context.pushNamed(
+      AppRouter.confirmTransfer,
+      extra: transferResult,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.isZenglyTransfer) return _buildZenglyTransfer(context);
-    return _buildBankTransfer(context);
-  }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = const Color(0xFFB57510);
+    final cardBg = isDark ? const Color(0xFF221D16) : Colors.white;
+    final cardBorder = isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE8E0D2);
 
-  Widget _buildBankTransfer(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        surfaceTintColor: Theme.of(context).colorScheme.surface,
-        title: Text(
-          "Enter Details",
-          style: GoogleFonts.raleway(
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-            letterSpacing: 0,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: AppDimensions.viewPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 8),
-            AccountBalanceTile(),
-            SizedBox(height: 32),
-            AppTextField(
-              controller: _accountNumberController,
-              labelText: "Account Number",
-            ),
-            SizedBox(height: 24),
-            AccountDetailsCard(),
-            SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: AppButton(
-                onPressed: () {
-                  context.pushNamed(AppRouter.amountScreen);
-                },
-                actionText: "Continue",
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildZenglyTransfer(BuildContext context) {
-    return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF16130E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -183,193 +264,719 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
         leading: IconButton(
           onPressed: () => context.pop(),
           icon: Icon(
-            Icons.arrow_back,
-            color: Theme.of(context).colorScheme.onSurface,
+            Icons.arrow_back_ios_new_rounded,
+            size: 19,
+            color: isDark ? Colors.white : const Color(0xFF1E1A14),
           ),
         ),
         title: Text(
-          "Transfer",
+          widget.isZenglyTransfer ? "Send to Zengly User" : "Transfer to Other Bank",
           style: GoogleFonts.raleway(
             fontWeight: FontWeight.w700,
-            fontSize: 20,
-            letterSpacing: 0,
+            fontSize: 18,
+            color: isDark ? Colors.white : const Color(0xFF1E1A14),
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.outlineVariant,
-                borderRadius: BorderRadius.circular(100),
+          // Balance pill
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF262017) : const Color(0xFFF0EBE0),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: primaryColor.withValues(alpha: 0.25),
               ),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Balance ",
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.scrim,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "₦345,778.90",
-                      style: GoogleFonts.inter(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Balance: ",
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: isDark ? Colors.white60 : Colors.black54,
+                  ),
                 ),
-              ),
+                Text(
+                  "₦2,000,000.00",
+                  style: GoogleFonts.inter(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: primaryColor,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        padding: AppDimensions.viewPadding,
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 32),
+        physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16),
-            DottedBorder(
-              options: RoundedRectDottedBorderOptions(
-                radius: const Radius.circular(12),
-                color: Theme.of(context).colorScheme.primary,
-                dashPattern: const [6, 4],
-                strokeWidth: 1.2,
+            // Instant Settlement / Zero Fee Promo Banner
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: widget.isZenglyTransfer
+                      ? [const Color(0xFF382709), const Color(0xFF211B12)]
+                      : (isDark
+                          ? [const Color(0xFF282117), const Color(0xFF1C1812)]
+                          : [const Color(0xFFFBF4E8), const Color(0xFFF3EADE)]),
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: primaryColor.withValues(alpha: 0.3),
+                ),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  width: double.infinity,
-                  height: 86,
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: primaryColor.withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      widget.isZenglyTransfer ? Icons.bolt_rounded : Icons.lock_outline_rounded,
+                      color: primaryColor,
+                      size: 22,
+                    ),
                   ),
-                  child: Stack(
-                    children: [
-                      // Cash artwork bleeds past the card's vertical bounds and
-                      // is trimmed by the ClipRRect, matching the design.
-                      Positioned(
-                        right: 4,
-                        top: -12,
-                        child: Image.asset(
-                          AppImages.cash,
-                          height: 109,
-                          width: 109,
-                          fit: BoxFit.contain,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.isZenglyTransfer ? "Instant & 100% Free Transfer" : "Bank-Grade Secure Interbank Settlement",
+                          style: GoogleFonts.inter(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.isZenglyTransfer
+                              ? "Transfers to any Zengly @username settle in seconds with zero charges."
+                              : "Instant NIP credit to all 50+ Nigerian commercial & microfinance banks.",
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            color: isDark ? Colors.white60 : Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Recipient Section
+            if (widget.isZenglyTransfer) ...[
+              // Zengly Username Input
+              Text(
+                "Recipient Zengly @Username",
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white70 : const Color(0xFF5A4D3B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: cardBorder),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: primaryColor.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        "@",
+                        style: GoogleFonts.inter(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          color: primaryColor,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(14, 12, 110, 12),
-                        child: Center(
-                          child: Text(
-                            "You have made 0 of 4 interbank transfers today. Transfer now to get ₦10 cashback.",
-                            style: GoogleFonts.inter(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0,
-                              height: 1.4,
-                            ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextField(
+                        controller: _usernameController,
+                        onChanged: _onUsernameChanged,
+                        style: GoogleFonts.inter(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: "Enter username (e.g. tiwasavage)",
+                          hintStyle: GoogleFonts.inter(
+                            fontSize: 13.5,
+                            color: isDark ? Colors.white38 : Colors.black38,
                           ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    if (_isZenglyUserResolved)
+                      const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20),
+                  ],
+                ),
+              ),
+
+              // Resolved User Card
+              if (_isZenglyUserResolved) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withValues(alpha: isDark ? 0.12 : 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: primaryColor,
+                        child: Text(
+                          _resolvedFullName.isNotEmpty ? _resolvedFullName[0] : "Z",
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _resolvedFullName,
+                              style: GoogleFonts.inter(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                              ),
+                            ),
+                            Text(
+                              "$_selectedUsername • Verified Zengly Account",
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                color: const Color(0xFF10B981),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ),
-            SizedBox(height: 16),
-            TextField(
-              controller: _searchController,
-              focusNode: _searchFocusNode,
-              onChanged: (value) => setState(() => _query = value),
-              style: GoogleFonts.inter(fontSize: 15, letterSpacing: 0),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Theme.of(context).colorScheme.outlineVariant,
-                hintText: "Search name, @username, or phone",
-                hintStyle: GoogleFonts.inter(
-                  fontSize: 15,
-                  letterSpacing: 0,
-                  color: Theme.of(context).colorScheme.scrim,
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none,
+              ],
+
+              const SizedBox(height: 14),
+
+              // Ballers Suggestion Chips
+              Text(
+                "Quick Stars & Ballers:",
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: isDark ? Colors.white54 : Colors.black54,
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            if (_selectedRecipient != null) ...[
-              _RecipientResultTile(
-                recipient: _selectedRecipient!,
-                onTap: () => setState(() => _selectedRecipient = null),
-              ),
-              SizedBox(height: 16),
-              AmountTextField(
-                fee: _fee,
-                onAmountChanged: (value) => _amountInput = value,
-                onNoteChanged: (value) => _noteInput = value,
-              ),
-              SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: AppButton(
-                  onPressed: _continue,
-                  actionText: "Continue",
-                ),
-              ),
-            ] else if (_filteredRecipients.isNotEmpty)
-              ..._filteredRecipients.map(
-                (recipient) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _RecipientResultTile(
-                    recipient: recipient,
-                    onTap: () => _selectRecipient(recipient),
-                  ),
-                ),
-              )
-            else ...[
-              _ZenglyOptionTile(
-                icon: Icons.alternate_email,
-                title: "Send via Username",
-                subtitle: "Find by @username",
-                onTap: _pickBankAccount,
-              ),
-              SizedBox(height: 12),
-              _ZenglyOptionTile(
-                icon: Icons.phone_outlined,
-                title: "Send via Phone",
-                subtitle: "Enter phone number",
-                onTap: _pickBankAccount,
-              ),
-              SizedBox(height: 24),
-              Center(
-                child: GestureDetector(
-                  onTap: () => context.pushNamed(AppRouter.preTransferScreen),
-                  child: Text(
-                    "More ways to send",
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).colorScheme.scrim,
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _suggestedZenglyUsers.map((user) {
+                  final isSelected = _selectedUsername == user["username"];
+                  return InkWell(
+                    onTap: () => _onSelectSuggestedUser(user),
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? primaryColor
+                            : (isDark ? const Color(0xFF262017) : const Color(0xFFEDE5D8)),
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(
+                          color: isSelected ? primaryColor : Colors.transparent,
+                        ),
+                      ),
+                      child: Text(
+                        user["username"]!,
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                        ),
+                      ),
                     ),
+                  );
+                }).toList(),
+              ),
+            ] else ...[
+              // Bank Transfer: Bank Selector Card
+              Text(
+                "Select Destination Bank",
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white70 : const Color(0xFF5A4D3B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: _pickBank,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: cardBg,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: cardBorder),
                   ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: (_selectedBank?.brandColor ?? primaryColor).withValues(alpha: 0.15),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.account_balance_rounded,
+                            size: 19,
+                            color: _selectedBank?.brandColor ?? primaryColor,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _selectedBank?.bankName ?? "Tap to choose bank",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                            fontSize: 14.5,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ),
+                      Icon(Icons.keyboard_arrow_down_rounded, color: isDark ? Colors.white60 : Colors.black54),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Account Number Input
+              Text(
+                "10-Digit NUBAN Account Number",
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: isDark ? Colors.white70 : const Color(0xFF5A4D3B),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: cardBorder),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _accountNumberController,
+                        onChanged: _onAccountNumberChanged,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 2,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: "0123456789",
+                          hintStyle: GoogleFonts.inter(
+                            fontSize: 16,
+                            letterSpacing: 1,
+                            color: isDark ? Colors.white38 : Colors.black38,
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
+                    if (_isValidatingAccount)
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFB57510)),
+                      )
+                    else if (_isAccountResolved)
+                      const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20)
+                    else
+                      IconButton(
+                        onPressed: () async {
+                          final data = await Clipboard.getData(Clipboard.kTextPlain);
+                          if (data?.text != null) {
+                            final text = data!.text!.replaceAll(RegExp(r'\D'), '');
+                            if (text.length >= 10) {
+                              _accountNumberController.text = text.substring(0, 10);
+                              _resolveBankAccount(_accountNumberController.text);
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.content_paste_rounded, size: 18),
+                        tooltip: "Paste Account",
+                      ),
+                  ],
+                ),
+              ),
+
+              // Resolved Account Card
+              if (_isAccountResolved) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withValues(alpha: isDark ? 0.12 : 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.verified_user_rounded, color: Color(0xFF10B981), size: 22),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _resolvedAccountName,
+                              style: GoogleFonts.inter(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                              ),
+                            ),
+                            Text(
+                              "${_selectedBank?.bankName ?? 'Bank'} • Verified NUBAN",
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                color: const Color(0xFF10B981),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 14),
+
+              // Saved Beneficiaries Quick Tray
+              Text(
+                "Saved Beneficiaries:",
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  color: isDark ? Colors.white54 : Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 38,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _savedBeneficiaries.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 8),
+                  itemBuilder: (context, idx) {
+                    final b = _savedBeneficiaries[idx];
+                    return InkWell(
+                      onTap: () => _selectBeneficiary(b),
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF262017) : const Color(0xFFEDE5D8),
+                          borderRadius: BorderRadius.circular(100),
+                          border: Border.all(color: cardBorder),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.person_outline_rounded, size: 14, color: primaryColor),
+                            const SizedBox(width: 6),
+                            Text(
+                              b["name"]!,
+                              style: GoogleFonts.inter(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
+
+            const SizedBox(height: 24),
+
+            // Amount Section
+            Text(
+              "Transfer Amount",
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : const Color(0xFF5A4D3B),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: cardBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "₦",
+                        style: GoogleFonts.inter(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          color: primaryColor,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          keyboardType: TextInputType.number,
+                          onChanged: (val) {
+                            final cleaned = val.replaceAll(",", "");
+                            final parsed = double.tryParse(cleaned) ?? 0;
+                            setState(() => _enteredAmount = parsed);
+                          },
+                          style: GoogleFonts.inter(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.5,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: "0.00",
+                            hintStyle: GoogleFonts.inter(
+                              fontSize: 26,
+                              color: isDark ? Colors.white24 : Colors.black26,
+                            ),
+                            border: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  // Quick Amount Chips
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _QuickAmountChip(label: "+₦1k", onTap: () => _setAmount(_enteredAmount + 1000)),
+                      _QuickAmountChip(label: "+₦5k", onTap: () => _setAmount(_enteredAmount + 5000)),
+                      _QuickAmountChip(label: "+₦10k", onTap: () => _setAmount(_enteredAmount + 10000)),
+                      _QuickAmountChip(label: "+₦50k", onTap: () => _setAmount(_enteredAmount + 50000)),
+                      _QuickAmountChip(label: "25%", onTap: () => _setPercentage(0.25)),
+                      _QuickAmountChip(label: "50%", onTap: () => _setPercentage(0.50)),
+                      _QuickAmountChip(label: "Max", onTap: () => _setPercentage(1.0)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+
+            // Narration / Note
+            Text(
+              "Remark / Note (Optional)",
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : const Color(0xFF5A4D3B),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: cardBg,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: cardBorder),
+              ),
+              child: TextField(
+                controller: _noteController,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+                decoration: InputDecoration(
+                  hintText: "What's this transfer for? (e.g. Weekend lunch treat)",
+                  hintStyle: GoogleFonts.inter(
+                    fontSize: 13.5,
+                    color: isDark ? Colors.white38 : Colors.black38,
+                  ),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Cost Summary Card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF1E1A14) : const Color(0xFFF3ECE0),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isDark ? Colors.white10 : const Color(0xFFE2D6C5),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Transfer Amount",
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                      ),
+                      Text(
+                        "₦${NumberFormat("#,##0.00").format(_enteredAmount)}",
+                        style: GoogleFonts.inter(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Transaction Fee",
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                        ),
+                      ),
+                      Text(
+                        widget.isZenglyTransfer ? "FREE (₦0.00)" : "₦10.00",
+                        style: GoogleFonts.inter(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: widget.isZenglyTransfer ? const Color(0xFF10B981) : primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Divider(height: 18),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Total Debit",
+                        style: GoogleFonts.inter(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      Text(
+                        "₦${NumberFormat("#,##0.00").format(_enteredAmount + (widget.isZenglyTransfer ? 0 : 10))}",
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 28),
+
+            // Continue CTA Button
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                onPressed: _onContinue,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  "Continue to Confirm",
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -377,146 +984,35 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
   }
 }
 
-class _RecipientResultTile extends StatelessWidget {
-  final _MockRecipient recipient;
+class _QuickAmountChip extends StatelessWidget {
+  final String label;
   final VoidCallback onTap;
 
-  const _RecipientResultTile({required this.recipient, required this.onTap});
+  const _QuickAmountChip({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.outlineVariant,
-          borderRadius: BorderRadius.circular(12),
+          color: isDark ? const Color(0xFF2C241B) : const Color(0xFFF3ECE0),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: const Color(0xFFB57510).withValues(alpha: 0.25),
+          ),
         ),
-        child: Row(
-          children: [
-            ClipOval(
-              child: Image.asset(
-                recipient.logo,
-                height: 40,
-                width: 40,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "${recipient.accountNumber}, ${recipient.name}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    recipient.bankName,
-                    style: GoogleFonts.inter(
-                      fontSize: 12,
-                      color: Theme.of(context).colorScheme.scrim,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 8),
-            Container(
-              height: 22,
-              width: 22,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.onSecondary,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.check,
-                size: 14,
-                color: Theme.of(context).colorScheme.surface,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ZenglyOptionTile extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ZenglyOptionTile({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.outlineVariant,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Container(
-              height: 44,
-              width: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.secondaryContainer,
-              ),
-              child: Icon(
-                icon,
-                size: 20,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: GoogleFonts.inter(
-                      fontSize: 13,
-                      letterSpacing: 0,
-                      color: Theme.of(context).colorScheme.scrim,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              Icons.chevron_right,
-              color: Theme.of(context).colorScheme.scrim,
-            ),
-          ],
+        child: Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFFB57510),
+          ),
         ),
       ),
     );

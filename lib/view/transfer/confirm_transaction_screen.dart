@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../../data/data.dart';
 import '../../utils/utils.dart';
@@ -26,6 +27,9 @@ class _ConfirmTransactionScreenState
   void _onDigit(String digit) {
     if (_pin.length >= 4) return;
     setState(() => _pin += digit);
+    if (_pin.length == 4) {
+      Future.delayed(const Duration(milliseconds: 200), _submit);
+    }
   }
 
   void _onDelete() {
@@ -61,17 +65,19 @@ class _ConfirmTransactionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = const Color(0xFFB57510);
+
     return Scaffold(
+      backgroundColor: isDark ? const Color(0xFF16130E) : const Color(0xFFFAF7F2),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          onPressed: () {
-            context.pop();
-          },
+          onPressed: () => context.pop(),
           color: Theme.of(context).colorScheme.onSurface,
-          icon: Icon(Icons.close_outlined),
+          icon: const Icon(Icons.close_rounded),
         ),
       ),
       body: SafeArea(
@@ -79,25 +85,45 @@ class _ConfirmTransactionScreenState
           padding: AppDimensions.viewPadding,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-
             children: [
               Text(
-                "Enter Transaction PIN",
+                "Authorize Transfer",
                 style: GoogleFonts.raleway(
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0,
-                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 22,
+                  color: isDark ? Colors.white : const Color(0xFF1E1A14),
                 ),
               ),
-
-              SizedBox(height: 32),
+              const SizedBox(height: 8),
+              // Transfer context summary pill
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF262017) : const Color(0xFFEDE5D8),
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                    color: primaryColor.withValues(alpha: 0.25),
+                  ),
+                ),
+                child: Text(
+                  "₦${NumberFormat("#,##0.00").format(widget.transfer.amount)} to ${widget.transfer.recipientName}",
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
               IntrinsicWidth(
                 child: Container(
                   padding: const EdgeInsets.all(10.0),
                   height: 44,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.outlineVariant,
-                    borderRadius: BorderRadius.all(Radius.circular(100)),
+                    color: isDark ? const Color(0xFF241F18) : const Color(0xFFEBE4D8),
+                    borderRadius: const BorderRadius.all(Radius.circular(100)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,

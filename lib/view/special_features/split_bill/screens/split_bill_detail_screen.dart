@@ -3,9 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:toastification/toastification.dart';
+
 import '../../../../data/data.dart';
 import '../../../../utils/utils.dart';
 import '../../../../widgets/widgets.dart';
+import '../../../auth/transaction_pin/enter_transaction_pin_screen.dart';
 
 class _SplitPayer {
   final String name;
@@ -403,6 +406,97 @@ class _SplitBillDetailScreenState extends ConsumerState<SplitBillDetailScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      AppOverlays.showToast(
+                        context: context,
+                        title: "Nudges Sent!",
+                        message: "Sent payment reminders to 2 pending friends via SMS and notification.",
+                        toastType: ToastificationType.success,
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Color(0xFFB57510)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    icon: const Icon(Icons.notifications_active_outlined, size: 18, color: Color(0xFFB57510)),
+                    label: Text(
+                      "Remind All",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.5,
+                        color: const Color(0xFFB57510),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final pin = await EnterTransactionPinScreen.show(context);
+                      if (pin != null && context.mounted) {
+                        AppOverlays.showToast(
+                          context: context,
+                          title: "Share Paid!",
+                          message: "You have successfully paid your ₦35,000 share for this bill.",
+                          toastType: ToastificationType.success,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB57510),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    icon: const Icon(Icons.check_circle_outline_rounded, size: 18, color: Colors.white),
+                    label: Text(
+                      "Pay My Share",
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: TextButton.icon(
+                onPressed: () {
+                  AppOverlays.showToast(
+                    context: context,
+                    title: "Invite Link Copied",
+                    message: "https://zengly.app/split/bill_492041 copied to clipboard",
+                    toastType: ToastificationType.success,
+                  );
+                },
+                icon: const Icon(Icons.share_rounded, size: 16, color: Color(0xFFB57510)),
+                label: Text(
+                  "Share Invite Link or QR Code",
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFFB57510),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
