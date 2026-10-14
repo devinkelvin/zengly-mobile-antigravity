@@ -238,7 +238,7 @@ class _PillButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.black.withValues(alpha: 0.55),
           borderRadius: BorderRadius.circular(100),
@@ -253,8 +253,8 @@ class _PillButton extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(width: 6),
-            Image.asset(imageIcon, width: 14, height: 14),
+            const SizedBox(width: 4),
+            Image.asset(imageIcon, width: 13, height: 13),
           ],
         ),
       ),

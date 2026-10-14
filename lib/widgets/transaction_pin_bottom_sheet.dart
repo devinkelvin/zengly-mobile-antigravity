@@ -147,20 +147,22 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    const primaryAmber = Color(0xFFC58314);
-    const sheetBg = Color(0xFF1E1E1E);
-    const boxBg = Color(0xFF282828);
-    const keyBg = Color(0xFF2E2E2E);
+    const primaryAmber = Color(0xFFB57510);
+    const activeBorderAmber = Color(0xFFC58314);
+    const sheetBg = Color(0xFF19191B);
+    const boxBg = Color(0xFF222225);
+    const keyBg = Color(0xFF28282B);
+    const dividerColor = Color(0xFF28282B);
 
     return Container(
       decoration: const BoxDecoration(
         color: sheetBg,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
       ),
       padding: EdgeInsets.only(
-        top: 10,
-        left: 20,
-        right: 20,
+        top: 12,
+        left: 16,
+        right: 16,
         bottom: MediaQuery.of(context).padding.bottom + 16,
       ),
       child: Column(
@@ -169,17 +171,17 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
           // Drag handle
           Center(
             child: Container(
-              width: 36,
-              height: 4,
+              width: 40,
+              height: 4.5,
               decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2),
+                color: const Color(0xFF48484A),
+                borderRadius: BorderRadius.circular(3),
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
 
-          // Header Row matching Screenshot 1
+          // Header Row matching Screenshot
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -187,16 +189,16 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
               GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
                 child: Container(
-                  width: 38,
-                  height: 38,
+                  width: 40,
+                  height: 40,
                   decoration: const BoxDecoration(
-                    color: Color(0xFF2B2B2B),
+                    color: keyBg,
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
                     Icons.close,
-                    color: Colors.white70,
-                    size: 20,
+                    color: Colors.white,
+                    size: 19,
                   ),
                 ),
               ),
@@ -208,7 +210,7 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
                   textAlign: TextAlign.center,
                   style: GoogleFonts.inter(
                     fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),
                 ),
@@ -218,8 +220,8 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
               GestureDetector(
                 onTap: _onBiometrics,
                 child: Container(
-                  width: 38,
-                  height: 38,
+                  width: 40,
+                  height: 40,
                   decoration: const BoxDecoration(
                     color: primaryAmber,
                     shape: BoxShape.circle,
@@ -234,9 +236,11 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
             ],
           ),
 
+          const SizedBox(height: 14),
+          const Divider(color: dividerColor, height: 1, thickness: 1),
           const SizedBox(height: 24),
 
-          // 4 PIN Boxes matching Screenshot 1
+          // 4 PIN Boxes matching Screenshot
           AnimatedBuilder(
             animation: _shakeController,
             builder: (context, child) {
@@ -253,17 +257,19 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
                 final isActive = index == _pin.length;
 
                 return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
-                  width: 58,
-                  height: 58,
+                  margin: const EdgeInsets.symmetric(horizontal: 6),
+                  width: 56,
+                  height: 56,
                   decoration: BoxDecoration(
                     color: boxBg,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: _errorMessage != null
                           ? const Color(0xFFEF4444)
-                          : (isActive ? primaryAmber : Colors.transparent),
-                      width: 1.8,
+                          : (isActive
+                              ? activeBorderAmber
+                              : const Color(0xFF28282B)),
+                      width: isActive ? 1.8 : 1.0,
                     ),
                   ),
                   alignment: Alignment.center,
@@ -271,7 +277,7 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
                       ? Text(
                           "*",
                           style: GoogleFonts.inter(
-                            fontSize: 28,
+                            fontSize: 26,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -298,77 +304,76 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
 
           // "Forgot Transaction Pin?" Link
           GestureDetector(
-            onTap: widget.onForgotPin ??
-                () {
-                  Navigator.of(context).pop();
-                },
+            onTap: widget.onForgotPin ?? () => Navigator.of(context).pop(),
             child: Text(
               "Forgot Transaction Pin?",
               style: GoogleFonts.inter(
-                fontSize: 14,
+                fontSize: 13.5,
                 fontWeight: FontWeight.w500,
                 color: Colors.white,
               ),
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 22),
 
-          // Custom Dark Numeric Keypad matching Screenshot 1
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              children: [
-                _buildKeypadRow(["1", "2", "3"], keyBg),
-                const SizedBox(height: 10),
-                _buildKeypadRow(["4", "5", "6"], keyBg),
-                const SizedBox(height: 10),
-                _buildKeypadRow(["7", "8", "9"], keyBg),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
+          // Custom Dark Numeric Keypad matching Screenshot with pixel-perfect LayoutBuilder
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const gap = 8.0;
+              final singleWidth = (constraints.maxWidth - (gap * 2)) / 3;
+              final doubleWidth = (singleWidth * 2) + gap;
+
+              return Column(
+                children: [
+                  _buildKeypadRow(["1", "2", "3"], singleWidth, gap, keyBg),
+                  const SizedBox(height: 8),
+                  _buildKeypadRow(["4", "5", "6"], singleWidth, gap, keyBg),
+                  const SizedBox(height: 8),
+                  _buildKeypadRow(["7", "8", "9"], singleWidth, gap, keyBg),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: doubleWidth,
+                        height: 54,
                         child: _buildKeypadButton("0", keyBg),
                       ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                      const SizedBox(width: gap),
+                      SizedBox(
+                        width: singleWidth,
+                        height: 54,
                         child: InkWell(
                           onTap: _onDelete,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
                           child: Container(
-                            height: 48,
+                            height: 54,
                             decoration: BoxDecoration(
                               color: keyBg,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             alignment: Alignment.center,
                             child: const Icon(
                               Icons.backspace_outlined,
                               color: Colors.white,
-                              size: 20,
+                              size: 21,
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
 
           const SizedBox(height: 20),
 
-          // Bottom Primary Button "Send Transfer" matching Screenshot 1
+          // Bottom Primary Button "Send Transfer" matching Screenshot
           SizedBox(
             width: double.infinity,
-            height: 52,
+            height: 54,
             child: ElevatedButton(
               onPressed: !_isLoading
                   ? () {
@@ -385,7 +390,7 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
                   : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryAmber,
-                disabledBackgroundColor: primaryAmber.withValues(alpha: 0.6),
+                disabledBackgroundColor: primaryAmber,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -406,6 +411,7 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
+                        color: Colors.white,
                       ),
                     ),
             ),
@@ -415,35 +421,35 @@ class _TransactionPinBottomSheetState extends State<TransactionPinBottomSheet>
     );
   }
 
-  Widget _buildKeypadRow(List<String> digits, Color bg) {
+  Widget _buildKeypadRow(
+      List<String> digits, double width, double gap, Color bg) {
     return Row(
-      children: digits.map((d) {
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: _buildKeypadButton(d, bg),
-          ),
-        );
-      }).toList(),
+      children: [
+        SizedBox(width: width, height: 54, child: _buildKeypadButton(digits[0], bg)),
+        SizedBox(width: gap),
+        SizedBox(width: width, height: 54, child: _buildKeypadButton(digits[1], bg)),
+        SizedBox(width: gap),
+        SizedBox(width: width, height: 54, child: _buildKeypadButton(digits[2], bg)),
+      ],
     );
   }
 
   Widget _buildKeypadButton(String digit, Color bg) {
     return InkWell(
       onTap: () => _onDigit(digit),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        height: 48,
+        height: 54,
         decoration: BoxDecoration(
           color: bg,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
         ),
         alignment: Alignment.center,
         child: Text(
           digit,
           style: GoogleFonts.inter(
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
+            fontSize: 22,
+            fontWeight: FontWeight.w400,
             color: Colors.white,
           ),
         ),
