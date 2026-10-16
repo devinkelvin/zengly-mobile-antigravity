@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../controller/theme/theme_controller.dart';
-import '../../data/data.dart';
 
 class AppearanceScreen extends ConsumerWidget {
   const AppearanceScreen({super.key});
@@ -11,28 +10,32 @@ class AppearanceScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentMode = ref.watch(themeProvider);
-    const bgColor = Color(0xFF14120E);
-    const cardColor = Color(0xFF1F1D19);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2);
+    final cardColor = isDark ? const Color(0xFF1F1D19) : Colors.white;
     const primaryAmber = Color(0xFFC58314);
-    const dividerColor = Color(0xFF2C2822);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final textSecondary = isDark ? Colors.white60 : const Color(0xFF6B5E4A);
+    final buttonBg = isDark ? const Color(0xFF25231F) : const Color(0xFFEDE4D4);
 
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => Navigator.of(context).pop(),
             child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF25231F),
+              decoration: BoxDecoration(
+                color: buttonBg,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back,
-                color: Colors.white,
+                color: textPrimary,
                 size: 20,
               ),
             ),
@@ -43,7 +46,7 @@ class AppearanceScreen extends ConsumerWidget {
           style: GoogleFonts.inter(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: textPrimary,
           ),
         ),
         centerTitle: false,
@@ -59,7 +62,7 @@ class AppearanceScreen extends ConsumerWidget {
                 style: GoogleFonts.inter(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
@@ -67,7 +70,7 @@ class AppearanceScreen extends ConsumerWidget {
                 "Choose how Zengly looks on your device.",
                 style: GoogleFonts.inter(
                   fontSize: 13,
-                  color: Colors.white60,
+                  color: textSecondary,
                 ),
               ),
               const SizedBox(height: 20),
@@ -136,7 +139,7 @@ class AppearanceScreen extends ConsumerWidget {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF282520),
+                              color: isDark ? const Color(0xFF282520) : const Color(0xFFF0EAE0),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
@@ -155,7 +158,7 @@ class AppearanceScreen extends ConsumerWidget {
                                   style: GoogleFonts.inter(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.white,
+                                    color: textPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -163,7 +166,7 @@ class AppearanceScreen extends ConsumerWidget {
                                   "Automatically match your device's light and dark appearance.",
                                   style: GoogleFonts.inter(
                                     fontSize: 12,
-                                    color: Colors.white60,
+                                    color: textSecondary,
                                   ),
                                 ),
                               ],
@@ -173,7 +176,7 @@ class AppearanceScreen extends ConsumerWidget {
                           Switch.adaptive(
                             value: currentMode == ThemeMode.system,
                             activeTrackColor: primaryAmber,
-                            activeColor: Colors.white,
+                            activeThumbColor: Colors.white,
                             onChanged: (val) {
                               ref.read(themeProvider.notifier).setTheme(
                                     val ? ThemeMode.system : ThemeMode.dark,

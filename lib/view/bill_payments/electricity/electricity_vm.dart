@@ -54,7 +54,7 @@ class ElectricityNotifier extends ChangeNotifier {
   }) {
     _selectedDisco = disco;
     _meterNumber = meterNumber;
-    _amount = amount;
+    _amount = amount.replaceAll('₦', '').trim();
     if (customerName != null) _customerName = customerName;
     if (address != null) _meterAddress = address;
     if (type != null) _selectedElectricityType = type;
@@ -83,7 +83,7 @@ class ElectricityNotifier extends ChangeNotifier {
           : "Postpaid Settlement",
       unitsPurchased: estimatedUnits,
       token: _generatedToken,
-      amount: "₦$_amount",
+      amount: "₦${_amount.replaceAll('₦', '').trim()}",
       date: DateFormat("dd MMM yyyy, hh:mm a").format(now),
       transactionId: "ELC-${now.millisecondsSinceEpoch}",
     );

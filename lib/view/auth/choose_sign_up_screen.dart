@@ -73,6 +73,7 @@ class _ChooseSignUpScreenState extends ConsumerState<ChooseSignUpScreen> {
                               actionText: l10n.createAnAccount,
                             ),
                           ),
+                          const SizedBox(height: 14),
                           SizedBox(
                             width: double.infinity,
                             child: AppButton(

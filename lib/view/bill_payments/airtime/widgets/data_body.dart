@@ -271,10 +271,10 @@ class _DataBodyState extends ConsumerState<DataBody> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 10.0,
-                crossAxisSpacing: 10.0,
-                childAspectRatio: 0.94,
+                crossAxisCount: 2,
+                mainAxisSpacing: 12.0,
+                crossAxisSpacing: 12.0,
+                childAspectRatio: 1.45,
               ),
               itemCount: plans.length,
               itemBuilder: (context, i) {

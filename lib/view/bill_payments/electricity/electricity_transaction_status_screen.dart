@@ -44,7 +44,8 @@ class _ElectricityTransactionStatusScreenState
   Widget build(BuildContext context) {
     final vm = ref.watch(electricityVm);
     final isPrepaid = vm.selectedElectricityType == ElectricityType.prepaid;
-    final amountStr = vm.amount.isNotEmpty ? "₦${vm.amount}" : "₦10,000";
+    final cleanAmt = vm.amount.replaceAll('₦', '').trim();
+    final amountStr = cleanAmt.isNotEmpty ? "₦$cleanAmt" : "₦10,000";
 
     return Scaffold(
       backgroundColor: const Color(0xFF16140F),

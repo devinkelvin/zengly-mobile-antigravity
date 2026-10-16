@@ -136,8 +136,9 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
       setState(() {
         _selectedBank = result;
       });
-      if (_accountNumberController.text.length == 10) {
-        _resolveBankAccount(_accountNumberController.text);
+      final clean = _accountNumberController.text.replaceAll(RegExp(r'\D'), '');
+      if (clean.length == 10) {
+        _resolveBankAccount(clean);
       }
     }
   }
@@ -148,29 +149,81 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
       _resolveBankAccount(clean);
     } else {
       setState(() {
+        _isValidatingAccount = false;
         _isAccountResolved = false;
         _resolvedAccountName = "";
       });
     }
   }
 
+  void _pasteAccountNumber() async {
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    if (data?.text != null) {
+      final clean = data!.text!.replaceAll(RegExp(r'\D'), '');
+      if (clean.isNotEmpty) {
+        final formatted = clean.length > 10 ? clean.substring(0, 10) : clean;
+        _accountNumberController.text = formatted;
+        _onAccountNumberChanged(formatted);
+      }
+    }
+  }
+
   Future<void> _resolveBankAccount(String nuban) async {
+    if (_selectedBank == null) {
+      setState(() {
+        _isValidatingAccount = false;
+        _isAccountResolved = false;
+        _resolvedAccountName = "";
+      });
+      return;
+    }
+
     setState(() {
       _isValidatingAccount = true;
       _isAccountResolved = false;
+      _resolvedAccountName = "";
     });
+
+    // Realistic NIP lookup delay
     await Future.delayed(const Duration(milliseconds: 650));
     if (!mounted) return;
+
+    String resolvedName;
+    if (nuban.startsWith("042") || nuban.startsWith("567")) {
+      resolvedName = "ABILITY ELIJAH OLUWAPELUMI";
+    } else if (nuban.startsWith("069") || nuban.startsWith("101")) {
+      resolvedName = "CHIDIEBERE EMMANUEL OKECHUKWU";
+    } else if (nuban.startsWith("208") || nuban.startsWith("305")) {
+      resolvedName = "FATIMA ABUBAKAR DANGOTE";
+    } else if (nuban.startsWith("200") || nuban.startsWith("803")) {
+      resolvedName = "BABATUNDE ADEWALE OLUWASEUN";
+    } else if (nuban.startsWith("902") || nuban.startsWith("621")) {
+      resolvedName = "FOLASHADE BLESSING ADEBAYO";
+    } else {
+      resolvedName = "KELVIN EKUHOHO ENTERPRISE";
+    }
+
     setState(() {
       _isValidatingAccount = false;
       _isAccountResolved = true;
-      _resolvedAccountName = "ADEWALE BABATUNDE OLUWASEUN";
+      _resolvedAccountName = resolvedName;
     });
   }
 
   void _selectBeneficiary(Map<String, String> b) {
     _accountNumberController.text = b["account"]!;
+    final matchBank = SelectBankSheet.allBanks.firstWhere(
+      (bank) => bank.bankName.toLowerCase().contains(b["bank"]!.toLowerCase()) || b["bank"]!.toLowerCase().contains(bank.bankName.toLowerCase()),
+      orElse: () => BankAccountOption(
+        bankName: b["bank"]!,
+        accountNumber: b["account"]!,
+        accountName: b["name"]!,
+        logo: AppImages.interBank,
+        brandColor: const Color(0xFFE5A93C),
+      ),
+    );
     setState(() {
+      _selectedBank = matchBank;
       _isAccountResolved = true;
       _resolvedAccountName = b["name"]!.toUpperCase();
     });
@@ -537,7 +590,7 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
             ] else ...[
               // Bank Transfer: Bank Selector Card
               Text(
-                "Select Destination Bank",
+                "Destination Bank & Account Details",
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -553,13 +606,17 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
                   decoration: BoxDecoration(
                     color: cardBg,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: cardBorder),
+                    border: Border.all(
+                      color: _selectedBank != null
+                          ? (_selectedBank!.brandColor ?? primaryColor).withValues(alpha: 0.3)
+                          : cardBorder,
+                    ),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 36,
-                        height: 36,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: (_selectedBank?.brandColor ?? primaryColor).withValues(alpha: 0.15),
@@ -567,135 +624,288 @@ class _SelectRecipientScreenState extends ConsumerState<SelectRecipientScreen> {
                         child: Center(
                           child: Icon(
                             Icons.account_balance_rounded,
-                            size: 19,
+                            size: 20,
                             color: _selectedBank?.brandColor ?? primaryColor,
                           ),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          _selectedBank?.bankName ?? "Tap to choose bank",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.inter(
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Destination Bank",
+                              style: GoogleFonts.inter(
+                                fontSize: 11,
+                                color: isDark ? Colors.white38 : Colors.black45,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _selectedBank?.bankName ?? "Tap to choose bank",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.inter(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w700,
+                                color: isDark ? Colors.white : Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Icon(Icons.keyboard_arrow_down_rounded, color: isDark ? Colors.white60 : Colors.black54),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: isDark ? Colors.white60 : Colors.black54,
+                      ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
-              // Account Number Input
-              Text(
-                "10-Digit NUBAN Account Number",
-                style: GoogleFonts.inter(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: isDark ? Colors.white70 : const Color(0xFF5A4D3B),
-                ),
-              ),
-              const SizedBox(height: 8),
+              // Account Number Input Box with Live Verification & Paste Button
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: cardBg,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: cardBorder),
+                  border: Border.all(
+                    color: _isAccountResolved
+                        ? const Color(0xFF2ED573).withValues(alpha: 0.6)
+                        : cardBorder,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _accountNumberController,
-                        onChanged: _onAccountNumberChanged,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        style: GoogleFonts.inter(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 2,
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: "0123456789",
-                          hintStyle: GoogleFonts.inter(
-                            fontSize: 16,
-                            letterSpacing: 1,
-                            color: isDark ? Colors.white38 : Colors.black38,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "10-Digit Recipient Account Number",
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              color: isDark ? Colors.white38 : Colors.black45,
+                            ),
                           ),
-                          border: InputBorder.none,
-                        ),
+                          TextField(
+                            controller: _accountNumberController,
+                            onChanged: _onAccountNumberChanged,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
+                            style: GoogleFonts.inter(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 2.0,
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                            decoration: InputDecoration(
+                              isDense: true,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                              hintText: "e.g. 0428658653",
+                              hintStyle: GoogleFonts.inter(
+                                fontSize: 15,
+                                letterSpacing: 1.0,
+                                color: isDark ? Colors.white24 : Colors.black26,
+                              ),
+                              border: InputBorder.none,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     if (_isValidatingAccount)
                       const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFB57510)),
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Color(0xFFE5A93C),
+                        ),
                       )
                     else if (_isAccountResolved)
-                      const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20)
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: Color(0xFF2ED573),
+                        size: 22,
+                      )
                     else
-                      IconButton(
-                        onPressed: () async {
-                          final data = await Clipboard.getData(Clipboard.kTextPlain);
-                          if (data?.text != null) {
-                            final text = data!.text!.replaceAll(RegExp(r'\D'), '');
-                            if (text.length >= 10) {
-                              _accountNumberController.text = text.substring(0, 10);
-                              _resolveBankAccount(_accountNumberController.text);
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.content_paste_rounded, size: 18),
-                        tooltip: "Paste Account",
+                      GestureDetector(
+                        onTap: _pasteAccountNumber,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF2E2619)
+                                : const Color(0xFFF3ECE0),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: const Color(0xFFE5A93C).withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Text(
+                            "PASTE",
+                            style: GoogleFonts.inter(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFFE5A93C),
+                            ),
+                          ),
+                        ),
                       ),
                   ],
                 ),
               ),
 
-              // Resolved Account Card
-              if (_isAccountResolved) ...[
+              // If 10 digits entered without bank selected
+              if (_accountNumberController.text.length == 10 && _selectedBank == null) ...[
+                const SizedBox(height: 10),
+                GestureDetector(
+                  onTap: _pickBank,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE5A93C).withValues(alpha: isDark ? 0.12 : 0.08),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: const Color(0xFFE5A93C).withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.info_outline_rounded, color: Color(0xFFE5A93C), size: 20),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "Please tap to select destination bank to verify account owner.",
+                            style: GoogleFonts.inter(
+                              fontSize: 12,
+                              color: isDark ? Colors.white70 : Colors.black87,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          "SELECT",
+                          style: GoogleFonts.inter(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFE5A93C),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+
+              // Loading NIP Indicator Card
+              if (_isValidatingAccount) ...[
                 const SizedBox(height: 10),
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withValues(alpha: isDark ? 0.12 : 0.08),
+                    color: isDark ? const Color(0xFF1E1C18) : const Color(0xFFF5EFE6),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+                    border: Border.all(color: isDark ? Colors.white10 : const Color(0xFFE5DECE)),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.verified_user_rounded, color: Color(0xFF10B981), size: 22),
-                      const SizedBox(width: 10),
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFE5A93C)),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Querying NIP name inquiry switch...",
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          color: isDark ? Colors.white60 : Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
+              // Dynamic Verified Account Owner Card
+              if (_isAccountResolved && _resolvedAccountName.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2ED573).withValues(alpha: isDark ? 0.12 : 0.08),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFF2ED573).withValues(alpha: 0.35)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2ED573).withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Center(
+                          child: Icon(Icons.verified_rounded, color: Color(0xFF2ED573), size: 22),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "VERIFIED ACCOUNT OWNER",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.8,
+                                    color: const Color(0xFF2ED573),
+                                  ),
+                                ),
+                                const Spacer(),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2ED573).withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    "NIP VERIFIED",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: const Color(0xFF2ED573),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 3),
                             Text(
                               _resolvedAccountName,
                               style: GoogleFonts.inter(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w700,
-                                color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w800,
+                                color: isDark ? Colors.white : const Color(0xFF1E1A14),
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
+                            const SizedBox(height: 2),
                             Text(
-                              "${_selectedBank?.bankName ?? 'Bank'} • Verified NUBAN",
+                              "${_selectedBank?.bankName ?? 'Bank'} • ${_accountNumberController.text}",
                               style: GoogleFonts.inter(
                                 fontSize: 11.5,
-                                color: const Color(0xFF10B981),
-                                fontWeight: FontWeight.w600,
+                                fontWeight: FontWeight.w500,
+                                color: isDark ? Colors.white60 : Colors.black54,
                               ),
                             ),
                           ],

@@ -41,7 +41,13 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF0D0C0A) : const Color(0xFFFAF7F2);
+    final buttonBg = isDark ? const Color(0xFF1E1D1A) : const Color(0xFFEDE4D4);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
@@ -51,14 +57,14 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
           child: GestureDetector(
             onTap: () => context.pop(),
             child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF25231F),
+              decoration: BoxDecoration(
+                color: buttonBg,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-                size: 20,
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: textPrimary,
+                size: 18,
               ),
             ),
           ),
@@ -73,12 +79,13 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
               style: GoogleFonts.raleway(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
+                color: textPrimary,
                 letterSpacing: 0,
               ),
             );
           },
         ),
-        actions: [BalanceWidget()],
+        actions: const [BalanceWidget()],
       ),
       body: Column(
         children: [
@@ -90,7 +97,7 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
               image: AppImages.smartPhone,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _AirtimeDataTabs(controller: _tabController),
@@ -99,7 +106,7 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: [AirtimeBody(), DataBody()],
+              children: const [AirtimeBody(), DataBody()],
             ),
           ),
         ],
@@ -108,107 +115,124 @@ class _AirtimeDataScreenState extends ConsumerState<AirtimeDataScreen>
   }
 }
 
-/// Two standalone cards rather than a segmented control — the selected one
-/// carries a gold outline and a check badge notched into its top-right corner.
+/// Unified, luxury segmented tab control matching the Zengly Bills & Payments family
 class _AirtimeDataTabs extends StatelessWidget {
   final TabController controller;
   const _AirtimeDataTabs({required this.controller});
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryGold = const Color(0xFFB57510);
+    final tabBg = isDark ? const Color(0xFF191714) : const Color(0xFFEEE7DC);
+    final borderColor = isDark ? Colors.white10 : const Color(0xFFDFD7CA);
+
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
-        return Row(
-          children: [
-            Expanded(
-              child: _TabCard(
-                label: "Airtime",
-                selected: controller.index == 0,
-                onTap: () => controller.animateTo(0),
+        return Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: tabBg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _SegmentTabItem(
+                  label: "Airtime",
+                  icon: Icons.phone_android_rounded,
+                  selected: controller.index == 0,
+                  onTap: () => controller.animateTo(0),
+                  primaryGold: primaryGold,
+                  isDark: isDark,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _TabCard(
-                label: "Data",
-                selected: controller.index == 1,
-                onTap: () => controller.animateTo(1),
+              Expanded(
+                child: _SegmentTabItem(
+                  label: "Data Bundles",
+                  icon: Icons.wifi_rounded,
+                  selected: controller.index == 1,
+                  onTap: () => controller.animateTo(1),
+                  primaryGold: primaryGold,
+                  isDark: isDark,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
   }
 }
 
-class _TabCard extends StatelessWidget {
+class _SegmentTabItem extends StatelessWidget {
   final String label;
+  final IconData icon;
   final bool selected;
   final VoidCallback onTap;
+  final Color primaryGold;
+  final bool isDark;
 
-  const _TabCard({
+  const _SegmentTabItem({
     required this.label,
+    required this.icon,
     required this.selected,
     required this.onTap,
+    required this.primaryGold,
+    required this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          height: 52,
-          decoration: BoxDecoration(
-            color: scheme.outlineVariant,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: selected ? scheme.primary : Colors.transparent,
-              width: 1.5,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        height: 44,
+        decoration: BoxDecoration(
+          color: selected
+              ? (isDark ? const Color(0xFF28231B) : Colors.white)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          border: selected
+              ? Border.all(color: primaryGold.withValues(alpha: 0.5), width: 1.2)
+              : null,
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.05),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: selected
+                  ? primaryGold
+                  : (isDark ? Colors.white54 : const Color(0xFF7A6E5D)),
             ),
-          ),
-          child: Stack(
-            children: [
-              Center(
-                child: Text(
-                  label,
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0,
-                    color: selected
-                        ? scheme.onSurface
-                        : scheme.onSurface.withValues(alpha: 0.5),
-                  ),
-                ),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 13.5,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                color: selected
+                    ? (isDark ? Colors.white : const Color(0xFF1E1A14))
+                    : (isDark ? Colors.white60 : const Color(0xFF7A6E5D)),
               ),
-              if (selected)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: Container(
-                    height: 22,
-                    width: 26,
-                    decoration: BoxDecoration(
-                      color: scheme.primary,
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(8),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.check,
-                      size: 14,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

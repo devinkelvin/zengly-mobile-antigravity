@@ -269,7 +269,7 @@ class _PostpaidBodyState extends ConsumerState<PostpaidBody> {
           keyboardType: const TextInputType.numberWithOptions(),
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
-            ThousandsFormatter(),
+            const ThousandsFormatter(symbol: ''),
           ],
         ),
 
@@ -300,7 +300,7 @@ class _PostpaidBodyState extends ConsumerState<PostpaidBody> {
               ref.read(electricityVm).setTransactionDetails(
                     disco: _selectedDisco,
                     meterNumber: _meterNumberController.text,
-                    amount: _amountController.text,
+                    amount: _amountController.text.replaceAll('₦', '').trim(),
                     customerName: "Kelvin Ekuhoho",
                     address: "14 Admiralty Way, Lekki Phase 1, Lagos",
                     type: ElectricityType.postpaid,

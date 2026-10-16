@@ -776,7 +776,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Text(
-                      "Requested Amount: ₦${CurrencyFormatter.format(_presetAmount!.toInt()).replaceFirst('₦', '')}",
+                      "Requested Amount: ${CurrencyFormatter.format(_presetAmount!.toInt())}",
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,

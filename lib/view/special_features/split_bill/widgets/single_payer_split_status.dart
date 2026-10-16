@@ -46,46 +46,50 @@ class _SinglePayerSplitStatusState
                 ),
               ),
               SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.isYou ? "You" : "Amara Williams",
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.isYou ? "You" : "Amara Williams",
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        "10%",
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color:
-                              widget.isPaid
-                                  ? Theme.of(context).colorScheme.onSecondary
-                                  : Color(0XFFFF3B30),
-                          letterSpacing: 0,
+                    Row(
+                      children: [
+                        Text(
+                          "10%",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color:
+                                widget.isPaid
+                                    ? Theme.of(context).colorScheme.onSecondary
+                                    : Color(0XFFFF3B30),
+                            letterSpacing: 0,
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        widget.isPaid ? "Paid" : "Unpaid",
-                        style: GoogleFonts.inter(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0,
-                          color: Theme.of(context).colorScheme.shadow,
+                        SizedBox(width: 10),
+                        Text(
+                          widget.isPaid ? "Paid" : "Unpaid",
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: 0,
+                            color: Theme.of(context).colorScheme.shadow,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              Spacer(),
+              const SizedBox(width: 10),
               Text(
                 "₦ 71,428.57",
                 style: GoogleFonts.inter(

@@ -26,6 +26,8 @@ class BankAccountOption {
 class SelectBankSheet extends StatefulWidget {
   const SelectBankSheet({super.key});
 
+  static List<BankAccountOption> get allBanks => _SelectBankSheetState._allBanks;
+
   @override
   State<SelectBankSheet> createState() => _SelectBankSheetState();
 }
@@ -265,6 +267,34 @@ class _SelectBankSheetState extends State<SelectBankSheet> {
               ),
             ),
           ),
+          const SizedBox(height: 12),
+          // Popular Banks Quick Chips
+          SizedBox(
+            height: 36,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
+              children: [
+                _buildQuickBankChip("GTBank", const Color(0xFFE55300), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("Access Bank", const Color(0xFF003B70), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("Zenith Bank", const Color(0xFFD32F2F), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("OPay", const Color(0xFF00B074), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("PalmPay", const Color(0xFF5F00B8), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("Kuda Bank", const Color(0xFF49127E), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("Moniepoint", const Color(0xFF0038FF), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("First Bank", const Color(0xFF0D47A1), isDark),
+                const SizedBox(width: 8),
+                _buildQuickBankChip("UBA", const Color(0xFFC62828), isDark),
+              ],
+            ),
+          ),
           const SizedBox(height: 14),
           Expanded(
             child: ListView.separated(
@@ -366,6 +396,53 @@ class _SelectBankSheetState extends State<SelectBankSheet> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildQuickBankChip(String label, Color color, bool isDark) {
+    return InkWell(
+      onTap: () {
+        final query = label.toLowerCase().replaceAll(" bank", "");
+        final match = _allBanks.firstWhere(
+          (b) => b.bankName.toLowerCase().contains(query),
+          orElse: () => _allBanks.first,
+        );
+        context.pop(match);
+      },
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: isDark ? 0.16 : 0.10),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color.withValues(alpha: 0.35),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: color,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : const Color(0xFF1E1A14),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

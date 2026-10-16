@@ -45,11 +45,11 @@ class _VanitiIntroDialogState extends State<VanitiIntroDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 40),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 60),
       backgroundColor: Colors.transparent,
       elevation: 0,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -65,18 +65,17 @@ class _VanitiIntroDialogState extends State<VanitiIntroDialog> {
                     ),
                   ),
                   child: Column(
-
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 28, 24, 0),
+                        padding: const EdgeInsets.fromLTRB(22, 22, 22, 0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Introducing",
                               style: GoogleFonts.inter(
-                                fontSize: 15,
+                                fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0,
                                 color: VanitiIntroDialog._gold,
@@ -86,54 +85,54 @@ class _VanitiIntroDialogState extends State<VanitiIntroDialog> {
                             Text(
                               "Vaniti",
                               style: GoogleFonts.inter(
-                                fontSize: 44,
+                                fontSize: 38,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -0.5,
                                 height: 1.1,
                                 color: Colors.white,
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             Text(
                               "Celebrations just got a glow-up. With the all-new "
                               "Vaniti Spray, every tap becomes an unforgettable "
                               "moment.",
                               style: GoogleFonts.inter(
-                                fontSize: 14,
-                                height: 1.5,
+                                fontSize: 13.5,
+                                height: 1.45,
                                 letterSpacing: 0,
                                 color: VanitiIntroDialog._body,
                               ),
                             ),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 10),
                             Text(
                               "Simply tap, hold, and spray to bring your screen "
                               "to life with premium effects, vibrant visuals, "
                               "and your own personal flair.",
                               style: GoogleFonts.inter(
-                                fontSize: 14,
-                                height: 1.5,
+                                fontSize: 13.5,
+                                height: 1.45,
                                 letterSpacing: 0,
                                 color: VanitiIntroDialog._body,
                               ),
                             ),
-                            const SizedBox(height: 14),
+                            const SizedBox(height: 10),
                             Text(
                               "Make every moment feel special.",
                               style: GoogleFonts.inter(
-                                fontSize: 16,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 0,
                                 color: VanitiIntroDialog._gold,
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 16),
                             GestureDetector(
                               onTap: _tryNow,
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 14,
+                                  horizontal: 22,
+                                  vertical: 12,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.black,
@@ -142,7 +141,7 @@ class _VanitiIntroDialogState extends State<VanitiIntroDialog> {
                                 child: Text(
                                   "Try Vaniti Now",
                                   style: GoogleFonts.inter(
-                                    fontSize: 14,
+                                    fontSize: 13.5,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 0,
                                     color: Colors.white,
@@ -153,24 +152,18 @@ class _VanitiIntroDialogState extends State<VanitiIntroDialog> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      // Artwork sits below the button with comfortable padding so the entire illustration is fully visible without being cropped at the bottom edge.
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
-                        child: Center(
-                          child: SizedBox(
-                            width: double.infinity,
-                            height: 260,
-                            child: Image.asset(
-                              AppImages.vanitiSprayHands,
-                              fit: BoxFit.contain,
-                              alignment: Alignment.center,
-                              errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                            ),
-                          ),
+                      const SizedBox(height: 10),
+                      // Artwork fills edge-to-edge with compact height
+                      SizedBox(
+                        width: double.infinity,
+                        height: 195,
+                        child: Image.asset(
+                          AppImages.vanitiSprayHands,
+                          fit: BoxFit.cover,
+                          alignment: Alignment.topCenter,
+                          errorBuilder: (_, __, ___) => const SizedBox.shrink(),
                         ),
                       ),
-
                     ],
                   ),
                 ),

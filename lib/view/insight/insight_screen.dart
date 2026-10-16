@@ -19,24 +19,29 @@ class _InsightScreenState extends ConsumerState<InsightScreen> {
   @override
   Widget build(BuildContext context) {
     final vm = ref.watch(insightVm);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2);
+    final buttonBg = isDark ? const Color(0xFF25231F) : const Color(0xFFEDE4D4);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF14120E),
+      backgroundColor: bgColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
             onTap: () => ref.read(dashboardVm).switchPage(0),
             child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFF25231F),
+              decoration: BoxDecoration(
+                color: buttonBg,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back,
-                color: Colors.white,
+                color: textPrimary,
                 size: 20,
               ),
             ),
@@ -47,7 +52,7 @@ class _InsightScreenState extends ConsumerState<InsightScreen> {
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w700,
             fontSize: 18,
-            color: Colors.white,
+            color: textPrimary,
           ),
         ),
         centerTitle: false,

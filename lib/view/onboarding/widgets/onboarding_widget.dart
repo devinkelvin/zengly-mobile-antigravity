@@ -14,13 +14,13 @@ class OnboardingWidget extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primary = Theme.of(context).colorScheme.primary;
 
-    return Padding(
-      padding: AppDimensions.horizontalPadding,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Spacer(),
-          Container(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Spacer(),
+        Padding(
+          padding: AppDimensions.horizontalPadding,
+          child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: primary.withValues(alpha: 0.12),
@@ -40,16 +40,21 @@ class OnboardingWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: Responsive.height(context) * 0.38,
-              maxWidth: 320,
-            ),
-            child: Image.asset(model.image, fit: BoxFit.contain),
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          width: double.infinity,
+          height: Responsive.height(context) * 0.38,
+          child: Image.asset(
+            model.image,
+            fit: BoxFit.fitWidth,
+            width: double.infinity,
           ),
-          const Spacer(),
-          Text.rich(
+        ),
+        const Spacer(),
+        Padding(
+          padding: AppDimensions.horizontalPadding,
+          child: Text.rich(
             TextSpan(
               children: [
                 TextSpan(
@@ -74,8 +79,11 @@ class OnboardingWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
-          Text(
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: AppDimensions.horizontalPadding,
+          child: Text(
             model.description,
             textAlign: TextAlign.center,
             style: GoogleFonts.inter(
@@ -85,9 +93,9 @@ class OnboardingWidget extends StatelessWidget {
               height: 1.45,
             ),
           ),
-          const SizedBox(height: 20),
-        ],
-      ),
+        ),
+        const SizedBox(height: 20),
+      ],
     );
   }
 }

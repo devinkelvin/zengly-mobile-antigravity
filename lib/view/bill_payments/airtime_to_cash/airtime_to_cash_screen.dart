@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import '../../../data/data.dart';
 import '../../../utils/utils.dart';
 import '../../../widgets/widgets.dart';
-import '../widgets/widgets.dart';
 import 'airtime_to_cash_vm.dart';
 
 class AirtimeToCashScreen extends ConsumerStatefulWidget {
@@ -119,7 +118,7 @@ class _AirtimeToCashScreenState extends ConsumerState<AirtimeToCashScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final vm = ref.watch(airtimeToCashVm);
-    final rawAmount = _amountController.text.replaceAll(',', '');
+    final rawAmount = _amountController.text.replaceAll('₦', '').replaceAll(',', '').trim();
     final receivable = vm.receivableAmount(rawAmount);
     final fee = vm.feeAmount(rawAmount);
 
@@ -292,7 +291,7 @@ class _AirtimeToCashScreenState extends ConsumerState<AirtimeToCashScreen> {
               keyboardType: const TextInputType.numberWithOptions(),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
-                ThousandsFormatter(),
+                const ThousandsFormatter(symbol: ''),
               ],
             ),
 

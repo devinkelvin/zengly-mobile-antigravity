@@ -27,8 +27,9 @@ class ElectricityConfirmationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final vm = ref.watch(electricityVm);
+    final cleanAmountStr = vm.amount.replaceAll('₦', '').replaceAll(',', '').trim();
     final effectiveAmount = amount ??
-        (double.tryParse(vm.amount.replaceAll(',', '')) ?? 10000.0);
+        (double.tryParse(cleanAmountStr) ?? 10000.0);
     final totalAmount = effectiveAmount + vm.fee;
     final effectiveMeter = meterNumber ?? vm.meterNumber;
     final effectiveType = meterType ?? (vm.selectedElectricityType == ElectricityType.prepaid ? "Prepaid" : "Postpaid");
@@ -109,7 +110,7 @@ class ElectricityConfirmationScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "₦${vm.amount}.00",
+                    "₦${NumberFormat("#,##0.00").format(effectiveAmount)}",
                     style: GoogleFonts.inter(
                       fontSize: 26,
                       fontWeight: FontWeight.w800,
@@ -139,14 +140,11 @@ class ElectricityConfirmationScreen extends ConsumerWidget {
                   ),
                   ElectricityTile(
                     title: "Meter Type",
-                    content:
-                        vm.selectedElectricityType == ElectricityType.prepaid
-                            ? "Prepaid"
-                            : "Postpaid",
+                    content: effectiveType,
                   ),
                   ElectricityTile(
                     title: "Meter Number",
-                    content: vm.meterNumber,
+                    content: effectiveMeter,
                   ),
                   ElectricityTile(
                     title: "Customer Name",

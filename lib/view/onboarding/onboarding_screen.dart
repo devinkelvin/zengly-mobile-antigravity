@@ -106,15 +106,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   itemBuilder: (context, index) {
                     final item = onboardingList[index];
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Spacer(),
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Spacer(),
 
-                          // Feature Badge
-                          Container(
+                        // Feature Badge
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: primary.withValues(alpha: 0.12),
@@ -134,25 +134,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               ),
                             ),
                           ),
+                        ),
 
-                          const SizedBox(height: 20),
+                        const SizedBox(height: 16),
 
-                          // Illustration with ambient container
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              maxHeight: Responsive.height(context) * 0.38,
-                              maxWidth: 320,
-                            ),
-                            child: Image.asset(
-                              item.image,
-                              fit: BoxFit.contain,
-                            ),
+                        // Illustration - fills screen width without left/right padding
+                        SizedBox(
+                          width: double.infinity,
+                          height: Responsive.height(context) * 0.38,
+                          child: Image.asset(
+                            item.image,
+                            fit: BoxFit.fitWidth,
+                            width: double.infinity,
                           ),
+                        ),
 
-                          const Spacer(),
+                        const Spacer(),
 
-                          // Headline
-                          Text.rich(
+                        // Headline
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Text.rich(
                             TextSpan(
                               children: [
                                 TextSpan(
@@ -177,11 +179,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             ),
                             textAlign: TextAlign.center,
                           ),
+                        ),
 
-                          const SizedBox(height: 12),
+                        const SizedBox(height: 12),
 
-                          // Description
-                          Text(
+                        // Description
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Text(
                             item.description,
                             textAlign: TextAlign.center,
                             style: GoogleFonts.inter(
@@ -191,10 +196,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               height: 1.45,
                             ),
                           ),
+                        ),
 
-                          const SizedBox(height: 20),
-                        ],
-                      ),
+                        const SizedBox(height: 20),
+                      ],
                     );
                   },
                 ),

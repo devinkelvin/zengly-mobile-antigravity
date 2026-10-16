@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -552,6 +553,447 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
     );
   }
 
+  void _showBankAccountLookupSheet() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final accountController = TextEditingController();
+    BankAccountOption? selectedBank = SelectBankSheet.allBanks.firstWhere(
+      (b) => b.bankName.contains("GTBank"),
+      orElse: () => SelectBankSheet.allBanks.first,
+    );
+    bool isResolving = false;
+    bool isVerified = false;
+    String resolvedName = "";
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (modalContext, setModalState) {
+            void resolveAccount(String nuban) async {
+              if (selectedBank == null) return;
+              setModalState(() {
+                isResolving = true;
+                isVerified = false;
+                resolvedName = "";
+              });
+              await Future.delayed(const Duration(milliseconds: 650));
+              if (!ctx.mounted) return;
+
+              String name;
+              if (nuban.startsWith("042") || nuban.startsWith("567")) {
+                name = "ABILITY ELIJAH OLUWAPELUMI";
+              } else if (nuban.startsWith("069") || nuban.startsWith("101")) {
+                name = "TIWA SAVAGE ENTERTAINMENT";
+              } else if (nuban.startsWith("208") || nuban.startsWith("305")) {
+                name = "DAVID ADELEKE MUSIC";
+              } else if (nuban.startsWith("200") || nuban.startsWith("803")) {
+                name = "BURNA BOY GLOBAL LLC";
+              } else {
+                name = "KELVIN EKUHOHO ENTERPRISE";
+              }
+
+              setModalState(() {
+                isResolving = false;
+                isVerified = true;
+                resolvedName = name;
+              });
+            }
+
+            void onAccountChanged(String val) {
+              final clean = val.replaceAll(RegExp(r'\D'), '');
+              if (clean.length == 10) {
+                resolveAccount(clean);
+              } else {
+                setModalState(() {
+                  isResolving = false;
+                  isVerified = false;
+                  resolvedName = "";
+                });
+              }
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF1C1813) : Colors.white,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  border: Border.all(
+                    color: isDark ? Colors.white10 : const Color(0xFFE5DECE),
+                  ),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white24 : Colors.black26,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      "Recipient Bank Account",
+                      style: GoogleFonts.raleway(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "Select destination bank and input 10-digit NUBAN to verify.",
+                      style: GoogleFonts.inter(
+                        fontSize: 12,
+                        color: isDark ? Colors.white60 : Colors.black54,
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Destination Bank Selector Card
+                    InkWell(
+                      onTap: () async {
+                        final picked = await AppOverlays.selectBankSheet(context: modalContext);
+                        if (picked != null) {
+                          setModalState(() {
+                            selectedBank = picked;
+                          });
+                          final clean = accountController.text.replaceAll(RegExp(r'\D'), '');
+                          if (clean.length == 10) {
+                            resolveAccount(clean);
+                          }
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: selectedBank != null
+                                ? (selectedBank!.brandColor ?? primaryColor).withValues(alpha: 0.35)
+                                : (isDark ? Colors.white12 : const Color(0xFFE5DECE)),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: (selectedBank?.brandColor ?? primaryColor).withValues(alpha: 0.15),
+                              ),
+                              child: Icon(
+                                Icons.account_balance_rounded,
+                                size: 18,
+                                color: selectedBank?.brandColor ?? primaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Destination Bank",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: isDark ? Colors.white38 : Colors.black45,
+                                    ),
+                                  ),
+                                  Text(
+                                    selectedBank?.bankName ?? "Tap to choose bank",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: isDark ? Colors.white : Colors.black87,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              Icons.keyboard_arrow_down_rounded,
+                              color: isDark ? Colors.white60 : Colors.black54,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // 10-Digit Recipient Account Number with Paste
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isVerified
+                              ? const Color(0xFF2ED573).withValues(alpha: 0.6)
+                              : (isDark ? Colors.white12 : const Color(0xFFE5DECE)),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "10-Digit Recipient Account Number",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: isDark ? Colors.white38 : Colors.black45,
+                                  ),
+                                ),
+                                TextField(
+                                  controller: accountController,
+                                  onChanged: onAccountChanged,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                    LengthLimitingTextInputFormatter(10),
+                                  ],
+                                  style: GoogleFonts.inter(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 2.0,
+                                    color: isDark ? Colors.white : Colors.black,
+                                  ),
+                                  decoration: InputDecoration(
+                                    isDense: true,
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                                    hintText: "e.g. 0428658653",
+                                    hintStyle: GoogleFonts.inter(
+                                      fontSize: 15,
+                                      letterSpacing: 1.0,
+                                      color: isDark ? Colors.white24 : Colors.black26,
+                                    ),
+                                    border: InputBorder.none,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isResolving)
+                            const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Color(0xFFE5A93C),
+                              ),
+                            )
+                          else if (isVerified)
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: Color(0xFF2ED573),
+                              size: 22,
+                            )
+                          else
+                            GestureDetector(
+                              onTap: () async {
+                                final data = await Clipboard.getData(Clipboard.kTextPlain);
+                                if (data?.text != null) {
+                                  final clean = data!.text!.replaceAll(RegExp(r'\D'), '');
+                                  if (clean.isNotEmpty) {
+                                    final formatted = clean.length > 10 ? clean.substring(0, 10) : clean;
+                                    accountController.text = formatted;
+                                    onAccountChanged(formatted);
+                                  }
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                decoration: BoxDecoration(
+                                  color: isDark ? const Color(0xFF2E2619) : const Color(0xFFF3ECE0),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: const Color(0xFFE5A93C).withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Text(
+                                  "PASTE",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFE5A93C),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+
+                    // Dynamic Verified Account Owner Card
+                    if (isVerified && resolvedName.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2ED573).withValues(alpha: isDark ? 0.12 : 0.08),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(color: const Color(0xFF2ED573).withValues(alpha: 0.35)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF2ED573).withValues(alpha: 0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.verified_rounded, color: Color(0xFF2ED573), size: 20),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "VERIFIED RECIPIENT",
+                                        style: GoogleFonts.inter(
+                                          fontSize: 9.5,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 0.8,
+                                          color: const Color(0xFF2ED573),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFF2ED573).withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          "NIP VERIFIED",
+                                          style: GoogleFonts.inter(
+                                            fontSize: 8.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: const Color(0xFF2ED573),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    resolvedName,
+                                    style: GoogleFonts.inter(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800,
+                                      color: isDark ? Colors.white : const Color(0xFF1E1A14),
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    "${selectedBank?.bankName ?? 'Bank'} • ${accountController.text}",
+                                    style: GoogleFonts.inter(
+                                      fontSize: 11,
+                                      color: isDark ? Colors.white60 : Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ] else if (isResolving) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: isDark ? const Color(0xFF1E1C18) : const Color(0xFFF5EFE6),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: isDark ? Colors.white10 : const Color(0xFFE5DECE)),
+                        ),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFE5A93C)),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              "Querying NIP name inquiry switch...",
+                              style: GoogleFonts.inter(
+                                fontSize: 11.5,
+                                color: isDark ? Colors.white60 : Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: isVerified
+                            ? () {
+                                final target = "$resolvedName (${selectedBank?.bankName ?? 'Bank'} • ${accountController.text})";
+                                Navigator.pop(ctx);
+                                setState(() {
+                                  _selectedRecipient = target;
+                                  _selectedSendMethod = "bank";
+                                });
+                                AppOverlays.showToast(
+                                  context: context,
+                                  title: "Bank Recipient Set",
+                                  message: "Ready to spray $resolvedName",
+                                  toastType: ToastificationType.success,
+                                );
+                              }
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFB57510),
+                          disabledBackgroundColor: isDark ? Colors.white12 : Colors.black12,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          "Confirm Recipient",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   void _onStartSpray() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -733,46 +1175,64 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
           ),
           const SizedBox(height: 12),
 
-          // 4 Action Buttons in a Row (Scan QR, NFC Tap, Contacts, Username)
+          // 5 Action Buttons in a Row (Scan QR, NFC Tap, Contacts, Username, Bank Acct)
           Row(
             children: [
-              _buildSendOption(
-                id: "qr",
-                label: "Scan QR",
-                icon: Icons.qr_code_scanner,
-                isDark: isDark,
-                onTap: () async {
-                  setState(() => _selectedSendMethod = "qr");
-                  final result = await context.push<String>(AppRouter.qrScanner);
-                  if (result != null && mounted) {
-                    setState(() => _selectedRecipient = result);
-                    _onStartSpray();
-                  }
-                },
+              Expanded(
+                child: _buildSendOption(
+                  id: "qr",
+                  label: "Scan QR",
+                  icon: Icons.qr_code_scanner,
+                  isDark: isDark,
+                  onTap: () async {
+                    setState(() => _selectedSendMethod = "qr");
+                    final result = await context.push<String>(AppRouter.qrScanner);
+                    if (result != null && mounted) {
+                      setState(() => _selectedRecipient = result);
+                      _onStartSpray();
+                    }
+                  },
+                ),
               ),
-              const SizedBox(width: 10),
-              _buildSendOption(
-                id: "nfc",
-                label: "NFC Tap",
-                icon: Icons.nfc,
-                isDark: isDark,
-                onTap: _showNfcRadarSheet,
+              const SizedBox(width: 6),
+              Expanded(
+                child: _buildSendOption(
+                  id: "nfc",
+                  label: "NFC Tap",
+                  icon: Icons.nfc,
+                  isDark: isDark,
+                  onTap: _showNfcRadarSheet,
+                ),
               ),
-              const SizedBox(width: 10),
-              _buildSendOption(
-                id: "contacts",
-                label: "Contacts",
-                icon: Icons.people_outline,
-                isDark: isDark,
-                onTap: _showContactsPickerSheet,
+              const SizedBox(width: 6),
+              Expanded(
+                child: _buildSendOption(
+                  id: "contacts",
+                  label: "Contacts",
+                  icon: Icons.people_outline,
+                  isDark: isDark,
+                  onTap: _showContactsPickerSheet,
+                ),
               ),
-              const SizedBox(width: 10),
-              _buildSendOption(
-                id: "username",
-                label: "Username",
-                icon: Icons.alternate_email,
-                isDark: isDark,
-                onTap: _showUsernameLookupSheet,
+              const SizedBox(width: 6),
+              Expanded(
+                child: _buildSendOption(
+                  id: "username",
+                  label: "Username",
+                  icon: Icons.alternate_email,
+                  isDark: isDark,
+                  onTap: _showUsernameLookupSheet,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: _buildSendOption(
+                  id: "bank",
+                  label: "Bank Acct",
+                  icon: Icons.account_balance_rounded,
+                  isDark: isDark,
+                  onTap: _showBankAccountLookupSheet,
+                ),
               ),
             ],
           ),
@@ -783,22 +1243,32 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC),
+                color: _selectedSendMethod == "bank"
+                    ? const Color(0xFF2ED573).withValues(alpha: isDark ? 0.12 : 0.08)
+                    : (isDark ? const Color(0xFF262017) : const Color(0xFFF9F5EC)),
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: const Color(0xFFB57510).withValues(alpha: 0.3),
+                  color: _selectedSendMethod == "bank"
+                      ? const Color(0xFF2ED573).withValues(alpha: 0.35)
+                      : const Color(0xFFB57510).withValues(alpha: 0.3),
                 ),
               ),
               child: Row(
                 children: [
                   Container(
-                    width: 34,
-                    height: 34,
-                    decoration: const BoxDecoration(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFB57510),
+                      color: _selectedSendMethod == "bank"
+                          ? const Color(0xFF2ED573).withValues(alpha: 0.2)
+                          : const Color(0xFFB57510),
                     ),
-                    child: const Icon(Icons.person_rounded, color: Colors.white, size: 18),
+                    child: Icon(
+                      _selectedSendMethod == "bank" ? Icons.verified_rounded : Icons.person_rounded,
+                      color: _selectedSendMethod == "bank" ? const Color(0xFF2ED573) : Colors.white,
+                      size: 20,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -808,36 +1278,59 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
                         Row(
                           children: [
                             Text(
-                              "Target Recipient",
+                              _selectedSendMethod == "bank" ? "VERIFIED ACCOUNT OWNER" : "Target Recipient",
                               style: GoogleFonts.inter(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
-                                color: isDark ? Colors.white60 : Colors.black54,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.6,
+                                color: _selectedSendMethod == "bank" ? const Color(0xFF2ED573) : (isDark ? Colors.white60 : Colors.black54),
                               ),
                             ),
-                            const SizedBox(width: 6),
-                            const Icon(Icons.verified, size: 13, color: Color(0xFFB57510)),
+                            if (_selectedSendMethod == "bank") ...[
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF2ED573).withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  "NIP VERIFIED",
+                                  style: GoogleFonts.inter(
+                                    fontSize: 8.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: const Color(0xFF2ED573),
+                                  ),
+                                ),
+                              ),
+                            ] else ...[
+                              const SizedBox(width: 6),
+                              const Icon(Icons.verified, size: 13, color: Color(0xFFB57510)),
+                            ],
                           ],
                         ),
+                        const SizedBox(height: 2),
                         Text(
                           _selectedRecipient!,
                           style: GoogleFonts.inter(
-                            fontSize: 14,
+                            fontSize: 13.5,
                             fontWeight: FontWeight.w700,
                             color: isDark ? Colors.white : const Color(0xFF1E1A14),
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
                   TextButton(
-                    onPressed: _showUsernameLookupSheet,
+                    onPressed: _selectedSendMethod == "bank" ? _showBankAccountLookupSheet : _showUsernameLookupSheet,
                     child: Text(
                       "Change",
                       style: GoogleFonts.inter(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFFB57510),
+                        color: _selectedSendMethod == "bank" ? const Color(0xFF2ED573) : const Color(0xFFB57510),
                       ),
                     ),
                   ),
@@ -927,42 +1420,42 @@ class _SprayCashScreenState extends ConsumerState<SprayCashScreen>
     final cardBg = isDark ? const Color(0xFF26211B) : const Color(0xFFF1F3F5);
     final borderColor = isSelected ? const Color(0xFFC87D0E) : Colors.transparent;
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor, width: 1.5),
-          ),
-          child: Column(
-            children: [
-              Container(
-                width: 38,
-                height: 38,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFF332717),
-                ),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: const Color(0xFFC87D0E),
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 2),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor, width: 1.5),
+        ),
+        child: Column(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: Color(0xFF332717),
               ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: GoogleFonts.inter(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? Colors.white : Colors.black87,
-                ),
+              child: Icon(
+                icon,
+                size: 19,
+                color: const Color(0xFFC87D0E),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.inter(
+                fontSize: 10.5,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+          ],
         ),
       ),
     );

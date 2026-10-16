@@ -7,7 +7,6 @@ import '../../data/data.dart';
 import '../../utils/utils.dart';
 import '../../widgets/widgets.dart';
 import 'widgets/top_sprayers_section.dart';
-import 'widgets/vaniti_host_event_sheet.dart';
 import 'widgets/vaniti_leaderboard_sheet.dart';
 import 'spray_cash/screens/own_the_moment_screen.dart';
 
@@ -16,8 +15,6 @@ class PreSpecialFeaturesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,

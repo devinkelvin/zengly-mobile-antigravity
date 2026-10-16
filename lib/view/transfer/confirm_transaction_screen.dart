@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -77,9 +76,12 @@ class _ConfirmTransactionScreenState
 
   @override
   Widget build(BuildContext context) {
-    const bgColor = Color(0xFF14120E);
-    const cardColor = Color(0xFF1F1D19);
-    const dividerColor = Color(0xFF2C2822);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF14120E) : const Color(0xFFFAF7F2);
+    final cardColor = isDark ? const Color(0xFF1F1D19) : Colors.white;
+    final dividerColor = isDark ? const Color(0xFF2C2822) : const Color(0xFFE5DEC8);
+    final textPrimary = isDark ? Colors.white : const Color(0xFF1A1A1A);
+    final buttonBg = isDark ? const Color(0xFF25231F) : const Color(0xFFEDE4D4);
     const primaryAmber = Color(0xFFB57510);
     final currencyFormat = NumberFormat("#,##0.00");
 
@@ -90,6 +92,7 @@ class _ConfirmTransactionScreenState
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: Padding(
           padding: const EdgeInsets.all(8.0),
           child: GestureDetector(
@@ -97,14 +100,14 @@ class _ConfirmTransactionScreenState
             child: Container(
               width: 38,
               height: 38,
-              decoration: const BoxDecoration(
-                color: Color(0xFF25231F),
+              decoration: BoxDecoration(
+                color: buttonBg,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-                size: 20,
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: textPrimary,
+                size: 18,
               ),
             ),
           ),
@@ -114,7 +117,7 @@ class _ConfirmTransactionScreenState
           style: GoogleFonts.inter(
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: textPrimary,
           ),
         ),
         centerTitle: true,
@@ -263,27 +266,27 @@ class _ConfirmTransactionScreenState
                     ),
 
                     const SizedBox(height: 20),
-                    const Divider(color: dividerColor, height: 1),
+                    Divider(color: dividerColor, height: 1),
                     const SizedBox(height: 16),
 
                     _buildDetailRow("Source Account", "Zengly Main Wallet"),
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       "Transaction Fee",
-                      t.fee != null && t.fee! > 0
+                      t.fee > 0
                           ? "₦${currencyFormat.format(t.fee)}"
                           : "₦0.00 (Free)",
                     ),
                     const SizedBox(height: 12),
                     _buildDetailRow(
                       "Total Debit",
-                      "₦${currencyFormat.format(t.amount + (t.fee ?? 0))}",
+                      "₦${currencyFormat.format(t.amount + t.fee)}",
                       isHighlighted: true,
                     ),
 
-                    if (t.note != null && t.note!.isNotEmpty) ...[
+                    if (t.note.isNotEmpty) ...[
                       const SizedBox(height: 12),
-                      _buildDetailRow("Description / Note", t.note!),
+                      _buildDetailRow("Description / Note", t.note),
                     ],
                   ],
                 ),
